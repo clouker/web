@@ -1,0 +1,6 @@
+server:
+  port: 8888
+  context-path: '/web'
+spring:
+  profiles:
+    active: dev
