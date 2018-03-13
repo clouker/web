@@ -1,8 +1,9 @@
 spring:
-  http:
-      multipart:
-        max-file-size: 20MB
-        max-request-size: 100MB
+#  http:
+      # 文件上传
+#      multipart:
+#        max-file-size: 20MB
+#        max-request-size: 100MB
   # ----------------------------mysql-------------------------- #
   datasource:
       driver-class-name: com.mysql.jdbc.Driver
@@ -18,7 +19,7 @@ spring:
         ddl-auto: none
         naming:
           # 表命名规格定义
-          physical-strategy: org.clc.appConfig.mysql.MySQLUpperCaseStrategy
+          physical-strategy: org.clc.config.mysql.MySQLUpperCaseStrategy
 
   # ----------------------------jackson------------------------- #
   jackson:

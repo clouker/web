@@ -1,4 +1,4 @@
-package org.clc.appConfig;
+package org.clc.config;
 
 
 import org.springframework.beans.factory.annotation.Value;
