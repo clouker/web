@@ -8,8 +8,8 @@
 <body>
 <div id="main" style="width: 600px;height:400px;"></div>
 <script th:inline="javascript">
-    var totalData = [[${totalData}]];
-    console.log(totalData);
+    var documents = [[${documents}]];
+    console.log(documents);
     // 绘制饼状图。
     echarts.init(document.getElementById('main')).setOption({
         title: {

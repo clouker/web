@@ -1,29 +1,31 @@
 spring:
-#  http:
-      # 文件上传
-#      multipart:
-#        max-file-size: 20MB
-#        max-request-size: 100MB
   # ----------------------------mysql-------------------------- #
   datasource:
       driver-class-name: com.mysql.jdbc.Driver
       # useSSL:高版本的MySQL是否进行ssl链接
-      url: jdbc:mysql://10.10.10.10:3306/myDB?characterEncoding=utf8&useSSL=false
-      username: linb
-      password: imissyou
+#      url: jdbc:mysql://10.10.10.10:3306/myDB?characterEncoding=utf8&useSSL=false
+#      username: linb
+#      password: imissyou
+      url: jdbc:mysql://172.16.17.22:3306/xsrk_integral_dev?characterEncoding=utf8&useSSL=false
+      username: xsrk_integral_dev
+      password: Xsrk_integral@dev123!
+
+  # ----------------------------mongo-------------------------- #
+  data:
+    mongodb:
+      uri: mongodb://feature_peoplexs_test:peoplexs1234@172.16.17.12:40012/feature_peoplexs_test
 
   # -----------------------------jpa--------------------------- #
-  jpa:
-      show-sql: true
-      hibernate:
-        ddl-auto: none
-        naming:
-          # 表命名规格定义
-          physical-strategy: org.clc.config.mysql.MySQLUpperCaseStrategy
+#  jpa:
+#      show-sql: true
+#      hibernate:
+#        ddl-auto: none
+#        naming:
+#          # 表命名规格定义
+#          physical-strategy: org.clc.config.mysql.MySQLUpperCaseStrategy
 
   # ----------------------------jackson------------------------- #
   jackson:
-      serialization: true
       # 日期json输出格式
       date-format: yyyy-MM-dd HH:mm:ss
       # 时区
@@ -33,7 +35,6 @@ spring:
   thymeleaf:
     cache: false
     mode: LEGACYHTML5
-    content-type: text/html
 
   # ------------------REDIS (RedisProperties)------------------ #
 #  redis:

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * mysql实体/表命名规范定义
  */
-@Component
+//@Component
 public class MySQLUpperCaseStrategy extends PhysicalNamingStrategyStandardImpl {
 
     /**
