@@ -8,13 +8,31 @@
         timeout 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为 unset（依赖驱动）。
         fetchSize 这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等。默认值为 unset（依赖驱动）。
     -->
-    <select id="findByWhere" resultType="java.util.HashMap">
-        SELECT * FROM #{table}
-        <if test="where != '' and where != null">
-            <where>#{where}</where>
+    <select id="find" resultType="org.clc.kernel.pojo.Pojo">
+        SELECT ${Cols} FROM ${table}
+        <where>
+            <if test="where != '' and where != null">
+                ${where}
+            </if>
+        </where>
+        <if test="order != '' and order != null">
+            ORDER BY ${order}
         </if>
-        <if test="o != '' and where != null">
-            <where>#{where}</where>
+
+        <if test="limit != '' and limit != null">
+             ${limit}
+        </if>
+    </select>
+    <select id="findByPage" resultType="org.clc.kernel.pojo.Pojo">
+        SELECT ${Cols} FROM ${table}
+        <if test="where != '' and where != null">
+            WHERE ${where}
+        </if>
+        <if test="order != '' and order != null">
+            ORDER BY ${order}
+        </if>
+        <if test="limit != '' and limit != null">
+            LIMIT ${limit}
         </if>
     </select>
 </mapper>

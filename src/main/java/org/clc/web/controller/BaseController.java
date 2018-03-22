@@ -1,6 +1,7 @@
 package org.clc.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clc.kernel.pojo.Pojo;
 import org.slf4j.Logger;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -27,7 +28,7 @@ public class BaseController {
      * @return
      */
 
-    protected <T> T getEntity(Class<T> entity) {
+    protected <T> T getPojo(Class<T> entity) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Map<String, String[]> map = request.getParameterMap();
@@ -38,7 +39,7 @@ public class BaseController {
             logger.error("解析失败。。。");
             e.printStackTrace();
         }
-        Map<String, Object> m = (Map<String, Object>) t;
+        Pojo pojo = (Pojo) t;
         String cls = t.getClass().getSimpleName().toUpperCase();
         map.forEach((k, v) -> {
             StringBuffer sb = new StringBuffer();
@@ -50,7 +51,7 @@ public class BaseController {
                 for (String s : v)
                     sb.append(s + ",");
             }
-            m.put(k, sb.toString());
+            pojo.put(k, sb.toString());
         });
         // 判断是否包含上传文件
         if(request.getContentType() !=null && request.getContentType().toString().startsWith("multipart/form-data")){
@@ -59,7 +60,7 @@ public class BaseController {
                 parts = request.getParts();
                 parts.forEach(item->{
                     if(item.getSize()!=-1)
-                        m.put("file",item);
+                        pojo.put("file",item);
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -68,6 +69,12 @@ public class BaseController {
         return t;
     }
 
+    protected Pojo pojo(String table){
+        return new Pojo(table);
+    }
+    protected Pojo pojo(String table,String cols){
+        return new Pojo(table,cols);
+    }
 
 
 }
