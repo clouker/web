@@ -1,6 +1,7 @@
 package org.clc.web.controller;
 
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.clc.mongo.dao.MongoBaseDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,8 @@ public class IndexController extends BaseController{
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-//        FindIterable<Document> documents = dao.find(10,null);
-//        System.out.println(documents);
-//        model.addAttribute("documents",documents);
+        FindIterable<Document> documents = dao.getCollection().find();
+        model.addAttribute("documents",documents.first());
         return "index";
     }
 }

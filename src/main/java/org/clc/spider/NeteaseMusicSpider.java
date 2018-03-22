@@ -26,7 +26,7 @@ public class NeteaseMusicSpider {
      *             通配符
      *             "月份中的日期"和"星期中的日期"必须要对其中一个设置?.
      */
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(cron = "0 15 10 * * ?")
     private void test(){
         log.info(LocalDateTime.now().toString());
     }

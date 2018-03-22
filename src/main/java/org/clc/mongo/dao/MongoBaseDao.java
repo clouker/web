@@ -13,8 +13,8 @@ public class MongoBaseDao {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public MongoCollection<Document> getCollection(int limit,Bson sort,int skip){
-        MongoCollection<Document> mongoCollection = mongoTemplate.getMongoDbFactory().getDb("feature_peoplexs_test").getCollection("PERSON_TOTAL");
+    public MongoCollection<Document> getCollection(){
+        MongoCollection<Document> mongoCollection = mongoTemplate.getCollection("PERSON_TOTAL");
         return mongoCollection;
     };
 }

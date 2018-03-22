@@ -14,7 +14,6 @@ spring:
   data:
     mongodb:
       uri: mongodb://feature_peoplexs_test:peoplexs1234@172.16.17.12:40012/feature_peoplexs_test
-
   # -----------------------------jpa--------------------------- #
 #  jpa:
 #      show-sql: true
@@ -35,6 +34,11 @@ spring:
   thymeleaf:
     cache: false
     mode: LEGACYHTML5
+# ----------------------------mybatis-------------------------- #
+mybatis:
+  # 加载mapper配置文件
+  mapper-locations: classpath:mapper/*-mapper.xml
+  type-aliases-package: org.cls.kernel.mapper
 
   # ------------------REDIS (RedisProperties)------------------ #
 #  redis:

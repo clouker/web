@@ -1,9 +1,9 @@
 package org.clc.config.mysql;
 
-import org.hibernate.boot.model.naming.Identifier;
-import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
-import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-import org.springframework.stereotype.Component;
+//import org.hibernate.boot.model.naming.Identifier;
+//import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
+//import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
+//import org.springframework.stereotype.Component;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,23 +12,23 @@ import java.util.regex.Pattern;
  * mysql实体/表命名规范定义
  */
 //@Component
-public class MySQLUpperCaseStrategy extends PhysicalNamingStrategyStandardImpl {
+public class MySQLUpperCaseStrategy/* extends PhysicalNamingStrategyStandardImpl */{
 
     /**
      * 转换表名对应格式------全部转换成大写
      */
-    @Override
-    public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment context) {
-        return name.toIdentifier(name.getText().toUpperCase());
-    }
+//    @Override
+//    public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment context) {
+//        return name.toIdentifier(name.getText().toUpperCase());
+//    }
 
     /**
      * 转换表字段对应格式------大写（含下划线）
      */
-    @Override
-    public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment context) {
-        return name.toIdentifier(hump2upWithUnderline(name.getText()));
-    }
+//    @Override
+//    public Identifier toPhysicalColumnName(Identifier name, JdbcEnvironment context) {
+//        return name.toIdentifier(hump2upWithUnderline(name.getText()));
+//    }
 
     /**
      * 驼峰转大写（含下划线）

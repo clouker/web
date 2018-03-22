@@ -9,7 +9,7 @@
 <div id="main" style="width: 600px;height:400px;"></div>
 <script th:inline="javascript">
     var documents = [[${documents}]];
-    console.log(documents);
+    var user = [[${user}]];
     // 绘制饼状图。
     echarts.init(document.getElementById('main')).setOption({
         title: {
