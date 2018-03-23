@@ -23,8 +23,11 @@ public class UserController extends BaseController {
     String find(Model model) {
 
 //        getPojo(Pojo.class);
-        Pojo user = pojo("SYS_USER").put("where", "USER_ID = 1");
-        List<Pojo> users = userMapper.findByPage(user);
+
+        Page page = page("SYS_USER",1,10);
+        page.setWhere("USER_ID != 8");
+        page.setOrder("USER_NAME");
+        List<Pojo> users = userMapper.findByPage(page);
         model.addAttribute("user", users);
         return "index";
     }

@@ -20,19 +20,19 @@
         </if>
 
         <if test="limit != '' and limit != null">
-             ${limit}
+            ${limit}
         </if>
     </select>
     <select id="findByPage" resultType="org.clc.kernel.pojo.Pojo">
-        SELECT ${Cols} FROM ${table}
+         FROM ${table}
         <if test="where != '' and where != null">
             WHERE ${where}
         </if>
         <if test="order != '' and order != null">
             ORDER BY ${order}
         </if>
-        <if test="limit != '' and limit != null">
-            LIMIT ${limit}
+        <if test="sort != '' and sort != null">
+            ORDER BY ${sort}
         </if>
     </select>
 </mapper>

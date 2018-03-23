@@ -47,6 +47,7 @@ mybatis:
 logging:
   level:
     org.clc.kernel.mapper: debug
+    org.clc.config.PageInterceptor: debug
   # ------------------REDIS (RedisProperties)------------------ #
 #  redis:
 #    # Redis数据库索引（默认为0）

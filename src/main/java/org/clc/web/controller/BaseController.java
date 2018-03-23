@@ -1,6 +1,7 @@
 package org.clc.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clc.common.Page;
 import org.clc.kernel.pojo.Pojo;
 import org.slf4j.Logger;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -23,6 +24,7 @@ public class BaseController {
 
     /**
      * 获取请求实体
+     *
      * @param entity
      * @param <T>
      * @return
@@ -54,13 +56,13 @@ public class BaseController {
             pojo.put(k, sb.toString());
         });
         // 判断是否包含上传文件
-        if(request.getContentType() !=null && request.getContentType().toString().startsWith("multipart/form-data")){
+        if (request.getContentType() != null && request.getContentType().toString().startsWith("multipart/form-data")) {
             Collection<Part> parts;
             try {
                 parts = request.getParts();
-                parts.forEach(item->{
-                    if(item.getSize()!=-1)
-                        pojo.put("file",item);
+                parts.forEach(item -> {
+                    if (item.getSize() != -1)
+                        pojo.put("file", item);
                 });
             } catch (Exception e) {
                 e.printStackTrace();
@@ -69,11 +71,31 @@ public class BaseController {
         return t;
     }
 
-    protected Pojo pojo(String table){
-        return new Pojo(table);
+    protected Pojo pojo(String table) {
+        return pojo(table, "*");
     }
-    protected Pojo pojo(String table,String cols){
-        return new Pojo(table,cols);
+
+    protected Pojo pojo(String table, String cols) {
+        return new Pojo(table, cols);
+    }
+
+    protected Page page(String table, int start, int size) {
+        return page(table, " * ", start, size);
+    }
+
+    /**
+     * 分页信息整合
+     *
+     * @param table 表名
+     * @param cols  返回固定字段
+     * @param start 页码
+     * @param size 单页容量
+     * @return
+     */
+    protected Page page(String table, String cols, int start, int size) {
+        Page page = new Page(table, start, size);
+        page.setCols(cols);
+        return page;
     }
 
 

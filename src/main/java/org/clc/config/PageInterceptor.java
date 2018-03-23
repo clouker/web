@@ -7,7 +7,7 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.ibatis.executor.Executor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -22,8 +22,9 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.clc.common.Page;
 
+@Slf4j
 @Intercepts(@Signature(type = StatementHandler.class, method = "prepare",
-        args = {Connection.class,Integer.class,}))
+        args = {Connection.class, Integer.class,}))
 public class PageInterceptor implements Interceptor {
 
     /*
@@ -35,23 +36,20 @@ public class PageInterceptor implements Interceptor {
         MetaObject metaObject = MetaObject.forObject(statementHandler, SystemMetaObject.DEFAULT_OBJECT_FACTORY, SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         String id = mappedStatement.getId();
-        if (id.matches(".+ByPage$")) {
+        if (id.matches(".+ByPage$")) {// 拦截分页方法
             BoundSql boundSql = statementHandler.getBoundSql();
-            Map<String, Object> params = (Map<String, Object>) boundSql.getParameterObject();
-            Page page = (Page) params.get("page");
-            String sql = boundSql.getSql();
-            String countSql = "select count(0) from " + params.get("table");
+            Page page = (Page) boundSql.getParameterObject();
             Connection connection = (Connection) invocation.getArgs()[0];
-            PreparedStatement countStatement = connection.prepareStatement(countSql);
+            PreparedStatement countStatement = connection.prepareStatement("SELECT COUNT(0) FROM " + page.getTable());
             ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
             parameterHandler.setParameters(countStatement);
             ResultSet rs = countStatement.executeQuery();
-            if (rs.next()) {
-                System.out.println(rs.getInt(1));
+            if (rs.next())
                 page.setTotal(rs.getInt(1));
-            }
-            String pageSql = sql/* + " limit " + page.getStartIndex() + "," + page.getTotalSelect()*/;
-            metaObject.setValue("delegate.boundSql.sql", pageSql);
+              log.debug("<==      Total: " + page.getTotal());
+            // 拼装分页sql
+            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.getStart() + "," + page.getTotal();
+            metaObject.setValue("delegate.boundSql.sql", _sql);
         }
         return invocation.proceed();
     }

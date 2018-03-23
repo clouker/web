@@ -19,5 +19,5 @@ public interface BaseMapper {
      */
     List<Pojo> find(Pojo pojo);
 
-    List<Pojo> findByPage(Pojo pojo);
+    List<Pojo> findByPage(Page page);
 }
