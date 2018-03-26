@@ -1,0 +1,41 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+
+                                  _oo8oo_
+                                 o8888888o
+                                 88" . "88
+                                 (| -_- |)
+                                 0\  =  /0
+                               ___/'==='\___
+                             .' \\|     |// '.
+                            / \\|||  :  |||// \
+                           / _||||| -:- |||||_ \
+                          |   | \\\  -  /// |   |
+                          | \_|  ''\---/''  |_/ |
+                          \  .-\__  '-'  __/-.  /
+                        ___'. .'  /--.--\  '. .'___
+                     ."" '<  '.___\_<|>_/___.'  >' "".
+                    | | :  `- \`.:`\ _ /`:.`/ -`  : | |
+                    \  \ `-.   \_ __\ /__ _/   .-` /  /
+                =====`-.____`.___ \_____/ ___.`____.-`=====
+                                  `=---=`
+
+                        佛祖保佑         永不宕机&&永无bug
+               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+    th:insert   ：保留自己的主标签，保留th:fragment的主标签。
+    th:replace ：不要自己的主标签，保留th:fragment的主标签。仅<head/body>不显示
+    th:include ：保留自己的主标签，不要th:fragment的主标签。（官方3.0后不推荐）
+ -->
+<head th:fragment="layer">
+    <script th:src="@{http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js}"></script>
+</head>
+<body th:fragment="echarts">
+<script th:src="@{/plugin/echarts.js}"></script>
+</body>
+<body th:fragment="">
+<script th:src="@{https://sweetalert.js.org/assets/sweetalert/sweetalert.min.js}"></script>
+</body>
+</html>

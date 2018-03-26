@@ -25,28 +25,17 @@ public class BaseController {
     /**
      * 获取请求实体
      *
-     * @param entity
-     * @param <T>
+     * @param table
      * @return
      */
 
-    protected <T> T getPojo(Class<T> entity) {
+    protected Pojo getPojo(String table) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Map<String, String[]> map = request.getParameterMap();
-        T t = null;
-        try {
-            t = entity.newInstance();
-        } catch (Exception e) {
-            logger.error("解析失败。。。");
-            e.printStackTrace();
-        }
-        Pojo pojo = (Pojo) t;
-        String cls = t.getClass().getSimpleName().toUpperCase();
+        Pojo pojo = new Pojo(table);
         map.forEach((k, v) -> {
             StringBuffer sb = new StringBuffer();
-            if (k.toUpperCase().startsWith(cls)) //去除实体类前缀
-                k = k.substring(cls.length() + 1);
             if (v.length == 1)
                 sb.append(v[0]);
             else {// 单key多val时，v以，相连
@@ -68,19 +57,42 @@ public class BaseController {
                 e.printStackTrace();
             }
         }
-        return t;
+        return pojo;
     }
 
+    /**
+     * 基本实体对象
+     *
+     * @param table
+     * @return
+     */
     protected Pojo pojo(String table) {
-        return pojo(table, "*");
+        return new Pojo(table);
     }
 
+    /**
+     * 基本实体对象
+     *
+     * @param table
+     * @param cols
+     * @return
+     */
     protected Pojo pojo(String table, String cols) {
-        return new Pojo(table, cols);
+        Pojo pojo = new Pojo(table);
+        pojo.setCols(cols);
+        return pojo;
     }
 
+    /**
+     * 分页信息整合
+     *
+     * @param table 表名
+     * @param start 页码
+     * @param size  单页容量
+     * @return
+     */
     protected Page page(String table, int start, int size) {
-        return page(table, " * ", start, size);
+        return new Page(table, start, size);
     }
 
     /**
@@ -89,7 +101,7 @@ public class BaseController {
      * @param table 表名
      * @param cols  返回固定字段
      * @param start 页码
-     * @param size 单页容量
+     * @param size  单页容量
      * @return
      */
     protected Page page(String table, String cols, int start, int size) {
@@ -97,6 +109,4 @@ public class BaseController {
         page.setCols(cols);
         return page;
     }
-
-
 }

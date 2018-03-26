@@ -22,8 +22,7 @@ public class UserController extends BaseController {
     @GetMapping(value = "find")
     String find(Model model) {
 
-//        getPojo(Pojo.class);
-
+        Pojo p = getPojo("SYS_USER");
         Page page = page("SYS_USER",1,10);
         page.setWhere("USER_ID != 8");
         page.setOrder("USER_NAME");
