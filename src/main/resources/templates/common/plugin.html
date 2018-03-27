@@ -1,6 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--
-
                                   _oo8oo_
                                  o8888888o
                                  88" . "88
@@ -20,26 +19,31 @@
                 =====`-.____`.___ \_____/ ___.`____.-`=====
                                   `=---=`
 
-                        佛祖保佑         永不宕机&&永无bug
+                              永不宕机--永无bug
                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
 
     th:insert   ：保留自己的主标签，保留th:fragment的主标签。
     th:replace ：不要自己的主标签，保留th:fragment的主标签。仅<head/body>不显示
     th:include ：保留自己的主标签，不要th:fragment的主标签。（官方3.0后不推荐）
  -->
-<head th:fragment="layer">
-    <script th:src="@{http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js}"></script>
-</head>
-<head th:fragment="angular">
-    <script th:src="@{https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js}"></script>
-</head>
-<body th:fragment="echarts">
-<script th:src="@{/plugin/echarts.js}"></script>
-</body>
-<body th:fragment="">
-<script th:src="@{https://sweetalert.js.org/assets/sweetalert/sweetalert.min.js}"></script>
-</body>
-
+<div th:data="jquery">
+    <script th:fragment="jquery" th:src="@{http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js}"></script>
+</div>
+<div th:data="angular">
+    <link th:fragment="angular" th:href="@{https://angularjs.org/css/angular.css}"/>
+    <script th:fragment="angular" th:src="@{https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js}"></script>
+    <script th:fragment="angular-animate" th:src="@{https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js}"></script>
+</div>
+<div th:data="charts">
+    <script th:fragment="charts" th:src="@{https://cdnjs.com/libraries/Chart.js}"></script>
+</div>
+<div th:data="echarts">
+    <script th:fragment="echarts" th:src="@{/plugin/echarts.js}"></script>
+</div>
+<div th:data="sweetalert">
+    <link th:fragment="sweetalert" th:href="@{https://sweetalert.js.org/assets/css/app.css}"/>
+    <link th:fragment="sweetalert" th:href="@{https://fonts.googleapis.com/css?family=Lato:300,400,400i,700,700i}"/>
+    <link th:fragment="sweetalert" th:href="@{https://fonts.googleapis.com/css?family=Inconsolata}"/>
+    <script th:fragment="sweetalert" th:src="@{https://sweetalert.js.org/assets/sweetalert/sweetalert.min.js}"></script>
+</div>
 </html>

@@ -22,8 +22,7 @@ public class UserController extends BaseController {
     private BaseMapper userMapper;
 
     @GetMapping(value = "find")
-    String find(Model model) throws Exception{
-        System.out.println(RequestUtil.getSession());
+    String find(Model model){
         Pojo p = getPojo("SYS_USER");
         System.out.println(p);
         Page page = page("SYS_USER", 1, 10);

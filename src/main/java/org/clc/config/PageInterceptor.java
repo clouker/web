@@ -1,26 +1,20 @@
 package org.clc.config;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Map;
-import java.util.Properties;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.plugin.Interceptor;
-import org.apache.ibatis.plugin.Intercepts;
-import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.plugin.Plugin;
-import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.clc.common.Page;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Properties;
 
 @Slf4j
 @Intercepts(@Signature(type = StatementHandler.class, method = "prepare",
@@ -46,7 +40,7 @@ public class PageInterceptor implements Interceptor {
             ResultSet rs = countStatement.executeQuery();
             if (rs.next())
                 page.setTotal(rs.getInt(1));
-              log.debug("<==      Total: " + page.getTotal());
+            log.debug("<==      Total: " + page.getTotal());
             // 拼装分页sql
             String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.getStart() + "," + page.getTotal();
             metaObject.setValue("delegate.boundSql.sql", _sql);

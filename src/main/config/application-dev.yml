@@ -11,9 +11,9 @@ spring:
       password: Xsrk_integral@dev123!
 
   # ----------------------------mongo-------------------------- #
-  data:
-    mongodb:
-      uri: mongodb://feature_peoplexs_test:peoplexs1234@172.16.17.12:40012/feature_peoplexs_test
+#  data:
+#    mongodb:
+#      uri: mongodb://feature_peoplexs_test:peoplexs1234@172.16.17.12:40012/feature_peoplexs_test
   # -----------------------------jpa--------------------------- #
 #  jpa:
 #      show-sql: true

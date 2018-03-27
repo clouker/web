@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8"/>
 </head>
 <body>
 <span th:replace="common/plugin"></span>
-<span th:replace="common/plugin :: layer"></span>
 <div id="main" style="width: 600px;height:400px;"></div>
 
 </body>
@@ -14,24 +12,23 @@
     var documents = [[${documents}]];
     var user = [[${user}]];
     var s = swal;
-    var $html = "<html><body><h2>哈哈哈</h2></body></html>";
-    // s( "Oops" ,  $html ,  "success");// success/warning/error/info
+    // s( "Oops" ,  "ds" ,  "success");// success/warning/error/info
     s({title : "this's a title",icon : "warning" , button : {text : "OK"}})
-    // 绘制饼状图。
-    // echarts.init(document.getElementById('main')).setOption({
-    //     title: {
-    //         text: 'ECharts 入门示例'
-    //     },
-    //     tooltip: {},
-    //     series: {
-    //         type: 'pie',
-    //         data: [
-    //             {name: 'A', value: 0.2},
-    //             {name: 'B', value: 0.3},
-    //             {name: 'C', value: 0.5}
-    //         ]
-    //     }
-    // });
+    // 绘制饼状图
+    echarts.init(document.getElementById('main')).setOption({
+        title: {
+            text: 'ECharts 入门示例'
+        },
+        tooltip: {},
+        series: {
+            type: 'pie',
+            data: [
+                {name: 'A', value: 0.2},
+                {name: 'B', value: 0.3},
+                {name: 'C', value: 0.5}
+            ]
+        }
+    });
 
 </script>
 </html>
