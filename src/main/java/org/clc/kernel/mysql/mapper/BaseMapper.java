@@ -11,10 +11,11 @@ public interface BaseMapper {
 
     /**
      * 查询
-     * @param pojo
+     * @param pojo(必传tableName)
      * 支持：
      *      where --> pojo.put("where", "where条件")
      *      order --> pojo.put("order", "order条件")
+     *      sort  --> pojo.put("sort","ase|desc")
      * @return
      */
     List<Pojo> find(Pojo pojo);

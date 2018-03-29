@@ -23,17 +23,16 @@ public class UserController extends BaseController {
     private BaseMapper userMapper;
 
     @GetMapping(value = "index")
-    String find(Model model) {
-        Pojo p = getPojo("SYS_USER");
-        System.out.println(p);
+    String find() {
         return PathCode.USER + PathCode.Index;
     }
 
     @PostMapping("findByPage")
     @ResponseBody
     Page getUser() {
-        Page page = page("SYS_USER", 1, 10);
-        page.setWhere("USER_ID != 8");
+        Pojo pageInfo = getPojo("SYS_USER");
+        Page page = page("SYS_USER", pageInfo);
+        page.setWhere("USER_ID != '80'");
         page.setOrder("USER_NAME");
         List<Pojo> users = userMapper.findByPage(page);
         page.setRecords(users);

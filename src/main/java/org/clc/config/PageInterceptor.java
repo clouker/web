@@ -39,10 +39,11 @@ public class PageInterceptor implements Interceptor {
             parameterHandler.setParameters(countStatement);
             ResultSet rs = countStatement.executeQuery();
             if (rs.next())
-                page.setTotal(rs.getInt(1));
-            log.debug("<==      Total: " + page.getTotal());
+                page.setRowCount(rs.getInt(1));
+            log.info("<==      Total: " + page.getRowCount());
             // 拼装分页sql
-            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getTotal();
+            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getRowCount();
+            page.clear();
             metaObject.setValue("delegate.boundSql.sql", _sql);
         }
         return invocation.proceed();

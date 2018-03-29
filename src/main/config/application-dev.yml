@@ -37,7 +37,6 @@ spring:
 # ----------------------------mybatis-------------------------- #
 mybatis:
   # 加载mapper配置文件
-  type-aliases-package: org.cls.kernel.mapper
   mapper-locations: classpath:mapper/*-mapper.xml
   config-location: classpath:mapper/config/mybatis-config.xml
 #  configuration:
@@ -46,8 +45,8 @@ mybatis:
 
 logging:
   level:
-    org.clc.kernel.mapper: debug
-    org.clc.config.PageInterceptor: debug
+    org.clc.kernel.mapper: DEBUG
+    org.clc.config.PageInterceptor: DEBUG
   # ------------------REDIS (RedisProperties)------------------ #
 #  redis:
 #    # Redis数据库索引（默认为0）

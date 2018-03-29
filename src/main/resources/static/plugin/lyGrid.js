@@ -2,7 +2,7 @@
  * js表格分页工具组件
  */
 
-(function () {
+
     CommnUtil = {
         /**
          * 判断某对象不为空..返回true 否则 false
@@ -37,32 +37,32 @@
     lyGrid = (function (params) {
         var confs = {
             l_column: [],
-            pagId: 'paging',       // 加载表格存放位置的ID
-            width: '100%',         // 表格高度
-            height: '100%',        // 表格宽度
-            tHeadHeight: '28px',   // 表格的thead高度
-            tBodyHeight: '27px',   // 表格body的每一行高度
+            pagId: 'paging',            // 加载表格存放位置的ID
+            width: '100%',              // 表格高度
+            height: '100%',             // 表格宽度
+            tHeadHeight: '28px',        // 表格的thead高度
+            tBodyHeight: '27px',        // 表格body的每一行高度
             caption: '',
-            jsonUrl: '',           // 访问后台地址
-            isFixed: false,        // 是否固定表头
-            usePage: true,         // 是否分页
-            serNumber: false,      // 是否显示序号
-            local: false,          // 是否本地分页,即返回所有数据,让前端分页
-            localData: [],         // 本地数据集
-            records: 'records',    // 分页数据
-            pageNow: 'now',        // 当前页码 或 当前第几页
-            totalPages: 'count',   // 总页数
-            totalRecords: 'total', // 总记录数
-            pagecode: '10',        // 分页时，最多显示几个页码
-            async: false,          // 默认为同步
-            data: '',              // 发送给后台的数据 是json数据 例如{nama:"a",age:"100"}....
-            pageSize: 10,          // 每页显示多少条数据
-            checkbox: false,       // 是否显示复选框
-            checkValue: 'id',      // 当checkbox为true时，需要设置存放checkbox的值字段 默认存放字段id的值
+            jsonUrl: '',                // 访问后台地址
+            isFixed: false,             // 是否固定表头
+            usePage: true,              // 是否分页
+            serNumber: false,           // 是否显示序号
+            local: false,               // 是否本地分页,即返回所有数据,让前端分页
+            localData: [],              // 本地数据集
+            records: 'records',         // 分页数据
+            pageNow: 'pageNow',         // 当前页码 或 当前第几页
+            totalPages: 'pageCount',    // 总页数
+            totalRecords: 'rowCount',   // 总记录数
+            pagecode: '10',             // 分页时，最多显示几个页码
+            async: false,               // 默认为同步
+            data: '',                   // 发送给后台的数据 是json数据 例如{nama:"a",age:"100"}....
+            pageSize: 10,               // 每页显示多少条数据
+            checkbox: false,            // 是否显示复选框
+            checkValue: 'id',           // 当checkbox为true时，需要设置存放checkbox的值字段 默认存放字段id的值
             treeGrid : {
-                type : 1,                               // 1 表示后台已经处理好父类带children集合 2 表示没有处理,由前端处理树形式
-                tree : false,                         // 是否显示树
-                name : 'name',                   // 以哪个字段 的树形式 如果是多个 name,key
+                type : 1,               // 1 表示后台已经处理好父类带children集合 2 表示没有处理,由前端处理树形式
+                tree : false,           // 是否显示树
+                name : 'name',          // 以哪个字段 的树形式 如果是多个 name,key
                 id : "id",
                 pid : "pid"
             },
@@ -1271,7 +1271,7 @@
         // 获取表格的当前页json数据
         };
     });
-})();
+
 // 利用js让头部与内容对应列宽度一致。
 var fixhead = function() {
     // 获取表格的宽度

@@ -1,6 +1,7 @@
 package org.clc.kernel.mysql.pojo;
 
 import lombok.Data;
+import lombok.NonNull;
 
 import java.util.HashMap;
 
@@ -14,7 +15,10 @@ public class Pojo extends HashMap<String, Object> {
     private String table = "table";
     // 查询字段
     private String cols = "*";
-
+    // 跳转页码
+    private int pageNow;
+    // 单页容量
+    private int pageSize;
 
     public Pojo put(String key, Object value) {
         super.put(key, value);

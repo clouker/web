@@ -17,10 +17,9 @@
         </where>
         <if test="order != '' and order != null">
             ORDER BY ${order}
-        </if>
-
-        <if test="limit != '' and limit != null">
-            ${limit}
+            <if test="sort != '' and sort != null">
+                ${sort}
+            </if>
         </if>
     </select>
     <select id="findByPage" resultType="org.clc.kernel.mysql.pojo.Pojo">
@@ -30,9 +29,9 @@
         </if>
         <if test="order != '' and order != null">
             ORDER BY ${order}
-        </if>
-        <if test="sort != '' and sort != null">
-            ORDER BY ${sort}
+            <if test="sort != '' and sort != null">
+                ${sort}
+            </if>
         </if>
     </select>
 </mapper>

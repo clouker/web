@@ -86,12 +86,11 @@ public class BaseController {
      * 分页信息整合
      *
      * @param table 表名
-     * @param start 页码
-     * @param size  单页容量
+     * @param pageInfo 分页信息（页码|页容量）
      * @return
      */
-    protected Page page(String table, int start, int size) {
-        return new Page(table, start, size);
+    protected Page page(String table,Pojo pageInfo) {
+        return page(table,"*" ,pageInfo);
     }
 
     /**
@@ -99,11 +98,16 @@ public class BaseController {
      *
      * @param table 表名
      * @param cols  返回固定字段
-     * @param start 页码
-     * @param size  单页容量
+     * @param pageInfo 分页信息（页码|页容量）
      * @return
      */
-    protected Page page(String table, String cols, int start, int size) {
+    protected Page page(String table, String cols,Pojo pageInfo) {
+        int start = 1;
+        int size = 10;
+        if(pageInfo.get("pageNow") != null && pageInfo.get("pageNow").toString().matches("[\\d]+"))
+            start = Integer.valueOf(pageInfo.get("pageNow").toString());
+        if(pageInfo.get("pageSize") != null && pageInfo.get("pageSize").toString().matches("[\\d]+"))
+            size = Integer.valueOf(pageInfo.get("pageSize").toString());
         Page page = new Page(table, start, size);
         page.setCols(cols);
         return page;
