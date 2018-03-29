@@ -1,8 +1,8 @@
 package org.clc.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.clc.common.Page;
-import org.clc.kernel.pojo.Pojo;
+import org.clc.utils.Page;
+import org.clc.kernel.mysql.pojo.Pojo;
 import org.slf4j.Logger;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

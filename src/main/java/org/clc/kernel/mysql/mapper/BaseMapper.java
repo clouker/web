@@ -1,8 +1,8 @@
-package org.clc.kernel.mapper;
+package org.clc.kernel.mysql.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.clc.common.Page;
-import org.clc.kernel.pojo.Pojo;
+import org.clc.utils.Page;
+import org.clc.kernel.mysql.pojo.Pojo;
 
 import java.util.List;
 

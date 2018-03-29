@@ -27,10 +27,11 @@
     th:include ：保留自己的主标签，不要th:fragment的主标签。（官方3.0后不推荐）
  -->
 <div th:data="jquery">
-    <script th:fragment="jquery" th:src="@{http://cdn.bootcss.com/jquery/1.12.3/jquery.min.js}"></script>
+    <script th:fragment="jquery" th:src="@{https://code.jquery.com/jquery-3.3.1.js}"></script>
+    <!--<script th:fragment="jquery" th:src="@{https://code.jquery.com/jquery-3.3.1.min.js}"></script>-->
 </div>
 <div th:data="angular">
-    <link th:fragment="angular" th:href="@{https://angularjs.org/css/angular.css}"/>
+    <link rel="stylesheet" th:fragment="angular" th:href="@{https://angularjs.org/css/angular.css}"/>
     <script th:fragment="angular" th:src="@{https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js}"></script>
     <script th:fragment="angular-animate" th:src="@{https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js}"></script>
 </div>
@@ -40,10 +41,11 @@
 <div th:data="echarts">
     <script th:fragment="echarts" th:src="@{/plugin/echarts.js}"></script>
 </div>
-<div th:data="sweetalert">
-    <link th:fragment="sweetalert" th:href="@{https://sweetalert.js.org/assets/css/app.css}"/>
-    <link th:fragment="sweetalert" th:href="@{https://fonts.googleapis.com/css?family=Lato:300,400,400i,700,700i}"/>
-    <link th:fragment="sweetalert" th:href="@{https://fonts.googleapis.com/css?family=Inconsolata}"/>
-    <script th:fragment="sweetalert" th:src="@{https://sweetalert.js.org/assets/sweetalert/sweetalert.min.js}"></script>
+<div th:data="sweetalert2">
+    <!--<link rel="stylesheet" th:fragment="sweetalert2" th:href="@{https://sweetalert.js.org/assets/css/app.css}"/>-->
+    <link rel="stylesheet" th:fragment="sweetalert2-animate" th:href="@{https://cdn.jsdelivr.net/npm/animate.css@3.6.1/animate.min.css}"/>
+    <link rel="stylesheet" th:fragment="sweetalert2-font-awesome" th:href="@{https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css}"/>
+    <script th:fragment="sweetalert2" th:src="@{https://unpkg.com/sweetalert2@7.18.0/dist/sweetalert2.all.js}"></script>
+    <!--<script th:fragment="sweetalert2" th:src="@{https://cdn.jsdelivr.net/npm/sweetalert2}"></script>-->
 </div>
 </html>

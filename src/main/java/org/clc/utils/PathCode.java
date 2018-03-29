@@ -1,4 +1,4 @@
-package org.clc.web.utils;
+package org.clc.utils;
 
 /**
  * 文件路径指定

@@ -1,4 +1,4 @@
-package org.clc.common;
+package org.clc.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;

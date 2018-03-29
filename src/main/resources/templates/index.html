@@ -2,10 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <import th:replace="common/plugin :: sweetalert"/>
-    <!--<import th:replace="common/plugin :: jquery"/>-->
-    <!--<import th:replace="common/plugin :: echarts"/>-->
-    <!--<import th:replace="common/plugin :: angular"/>-->
+    <import th:replace="common/plugin :: sweetalert2"/>
+    <import th:replace="common/plugin :: sweetalert2-animate"/>
+    <import th:replace="common/plugin :: sweetalert2-font-awesome"/>
+    <import th:replace="common/plugin :: jquery"/>
+    <import th:replace="common/plugin :: echarts"/>
+    <import th:replace="common/plugin :: angular"/>
+    <script th:src="@{plugin/md5.js}"></script>
 </head>
 <body>
 <div id="main" style="width: 600px;height:400px;"></div>
@@ -14,29 +17,35 @@
     var documents = [[${documents}]];
     var user = [[${user}]];
     var $alert = swal;
-
     $alert({
-        className: "red-bg",
-        icon: "info",
-        button: {text: "ok", value: true, visible: true, closeModal: false, className: "on",}
+        title: 'LOOK',
+        type: 'success',
+        animation: false,
+        html:
+            '获取的身份证号 <b>:</b>' + '<a href="#">' + documents.ZJHM + '</a>',
+        showCloseButton: true,
+        showCancelButton: true,
+        focusConfirm: false,
+        confirmButtonText:
+            '<i class="fa fa-thumbs-up"></i> Great!',
+        cancelButtonText:
+            '<i class="fa fa-thumbs-down"> Close</i>',
     })
-
     // 绘制饼状图。
-    // echarts.init(document.getElementById('main')).setOption({
-    //     title: {
-    //         text: 'ECharts 入门示例'
-    //     },
-    //     tooltip: {},
-    //     series: {
-    //         type: 'pie',
-    //         data: [
-    //             {name: 'A', value: 0.2},
-    //             {name: 'B', value: 0.3},
-    //             {name: 'C', value: 0.5}
-    //         ]
-    //     }
-    // });
-
+    echarts.init(document.getElementById('main')).setOption({
+        title: {
+            text: 'ECharts 入门示例'
+        },
+        tooltip: {},
+        series: {
+            type: 'pie',
+            data: [
+                {name: 'A', value: 0.2},
+                {name: 'B', value: 0.3},
+                {name: 'C', value: 0.5}
+            ]
+        }
+    });
 </script>
 </html>
 

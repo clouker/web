@@ -9,7 +9,7 @@ import org.apache.ibatis.plugin.*;
 import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.clc.common.Page;
+import org.clc.utils.Page;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,7 +42,7 @@ public class PageInterceptor implements Interceptor {
                 page.setTotal(rs.getInt(1));
             log.debug("<==      Total: " + page.getTotal());
             // 拼装分页sql
-            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.getStart() + "," + page.getTotal();
+            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getTotal();
             metaObject.setValue("delegate.boundSql.sql", _sql);
         }
         return invocation.proceed();

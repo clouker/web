@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.clc.kernel.mapper.BaseMapper">
+<mapper namespace="org.clc.kernel.mysql.mapper.BaseMapper">
     <!--
         flushCache 将其设置为 true，任何时候只要语句被调用，都会导致本地缓存和二级缓存都会被清空，默认值：false。
         useCache 将其设置为 true，将会导致本条语句的结果被二级缓存，默认值：对 select 元素为 true。
         timeout 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为 unset（依赖驱动）。
         fetchSize 这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等。默认值为 unset（依赖驱动）。
     -->
-    <select id="find" resultType="org.clc.kernel.pojo.Pojo">
+    <select id="find" resultType="org.clc.kernel.mysql.pojo.Pojo">
         SELECT ${Cols} FROM ${table}
         <where>
             <if test="where != '' and where != null">
@@ -23,7 +23,7 @@
             ${limit}
         </if>
     </select>
-    <select id="findByPage" resultType="org.clc.kernel.pojo.Pojo">
+    <select id="findByPage" resultType="org.clc.kernel.mysql.pojo.Pojo">
          FROM ${table}
         <if test="where != '' and where != null">
             WHERE ${where}

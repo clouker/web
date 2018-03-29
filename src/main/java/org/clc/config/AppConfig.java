@@ -1,15 +1,28 @@
 package org.clc.config;
 
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.ComponentScan;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Slf4j
 @Configuration
-@ComponentScan(basePackages = {"s","s"})
-@PropertySource(value = {"属性文件位置"},ignoreResourceNotFound = true)
-public class AppConfig {
-    @Value("")
-    private String a;
+public class AppConfig implements WebMvcConfigurer {
+
+    @Autowired // 登陆拦截器
+    private LoginInterceptor loginInterceptor;
+
+    /**
+     * 注册拦截器
+     *
+     * @param registry
+     */
+    public void addInterceptors(InterceptorRegistry registry) {
+        log.info("InterceptorRegistry : Start...");
+        log.info("          ---loginInterceptor : Open...");
+        registry.addInterceptor(loginInterceptor);
+        log.info("InterceptorRegistry : Success...");
+    }
 }

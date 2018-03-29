@@ -1,4 +1,4 @@
-package org.clc.common;
+package org.clc.utils;
 
 import lombok.Data;
 import org.apache.http.cookie.Cookie;
@@ -9,7 +9,6 @@ import org.jsoup.select.Elements;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 定义请求返回对象

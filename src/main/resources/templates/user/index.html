@@ -2,34 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <script th:inline="javascript">
+
+    </script>
+    <import th:replace="common/plugin :: jquery"/>
+    <script th:src="@{/plugin/lyGrid.js}"></script>
+    <script th:src="@{/js/user/index.js}"></script>
 </head>
 <body>
-<span th:replace="common/plugin"></span>
-<div id="main" style="width: 600px;height:400px;"></div>
-
+<div style="height:200px;border:5px solid  peru ;"></div>
+<div id="grid1"></div>
 </body>
-<script th:inline="javascript">
-    var documents = [[${documents}]];
-    var user = [[${user}]];
-    var s = swal;
-    // s( "Oops" ,  "ds" ,  "success");// success/warning/error/info
-    s({title : "this's a title",icon : "warning" , button : {text : "OK"}})
-    // 绘制饼状图
-    echarts.init(document.getElementById('main')).setOption({
-        title: {
-            text: 'ECharts 入门示例'
-        },
-        tooltip: {},
-        series: {
-            type: 'pie',
-            data: [
-                {name: 'A', value: 0.2},
-                {name: 'B', value: 0.3},
-                {name: 'C', value: 0.5}
-            ]
-        }
-    });
-
-</script>
 </html>
 

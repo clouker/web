@@ -1,7 +1,6 @@
-package org.clc.kernel.pojo;
+package org.clc.kernel.mysql.pojo;
 
 import lombok.Data;
-import lombok.NonNull;
 
 import java.util.HashMap;
 
