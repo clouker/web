@@ -2,16 +2,85 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <script th:inline="javascript">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
+    <!--<link rel="stylesheet" th:href="@{/css/font-awesome.css}" />-->
+    <link rel="stylesheet" th:href="@{/css/ace.css}"/>
+    <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}" />
 
-    </script>
     <import th:replace="common/plugin :: jquery"/>
-    <script th:src="@{/plugin/lyGrid.min.js}"></script>
+    <script th:src="@{/plugin/layer/layer.js}"></script>
+    <script th:src="@{/plugin/iCheck/icheck.min.js}"></script>
+    <script th:src="@{/plugin/lyGrid/common/CommonUtil.js}"></script>
+    <script th:src="@{/plugin/jquery/underscore.js}"></script>
+    <script th:src="@{/plugin/lyGrid/common/lyGrid.min.js}"></script>
+    <script th:src="@{/plugin/lyGrid/common/base64.js}"></script>
+    <script th:src="@{/plugin/lyGrid/common/jquery.serializejson.min.js}"></script>
+    <script th:src="@{/plugin/lyGrid/table-data.js}"></script>
     <script th:src="@{/js/user/index.js}"></script>
+    <style type="text/css">
+        .table>thead>tr {
+            background-image: inherit;
+        }
+        .dmycol-menu {
+            position: fixed;
+            background-color: white;
+            font-size: 14px;
+            text-align: left;
+            list-style: none;
+            border: 1px solid rgba(0, 0, 0, .15);
+            z-index: 1000;
+            margin-top: 11px;
+            width: 120px;
+        }
+
+        .span_checkbox {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            background:
+                    url(/images/custom.png)
+                    no-repeat;
+            border: none;
+            cursor: pointer;
+            top: -2px;
+        }
+
+        .span_checkbox.checked {
+            background-position: -20px 0;
+        }
+
+        .span_checkbox {
+            background-position: 0 0;
+        }
+
+        .wj-glyph-up{
+            display: inline-block;
+            border-right: .4em solid transparent;
+            border-bottom: .5em solid;
+            border-left: .4em solid transparent;
+            opacity: .75;
+            margin-left: 3px;
+        }
+        .wj-glyph-down{
+            display: inline-block;
+            border-top: .5em solid;
+            border-right: .4em solid transparent;
+            border-left: .4em solid transparent;
+            opacity: .75;
+            margin-left: 3px;
+        }
+    </style>
 </head>
 <body>
-<div style="height:50px;border:5px solid  peru ;"></div>
-<div id="grid"></div>
+<div style="height:80px;border:3px solid  peru;border-radius: 10px"></div>
+<div class="page-content" style="padding: 0px;">
+    <button class="btn btn-success export" >导出</button>
+    <div id="paging"></div>
+</div>
+</div>
 </body>
 </html>
 

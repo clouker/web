@@ -11,18 +11,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class AppConfig implements WebMvcConfigurer {
 
-    @Autowired // 登陆拦截器
-    private LoginInterceptor loginInterceptor;
+//    @Autowired // 登陆拦截器
+//    private LoginInterceptor loginInterceptor;
 
     /**
      * 注册拦截器
      *
      * @param registry
      */
-    public void addInterceptors(InterceptorRegistry registry) {
-        log.info("InterceptorRegistry : Start...");
-        log.info("          ---loginInterceptor : Open...");
-        registry.addInterceptor(loginInterceptor);
-        log.info("InterceptorRegistry : Success...");
-    }
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        log.info("InterceptorRegistry : Start...");
+//        log.info("          ---loginInterceptor : Open...");
+//        registry.addInterceptor(loginInterceptor);
+//        log.info("InterceptorRegistry : Success...");
+//    }
 }

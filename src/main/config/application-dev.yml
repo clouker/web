@@ -42,11 +42,10 @@ mybatis:
 #  configuration:
 #    interceptors:
 #      - org.clc.config.PageInterceptor
-
 logging:
   level:
-    org.clc.kernel.mapper: DEBUG
-    org.clc.config.PageInterceptor: DEBUG
+    org.clc.kernel.mysql.mapper: debug
+    org.clc.config: debug
   # ------------------REDIS (RedisProperties)------------------ #
 #  redis:
 #    # Redis数据库索引（默认为0）

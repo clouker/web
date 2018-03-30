@@ -42,7 +42,7 @@ public class PageInterceptor implements Interceptor {
                 page.setRowCount(rs.getInt(1));
             log.info("<==      Total: " + page.getRowCount());
             // 拼装分页sql
-            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getRowCount();
+            String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getPageSize();
             page.clear();
             metaObject.setValue("delegate.boundSql.sql", _sql);
         }

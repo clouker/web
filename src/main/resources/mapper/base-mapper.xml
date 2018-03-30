@@ -23,7 +23,7 @@
         </if>
     </select>
     <select id="findByPage" resultType="org.clc.kernel.mysql.pojo.Pojo">
-         FROM ${table}
+        FROM ${table}
         <if test="where != '' and where != null">
             WHERE ${where}
         </if>

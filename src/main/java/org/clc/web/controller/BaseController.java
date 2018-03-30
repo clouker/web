@@ -23,16 +23,13 @@ public class BaseController {
 
     /**
      * 获取请求实体
-     *
-     * @param table
-     * @return
      */
 
-    protected Pojo getPojo(String table) {
+    protected Pojo getPojo() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         Map<String, String[]> map = request.getParameterMap();
-        Pojo pojo = new Pojo(table);
+        Pojo pojo = new Pojo();
         map.forEach((k, v) -> {
             StringBuffer sb = new StringBuffer();
             if (v.length == 1)
@@ -85,30 +82,35 @@ public class BaseController {
     /**
      * 分页信息整合
      *
-     * @param table 表名
+     * @param table    表名
      * @param pageInfo 分页信息（页码|页容量）
      * @return
      */
-    protected Page page(String table,Pojo pageInfo) {
-        return page(table,"*" ,pageInfo);
+    protected Page page(String table, Pojo pageInfo) {
+        return page(table, "*", pageInfo);
     }
 
     /**
      * 分页信息整合
      *
-     * @param table 表名
-     * @param cols  返回固定字段
+     * @param table    表名
+     * @param cols     返回固定字段
      * @param pageInfo 分页信息（页码|页容量）
      * @return
      */
-    protected Page page(String table, String cols,Pojo pageInfo) {
+    protected Page page(String table, String cols, Pojo pageInfo) {
         int start = 1;
         int size = 10;
-        if(pageInfo.get("pageNow") != null && pageInfo.get("pageNow").toString().matches("[\\d]+"))
+        if (pageInfo.get("pageNow") != null && pageInfo.get("pageNow").toString().matches("[\\d]+"))
             start = Integer.valueOf(pageInfo.get("pageNow").toString());
-        if(pageInfo.get("pageSize") != null && pageInfo.get("pageSize").toString().matches("[\\d]+"))
+        if (pageInfo.get("pageSize") != null && pageInfo.get("pageSize").toString().matches("[\\d]+"))
             size = Integer.valueOf(pageInfo.get("pageSize").toString());
+
         Page page = new Page(table, start, size);
+        if(pageInfo.get("order") != null)
+            page.setOrder(pageInfo.get("order").toString());
+        if(pageInfo.get("sort") != null)
+            page.setSort(pageInfo.get("sort").toString());
         page.setCols(cols);
         return page;
     }

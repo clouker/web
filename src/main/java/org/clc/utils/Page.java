@@ -24,7 +24,7 @@ public class Page {
     // 分页排序
     private String order = "";
     // 分页排序(正反)
-    private String sort = "";
+    private String sort = "desc";
     // 总记录
     private int rowCount;
     // 总页数
