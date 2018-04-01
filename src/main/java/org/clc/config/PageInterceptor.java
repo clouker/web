@@ -17,8 +17,7 @@ import java.sql.ResultSet;
 import java.util.Properties;
 
 @Slf4j
-@Intercepts(@Signature(type = StatementHandler.class, method = "prepare",
-        args = {Connection.class, Integer.class,}))
+@Intercepts(@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class,}))
 public class PageInterceptor implements Interceptor {
 
     /*

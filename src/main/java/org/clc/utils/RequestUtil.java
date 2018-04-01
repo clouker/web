@@ -2,6 +2,7 @@ package org.clc.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clc.kernel.mysql.pojo.Pojo;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

@@ -3,7 +3,9 @@ package org.clc.web.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.clc.utils.Page;
 import org.clc.kernel.mysql.pojo.Pojo;
+import org.clc.utils.RequestUtil;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -21,13 +23,12 @@ public class BaseController {
     //日志记录
     protected static Logger logger = log;
 
+
     /**
      * 获取请求实体
      */
-
     protected Pojo getPojo() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
-                .getRequest();
+        HttpServletRequest request = RequestUtil.getRequest();
         Map<String, String[]> map = request.getParameterMap();
         Pojo pojo = new Pojo();
         map.forEach((k, v) -> {
@@ -105,7 +106,6 @@ public class BaseController {
             start = Integer.valueOf(pageInfo.get("pageNow").toString());
         if (pageInfo.get("pageSize") != null && pageInfo.get("pageSize").toString().matches("[\\d]+"))
             size = Integer.valueOf(pageInfo.get("pageSize").toString());
-
         Page page = new Page(table, start, size);
         if(pageInfo.get("order") != null)
             page.setOrder(pageInfo.get("order").toString());

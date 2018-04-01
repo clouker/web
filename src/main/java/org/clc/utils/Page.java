@@ -33,7 +33,7 @@ public class Page {
     private List<Pojo> records;
 
     // 清除与分页无关信息
-    public void clear(){
+    public void clear() {
         this.table = "";
         this.cols = "";
         this.where = "";

@@ -16,5 +16,5 @@ public class MongoBaseDao {
     public MongoCollection<Document> getCollection(){
         MongoCollection<Document> mongoCollection = mongoTemplate.getCollection("PERSON_TOTAL");
         return mongoCollection;
-    };
+    }
 }
