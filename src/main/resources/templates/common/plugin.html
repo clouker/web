@@ -27,7 +27,7 @@
     th:include ：保留自己的主标签，不要th:fragment的主标签。（官方3.0后不推荐）
  -->
 <div th:data="jquery">
-    <script th:fragment="jquery" th:src="@{/plugin/jquery/jquery.min-2.1.4.js}"></script>
+    <script th:fragment="jquery" th:src="@{/plugin/jquery/jquery.js}"></script>
 </div>
 <div th:data="angular">
     <link rel="stylesheet" th:fragment="angular" href="https://angularjs.org/css/angular.css"/>
@@ -35,16 +35,16 @@
     <script th:fragment="angular-animate" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular-animate.min.js"></script>
 </div>
 <div th:data="charts">
-    <script th:fragment="charts" src="https://cdnjs.com/libraries/Chart.js"></script>
+    <!--<script th:fragment="charts" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script><script th:fragment="charts" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>-->
+    <script th:fragment="charts" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script><script th:fragment="charts" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
 </div>
 <div th:data="echarts">
     <script th:fragment="echarts" th:src="@{/plugin/echarts.js}"></script>
 </div>
 <div th:data="sweetalert2">
-    <!--<link rel="stylesheet" th:fragment="sweetalert2" href="https://sweetalert.js.org/assets/css/app.css"/>-->
     <link rel="stylesheet" th:fragment="sweetalert2-animate" href="https://cdn.jsdelivr.net/npm/animate.css@3.6.1/animate.min.css"/>
     <link rel="stylesheet" th:fragment="sweetalert2-font-awesome" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"/>
-    <script th:fragment="sweetalert2" src="https://unpkg.com/sweetalert2@7.18.0/dist/sweetalert2.all.js"></script>
-    <!--<script th:fragment="sweetalert2" src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>-->
+    <!--<script th:fragment="sweetalert2" src="https://unpkg.com/sweetalert2@7.18.0/dist/sweetalert2.all.js"></script>-->
+    <script th:fragment="sweetalert2" src="https://cdn.jsdelivr.net/npm/sweetalert2"></script>
 </div>
 </html>
