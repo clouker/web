@@ -1,6 +1,5 @@
 package org.clc.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -23,30 +22,11 @@ import java.util.Map;
 
 public class WebUtils {
     // 系统换行符：System.getProperty("line.separator")
-    public static void main(String... args) {
-        String url = "http://my.zp365.com/login/login.aspx";
-        Map<String, String> params = new HashMap<>();
-        params.put("ctl00$Con$PassPort", "15296284109");
-        params.put("ctl00$Con$u_Pass", "zzm520888");
-        params.put("ctl00$Con$nxt", "");
-        Response response = WebUtils.post(url, params);
-        ObjectMapper mapper = new ObjectMapper();
-        String contentType = response.getContentType();
-        if (contentType.equals("json")) {
-            String content = response.getContent();
-            content = content.substring(content.indexOf("(") + 1);
-            try {
-                System.out.println(mapper.readValue(content, Map.class));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println(response.getContent());
-        }
+    public static void main(String[] args) {
+        get("");
     }
-
     /**
-     * get请求
+     * get基本请求
      *
      * @param url
      * @return
@@ -61,7 +41,7 @@ public class WebUtils {
      * @param url
      * @return
      */
-    public static Response get(String url, Map<String, String> params, List<Cookie> cookies) {
+    public static Response get(String url, Map<String, ?> params, List<Cookie> cookies) {
         return send(url, "get", cookies, params, null);
     }
 
@@ -72,7 +52,7 @@ public class WebUtils {
      * @param params
      * @return
      */
-    public static Response post(String url, Map<String, String> params) {
+    public static Response post(String url, Map<String, ?> params) {
         return post(url, params, null, null);
     }
 
@@ -84,18 +64,20 @@ public class WebUtils {
      * @param headers 自定义请求头
      * @return
      */
-    public static Response post(String url, Map<String, String> params, Map<String, String> headers, List<Cookie> cookies) {
+    public static Response post(String url, Map<String, ?> params, Map<String, String> headers, List<Cookie> cookies) {
         return send(url, "post", cookies, params, headers);
     }
 
     /**
      * 公共请求
-     *
      * @param url
      * @param method
+     * @param cookies
+     * @param params
+     * @param headers
      * @return
      */
-    private static Response send(String url, String method, List<Cookie> cookies, Map<String, String> params, Map<String, String> headers) {
+    private static Response send(String url, String method, List<Cookie> cookies, Map<String, ?> params, Map<String, String> headers) {
         Response rs = null;
         CloseableHttpClient httpClient = null;
         CloseableHttpResponse response = null;
@@ -153,7 +135,7 @@ public class WebUtils {
      * @param method  请求类型
      * @return
      */
-    private static HttpUriRequest getHttpUriRequest(String url, Map<String, String> params, Map<String, String> headers, String method) {
+    private static HttpUriRequest getHttpUriRequest(String url, Map<String, ?> params, Map<String, String> headers, String method) {
         HttpRequestBase httpRequest = null;
         try {
             if (method.equalsIgnoreCase("post")) {
@@ -163,7 +145,7 @@ public class WebUtils {
                 params = params != null ? params : new HashMap<>(0);
                 params.forEach((k, v) -> {
                     System.out.println(k + " --------- " + v);
-                    pairs.add(new BasicNameValuePair(k, v));
+                    pairs.add(new BasicNameValuePair(k, v.toString()));
                 });
                 if (pairs.size() > 0)
                     ((HttpPost) httpRequest).setEntity(new UrlEncodedFormEntity(pairs, "utf-8"));
