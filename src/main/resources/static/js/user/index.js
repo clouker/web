@@ -17,7 +17,7 @@ $(function () {
             renderData: function (rowindex, data, rowdata, column) {
                 if (data)
                     return '<img src="data:image/jpeg|png|gif;base64,' + data + '" style="width: 43px;height: 33px;"  alt="暂无图片" />';
-                return '<img src="' + '/web/images/default.jpg" style="width: 43px;height: 33px;"  title="默认图标"/>';
+                return '<img src="' + '/images/default.jpg" style="width: 43px;height: 33px;"  title="默认图标"/>';
             }
         }, {
             colkey: "SFZH",
@@ -67,21 +67,30 @@ $(function () {
         checkbox: true,
         // selectPageSize: [10, 20, 50],
         goPage: true,
-        jsonUrl: location.pathname.substr(0, 4) + '/user/findByPage', //jsondata
+        jsonUrl: '/user/findByPage', //jsondata
         data: {//传给后台的参数
 
         },
         trRowClick: function (index, data) { // 双击行事件.index行索引,data行数据JSON.stringify(data)
         }
     });
-$(".export").click(function () {
-    exportTable();
-})
+    $(".export").click(function () {
+        exportTable();
+    })
 });
 
 function exportTable() {
     console.log(grid.getColumn());
-    grid.exportData();
+    // grid.exportData();
+    layer.alert("待开发。。。");
+    return;
+    layer.open({
+        type: 2,
+        area: ['700px', '450px'],
+        fixed: false, //不固定
+        maxmin: true,
+        content: 'http://127.0.0.1:8080/'
+    })
 }
 
 function gridOptions() {// 绑定查询按扭

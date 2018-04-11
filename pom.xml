@@ -59,7 +59,9 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
+            <!-- 依赖传递 -->
             <optional>true</optional>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -96,7 +98,6 @@
             <version>1.11.2</version>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>

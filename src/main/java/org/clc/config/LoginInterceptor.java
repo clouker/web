@@ -11,7 +11,15 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println(request.getRequestURI());
-        return true;
+        String requestURI = request.getRequestURI();
+        System.out.println(requestURI);
+        if (requestURI.contains("/css/")
+                || requestURI.contains("/plugin/")
+                || requestURI.contains("/js/")
+                || requestURI.contains("/fonts/")
+                || requestURI.contains("/images/"))
+            return true;
+        else
+            return true;
     }
 }

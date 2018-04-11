@@ -1,5 +1,10 @@
 server:
   port: 80
+#  ssl:
+#    key-store: classpath:.keystore
+#    key-store-type: JKS
+#    key-password: 123123
+#    key-alias: tomcat
 spring:
   profiles:
     active: dev
