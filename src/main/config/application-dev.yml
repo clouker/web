@@ -6,14 +6,14 @@ spring:
 #      url: jdbc:mysql://10.10.10.10:3306/myDB?characterEncoding=utf8&useSSL=false
 #      username: linb
 #      password: imissyou
-      url: jdbc:mysql://172.16.17.22:3306/xsrk_integral_dev?characterEncoding=utf8&useSSL=false
-      username: xsrk_integral_dev
-      password: Xsrk_integral@dev123!
+      url: jdbc:mysql://120.78.107.157:3306/app?characterEncoding=utf8&useSSL=false
+      username: root
+      password: 1+1=zyes
 
   # ----------------------------mongo-------------------------- #
-  data:
-    mongodb:
-      uri: mongodb://feature_peoplexs_test:Feature1234@172.30.10.31:40012/feature_peoplexs_test
+#  data:
+#    mongodb:
+#      uri: mongodb://feature_peoplexs_test:Feature1234@172.30.10.31:40012/feature_peoplexs_test
   # -----------------------------jpa--------------------------- #
 #  jpa:
 #      show-sql: true

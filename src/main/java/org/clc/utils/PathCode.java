@@ -11,6 +11,7 @@ public class PathCode {
     public final static String Index = "index";
     public final static String Add = "add";
     public final static String Edit = "edit";
+    public final static String REDIRECT = "redirect:/";
     /**
      * 根路径
      */

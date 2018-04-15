@@ -25,7 +25,7 @@ public class UserController extends BaseController {
     @Autowired
     private BaseMapper userMapper;
 
-    @GetMapping(value = "index")
+    @GetMapping(value = {"index",""})
     @ApiOperation(value = "用户列表UI")
     public String index() {
         return PathCode.USER + PathCode.Index;
