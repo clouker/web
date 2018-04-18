@@ -1,4 +1,4 @@
-package org.clc.config.mysql;
+package org.clc.common.mysql;
 
 //import org.hibernate.boot.model.naming.Identifier;
 //import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;

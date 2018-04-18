@@ -2,12 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.css}" />
-    <link rel="stylesheet" th:href="@{/css/font-awesome.css}" />
+    <import th:replace="common/plugin :: bootstrap"/>
     <link rel="stylesheet" th:href="@{/css/ace.css}"/>
-    <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}" />
+    <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}"/>
 
+    <import th:replace="common/plugin :: sweetalert2"/>
+    <import th:replace="common/plugin :: sweetalert2-animate"/>
+    <import th:replace="common/plugin :: sweetalert2-font-awesome"/>
     <import th:replace="common/plugin :: jquery"/>
+    <!--<import th:replace="common/plugin :: vue"/>-->
+
     <script th:src="@{/plugin/layer/layer.js}"></script>
     <script th:src="@{/plugin/iCheck/icheck.min.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/CommonUtil.js}"></script>
@@ -18,69 +22,42 @@
     <script th:src="@{/plugin/lyGrid/table-data.js}"></script>
     <script th:src="@{/js/user/index.js}"></script>
     <style type="text/css">
-        .table>thead>tr {
-            background-image: inherit;
-        }
-        .dmycol-menu {
-            position: fixed;
-            background-color: white;
-            font-size: 14px;
-            text-align: left;
-            list-style: none;
-            border: 1px solid rgba(0, 0, 0, .15);
-            z-index: 1000;
-            margin-top: 11px;
-            width: 120px;
+        .add-user {
+            margin-top: 15px;
         }
 
-        .span_checkbox {
-            display: inline-block;
-            vertical-align: middle;
-            margin: 0;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            background:
-                    url(/images/custom.png)
-                    no-repeat;
-            border: none;
-            cursor: pointer;
-            top: -2px;
+        .add-user label {
+            margin-top: 10px;
         }
 
-        .span_checkbox.checked {
-            background-position: -20px 0;
-        }
-
-        .span_checkbox {
-            background-position: 0 0;
-        }
-
-        .wj-glyph-up{
-            display: inline-block;
-            border-right: .4em solid transparent;
-            border-bottom: .5em solid;
-            border-left: .4em solid transparent;
-            opacity: .75;
-            margin-left: 3px;
-        }
-        .wj-glyph-down{
-            display: inline-block;
-            border-top: .5em solid;
-            border-right: .4em solid transparent;
-            border-left: .4em solid transparent;
-            opacity: .75;
-            margin-left: 3px;
+        input[type='search'] {
+            width: calc(40%);
         }
     </style>
 </head>
 <body>
 <div style="height:80px;border:3px solid  peru;border-radius: 10px"></div>
 <div class="page-content" style="padding: 0px;">
-    <button class="btn btn-success export" >导出</button>
+    <div class="nav">
+        <input type="search"/>
+        <button class="btn btn-info fa-search">搜索</button>
+        <button class="btn btn-success export">导出</button>
+        <button class="btn btn-bold input-lg add">添加</button>
+    </div>
     <div id="paging"></div>
 </div>
 </div>
+<script id="addDiv" type="text/html">
+    <form class="add-user" method="post" th:action="@{/user/add}">
+        <label>昵&nbsp;&nbsp;&nbsp;称：<input name="name" placeholder="请输入昵称" type="text"/></label>
+        <label>用户名：<input name="userName" placeholder="请输入用户名" type="text"/></label>
+        <label>邮&nbsp;&nbsp;&nbsp;箱：<input placeholder="请输入邮箱" type="email"/></label>
+        <label>头&nbsp;&nbsp;&nbsp;像：<img id="ava" width="150px" height="150px">
+            <input type="file" accept="image/*" onchange="ConvertToBase64Img(event)" class="hidden avatar"/></label>
+        <label>身份证：<input placeholder="请输入邮箱" type="email"/></label>
+        <label>邮&nbsp;&nbsp;&nbsp;箱：<input placeholder="请输入邮箱" type="email"/></label>
+    </form>
+</script>
 </body>
 </html>
 

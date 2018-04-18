@@ -3,6 +3,7 @@ package org.clc.web.controller.system;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.clc.common.Info;
 import org.clc.utils.Page;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.kernel.mysql.mapper.BaseMapper;
@@ -10,6 +11,7 @@ import org.clc.web.controller.BaseController;
 import org.clc.utils.PathCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,5 +43,14 @@ public class UserController extends BaseController {
         List<Pojo> users = userMapper.findByPage(page);
         page.setRecords(users);
         return page;
+    }
+
+    @PostMapping("add")
+    @Transactional
+    public Info add() {
+        Pojo pojo = getPojo();
+        pojo.setTable("SYS_USER");
+        int code = userMapper.insert(pojo);
+        return Info.returnMsg(0, "Success");
     }
 }

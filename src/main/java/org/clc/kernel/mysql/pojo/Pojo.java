@@ -1,5 +1,6 @@
 package org.clc.kernel.mysql.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -11,9 +12,9 @@ import java.util.HashMap;
 @Data
 public class Pojo extends HashMap<String, Object> {
 
-    // 表名
+    @JsonIgnore// 表名
     private String table = "table";
-    // 查询字段
+    @JsonIgnore// 查询字段
     private String cols = "*";
     // 跳转页码
     private int pageNow;

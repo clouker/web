@@ -2,15 +2,10 @@ package org.clc;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Connector;
-import org.clc.config.LoginInterceptor;
+import org.clc.common.LoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;
-import org.springframework.boot.web.embedded.tomcat.TomcatEmbeddedWebappClassLoader;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

@@ -1,4 +1,4 @@
-package org.clc.config;
+package org.clc.common;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

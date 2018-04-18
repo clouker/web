@@ -7,25 +7,29 @@ import java.security.MessageDigest;
 
 public class MD5 {
 
-    public static void main(String[] args) {
-        jdkMD5("12s3@!213456");
-        ccMD5("12s3@!213456");
-    }
+	public static void main(String[] args) {
+		String encoding = encoding("abcde");
+		System.out.println(encoding + " --- " + encoding.length());
+		String encoding1 = encoding("abcde");
+		System.out.println(encoding1 + " --- " + encoding1.length());
+	}
 
-    // 用jdk实现:MD5
-    public static void jdkMD5(String src) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] md5Bytes = md.digest(src.getBytes());
-            System.out.println("JDK MD5:" + Hex.encodeHexString(md5Bytes));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	public static String encoding(String str) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] bytes = md.digest(str.getBytes("utf-8"));
+			return toHex(bytes);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    // 用common codes实现实现:MD5
-    public static void ccMD5(String src) {
-        System.out.println("common codes MD5:" + DigestUtils.md5Hex(src.getBytes()));
-    }
+	public static String toHex(byte[] bytes) {
+		final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
+		StringBuilder ret = new StringBuilder(bytes.length * 2);
+		for (int i = 0; i < bytes.length; i++)
+			ret.append(HEX_DIGITS[(bytes[i] >> 4) & 0x0f]).append(HEX_DIGITS[bytes[i] & 0x0f]);
+		return ret.toString();
+	}
 
 }

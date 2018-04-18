@@ -56,7 +56,7 @@ $(function () {
         }, {
             name: "操作",
             renderData: function () {
-                return "<label class='red'>测试渲染函数,自由操作每一列的数据显示!</label>";
+                return "<label class='red'>测试渲染函数</label>";
             }
         }],
         async: false, // 默认为同步
@@ -69,7 +69,6 @@ $(function () {
         goPage: true,
         jsonUrl: '/user/findByPage', //jsondata
         data: {//传给后台的参数
-
         },
         trRowClick: function (index, data) { // 双击行事件.index行索引,data行数据JSON.stringify(data)
         }
@@ -77,24 +76,33 @@ $(function () {
     $(".export").click(function () {
         exportTable();
     })
+    $(".add").click(function () {
+        var $addDiv = document.getElementById('addDiv').innerHTML;
+        //igm是指分别用于指定区分大小写的匹配、全局匹配和多行匹配。
+        var reg = new RegExp('\\[([^\\[\\]]*?)\\]', 'igm');
+        var target = $addDiv.replace(reg, function (node, key) {
+            return {'data': '标题', 'data1': '说的'}[key];
+        });
+        swal({
+            title: "添加用户",
+            html: $addDiv,
+            showConfirmButton: false,
+            backdrop: 'rgba(0,0,123,0.4) url("/images/cool.gif") center left no-repeat'
+        });
+    })
 });
 
 function exportTable() {
     console.log(grid.getColumn());
+    layer.alert('待开发。。。');
     // grid.exportData();
-    layer.alert("待开发。。。");
     return;
-    layer.open({
-        type: 2,
-        area: ['700px', '450px'],
-        fixed: false, //不固定
-        maxmin: true,
-        content: 'http://127.0.0.1:8080/'
-    })
 }
 
+
+
 function gridOptions() {// 绑定查询按扭
-    //以下每一个配置都可以放到基本属性表格对象,,参考上的表格例子配置
+    //以下每一个配置都可以放到基本属性表格对象,参考上的表格例子配置
     grid.setOptions({
         pageSize: 20
     });
@@ -111,16 +119,30 @@ function gridOptions() {// 绑定查询按扭
             layer.alert(s);
         }
     });
-    var s = "当前选中多选框的值 " + JSON.stringify(grid.getSelectedCheckbox());
-    layer.alert(s);
-    var s = "当前先中的值 " + JSON.stringify(grid.selectRow());
-    layer.alert(s);
-    //数据上移,可设置参数url  grid.lyGridUp(url ); 如果不设置,不请求后台
+    layer.alert("当前选中多选框的值 " + JSON.stringify(grid.getSelectedCheckbox()));
+    layer.alert("当前先中的值 " + JSON.stringify(grid.selectRow()));
+    //数据上移,可设置参数url  grid.lyGridUp(url); 如果不设置,不请求后台
     grid.lyGridUp();
     //数据下移,可设置参数url  grid.lyGridDown(url ); 如果不设置,不请求后台
     grid.lyGridDown(location.pathname.substr(0, 4) + '/user/findByPage');
-    var s = "当前表格所有数据 " + JSON.stringify(grid.resultJSONData());
-    layer.alert(s);
-    var s = "当前表格表头 " + JSON.stringify(grid.getColumn());
-    layer.alert(s);
+    layer.alert("当前表格所有数据 " + JSON.stringify(grid.resultJSONData()));
+    layer.alert("当前表格表头 " + JSON.stringify(grid.getColumn()));
 }
+
+function ConvertToBase64Img(e) {
+    var file = e.target.files[0];
+    console.info(file);//图片文件
+    console.log(e.target.value);
+    var reader = new FileReader();
+    reader.onload = (function () {
+        return function () {
+            //this.result就是base64的数据了
+            $("#ava")[0].src = this.result;
+        };
+    })();
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+
+
+

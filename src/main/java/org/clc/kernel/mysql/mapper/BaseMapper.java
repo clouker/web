@@ -21,4 +21,6 @@ public interface BaseMapper {
     List<Pojo> find(Pojo pojo);
 
     List<Pojo> findByPage(Page page);
+
+	int insert(Pojo pojo);
 }
