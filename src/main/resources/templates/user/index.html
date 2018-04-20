@@ -5,21 +5,21 @@
     <import th:replace="common/plugin :: bootstrap"/>
     <link rel="stylesheet" th:href="@{/css/ace.css}"/>
     <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}"/>
-
+    <script th:src="@{/plugin/ajax/ajax.1.7.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
     <import th:replace="common/plugin :: sweetalert2"/>
     <import th:replace="common/plugin :: sweetalert2-animate"/>
     <import th:replace="common/plugin :: sweetalert2-font-awesome"/>
     <import th:replace="common/plugin :: jquery"/>
     <!--<import th:replace="common/plugin :: vue"/>-->
 
-    <script th:src="@{/plugin/layer/layer.js}"></script>
     <script th:src="@{/plugin/iCheck/icheck.min.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/CommonUtil.js}"></script>
     <script th:src="@{/plugin/jquery/underscore.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/lyGrid.min.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/base64.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/jquery.serializejson.min.js}"></script>
-    <script th:src="@{/plugin/lyGrid/table-data.js}"></script>
+    <!--<script th:src="@{/plugin/lyGrid/table-data.js}"></script>-->
     <script th:src="@{/js/user/index.js}"></script>
     <style type="text/css">
         .add-user {
@@ -40,7 +40,7 @@
 <div class="page-content" style="padding: 0px;">
     <div class="nav">
         <input type="search"/>
-        <button class="btn btn-info fa-search">搜索</button>
+        <button class="btn btn-info search-btn">搜索</button>
         <button class="btn btn-success export">导出</button>
         <button class="btn btn-bold input-lg add">添加</button>
     </div>

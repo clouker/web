@@ -1,22 +1,25 @@
 package org.clc.utils;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.security.MessageDigest;
 
-public class MD5 {
+public class Encode {
 
 	public static void main(String[] args) {
-		String encoding = encoding("abcde");
+		String encoding = MD5("2");
 		System.out.println(encoding + " --- " + encoding.length());
-		String encoding1 = encoding("abcde");
+		String encoding1 = MD5("1");
 		System.out.println(encoding1 + " --- " + encoding1.length());
 	}
 
-	public static String encoding(String str) {
+	/**
+	 * MD5加密
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static String MD5(String str) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
+			MessageDigest md = MessageDigest.getInstance("Encode");
 			byte[] bytes = md.digest(str.getBytes("utf-8"));
 			return toHex(bytes);
 		} catch (Exception e) {
@@ -24,7 +27,7 @@ public class MD5 {
 		}
 	}
 
-	public static String toHex(byte[] bytes) {
+	private static String toHex(byte[] bytes) {
 		final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 		StringBuilder ret = new StringBuilder(bytes.length * 2);
 		for (int i = 0; i < bytes.length; i++)
