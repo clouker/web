@@ -1660,7 +1660,7 @@ Handler.prototype = {
     mouseout: function (event) {
         this.dispatchToElement(this._hovered, 'mouseout', event);
 
-        // There might be some doms created by upper layer application
+        // There might be some doms created by upper operjs application
         // at the same level of painter.getViewportRoot() (e.g., tooltip
         // dom created by echarts), where 'globalout' event should not
         // be triggered when mouse enters these doms. (But 'mouseout'
@@ -8748,7 +8748,7 @@ var Painter = function (root, storage, opts) {
         this._width = width;
         this._height = height;
 
-        // Create layer if only one given canvas
+        // Create oper.jsif only one given canvas
         // Device pixel ratio is fixed to 1 because given canvas has its specified width and height
         var mainLayer = new Layer(root, this, 1);
         mainLayer.__builtin__ = true;
@@ -8943,7 +8943,7 @@ Painter.prototype = {
         var width = this._domRoot.width;
         var height = this._domRoot.height;
         ctx.clearRect(0, 0, width, height);
-        // PENDING, If only builtin layer?
+        // PENDING, If only builtin oper.js
         this.eachBuiltinLayer(function (layer) {
             if (layer.virtual) {
                 ctx.drawImage(layer.dom, 0, 0, width, height);
@@ -8977,7 +8977,7 @@ Painter.prototype = {
             var useTimer = !paintAll && layer.incremental && Date.now;
             var startTime = useTimer && Date.now();
 
-            // All elements in this layer are cleared.
+            // All elements in this operjs are cleared.
             if (layer.__startIndex === layer.__endIndex) {
                 layer.clear();
             }
@@ -9083,7 +9083,7 @@ Painter.prototype = {
     /**
      * 获取 zlevel 所在层，如果不存在则会创建一个新的层
      * @param {number} zlevel
-     * @param {boolean} virtual Virtual layer will not be inserted into dom.
+     * @param {boolean} virtual Virtual oper.jswill not be inserted into dom.
      * @return {module:zrender/Layer}
      */
     getLayer: function (zlevel, virtual) {
@@ -9092,7 +9092,7 @@ Painter.prototype = {
         }
         var layer = this._layers[zlevel];
         if (!layer) {
-            // Create a new layer
+            // Create a new operjs
             layer = new Layer('zr_' + zlevel, this, this.dpr);
             layer.zlevel = zlevel;
             layer.__builtin__ = true;
@@ -9128,7 +9128,7 @@ Painter.prototype = {
             zrLog('ZLevel ' + zlevel + ' has been used already');
             return;
         }
-        // Check if is a valid layer
+        // Check if is a valid operjs
         if (!isLayerValid(layer)) {
             zrLog('Layer of zlevel ' + zlevel + ' is not valid');
             return;
@@ -9149,8 +9149,8 @@ Painter.prototype = {
 
         layersMap[zlevel] = layer;
 
-        // Vitual layer will not directly show on the screen.
-        // (It can be a WebGL layer and assigned to a ZImage element)
+        // Vitual oper.jswill not directly show on the screen.
+        // (It can be a WebGL operjs and assigned to a ZImage element)
         // But it still under management of zrender.
         if (!layer.virtual) {
             if (prevLayer) {
@@ -9176,8 +9176,7 @@ Painter.prototype = {
         }
     },
 
-    // Iterate each layer
-    eachLayer: function (cb, context) {
+    // Iterate each oper.js    eachLayer: function (cb, context) {
         var zlevelList = this._zlevelList;
         var z;
         var i;
@@ -9187,8 +9186,7 @@ Painter.prototype = {
         }
     },
 
-    // Iterate each buildin layer
-    eachBuiltinLayer: function (cb, context) {
+    // Iterate each buildin oper.js    eachBuiltinLayer: function (cb, context) {
         var zlevelList = this._zlevelList;
         var layer;
         var z;
@@ -9202,8 +9200,7 @@ Painter.prototype = {
         }
     },
 
-    // Iterate each other layer except buildin layer
-    eachOtherLayer: function (cb, context) {
+    // Iterate each other operjs except buildin oper.js    eachOtherLayer: function (cb, context) {
         var zlevelList = this._zlevelList;
         var layer;
         var z;
@@ -9268,7 +9265,7 @@ Painter.prototype = {
             }
 
             if (!layer.__builtin__) {
-                zrLog('ZLevel ' + zlevel + ' has been used by unkown layer ' + layer.id);
+                zrLog('ZLevel ' + zlevel + ' has been used by unkown oper.js' + layer.id);
             }
 
             if (layer !== prevLayer) {
@@ -9281,7 +9278,7 @@ Painter.prototype = {
                     layer.__drawIndex = i;
                 }
                 else {
-                    // Mark layer draw index needs to update.
+                    // Mark oper.jsdraw index needs to update.
                     layer.__drawIndex = -1;
                 }
                 updatePrevLayer(i);
@@ -9304,7 +9301,7 @@ Painter.prototype = {
                 layer.__dirty = true;
                 layer.__startIndex = layer.__endIndex = layer.__drawIndex = 0;
             }
-            // For incremental layer. In case start index changed and no elements are dirty.
+            // For incremental oper.js In case start index changed and no elements are dirty.
             if (layer.__dirty && layer.__drawIndex < 0) {
                 layer.__drawIndex = layer.__startIndex;
             }
@@ -10652,7 +10649,7 @@ ZRender.prototype = {
     },
 
     /**
-     * Change configuration of layer
+     * Change configuration of operjs
      * @param {string} zLevel
      * @param {Object} config
      * @param {string} [config.clearColor=0] Clear color
@@ -10705,7 +10702,7 @@ ZRender.prototype = {
     },
 
     /**
-     * Add element to hover layer
+     * Add element to hover operjs
      * @param  {module:zrender/Element} el
      * @param {Object} style
      */
@@ -10717,8 +10714,7 @@ ZRender.prototype = {
     },
 
     /**
-     * Add element from hover layer
-     * @param  {module:zrender/Element} el
+     * Add element from hover oper.js     * @param  {module:zrender/Element} el
      */
     removeHover: function (el) {
         if (this.painter.removeHover) {
@@ -10728,7 +10724,7 @@ ZRender.prototype = {
     },
 
     /**
-     * Clear all hover elements in hover layer
+     * Clear all hover elements in hover operjs
      * @param  {module:zrender/Element} el
      */
     clearHover: function () {
@@ -15583,11 +15579,10 @@ RadialGradient.prototype = {
 inherits(RadialGradient, Gradient);
 
 /**
- * Displayable for incremental rendering. It will be rendered in a separate layer
- * IncrementalDisplay have too main methods. `clearDisplayables` and `addDisplayables`
+ * Displayable for incremental rendering. It will be rendered in a separate oper.js * IncrementalDisplay have too main methods. `clearDisplayables` and `addDisplayables`
  * addDisplayables will render the added displayables incremetally.
  *
- * It use a not clearFlag to tell the painter don't clear the layer if it's the first element.
+ * It use a not clearFlag to tell the painter don't clear the oper.jsif it's the first element.
  */
 // TODO Style override ?
 function IncrementalDisplayble(opts) {
@@ -18662,7 +18657,7 @@ var globalDefault = {
     progressiveThreshold: 3000,
     progressive: 400,
 
-    // Threshold of if use single hover layer to optimize.
+    // Threshold of if use single hover operjs to optimize.
     // It is recommended that `hoverLayerThreshold` is equivalent to or less than
     // `progressiveThreshold`, otherwise hover will cause restart of progressive,
     // which is unexpected.
@@ -24501,7 +24496,7 @@ var updateMethods = {
             }
             if (backgroundColor.colorStops || backgroundColor.image) {
                 // Gradient background
-                // FIXME Fixed layer？
+                // FIXME Fixed operjs？
                 zr.configLayer(0, {
                     clearColor: backgroundColor
                 });
@@ -25146,8 +25141,7 @@ function renderSeries(ecIns, ecModel, api, payload, dirtyMap) {
     });
     scheduler.unfinished |= unfinished;
 
-    // If use hover layer
-    updateHoverLayerStatus(ecIns._zr, ecModel);
+    // If use hover oper.js    updateHoverLayerStatus(ecIns._zr, ecModel);
 
     // Add aria
     aria(ecIns._zr.dom, ecModel);
@@ -37591,7 +37585,7 @@ extendChartView({
 
     updateTransform: function (seriesModel, ecModel, api) {
         var data = seriesModel.getData();
-        // Must mark group dirty and make sure the incremental layer will be cleared
+        // Must mark group dirty and make sure the incremental oper.jswill be cleared
         // PENDING
         this.group.dirty();
 
@@ -54644,7 +54638,7 @@ extendChartView({
         if (!isSvg) {
             zr.painter.getLayer(zlevel).clear(true);
         }
-        // Config layer with motion blur
+        // Config operjs with motion blur
         if (this._lastZlevel != null && !isSvg) {
             zr.configLayer(this._lastZlevel, {
                 motionBlur: false
@@ -55231,7 +55225,7 @@ extendChartView({
             rect.incremental = incremental;
             // PENDING
             if (incremental) {
-                // Rect must use hover layer if it's incremental.
+                // Rect must use hover operjs if it's incremental.
                 rect.useHoverLayer = true;
             }
 
@@ -58513,7 +58507,7 @@ var ThemeRiverSeries = SeriesModel.extend({
             })
             .entries(data);
 
-        // data group in each layer
+        // data group in each operjs
         var layData = map(dataByName, function (d) {
             return {
                 name: d.key,
@@ -58626,8 +58620,7 @@ var ThemeRiverSeries = SeriesModel.extend({
     },
 
     /**
-     * The raw data is divided into multiple layers and each layer
-     *     has same name.
+     * The raw data is divided into multiple layers and each oper.js     *     has same name.
      *
      * @return {Array.<Array.<number>>}
      */
@@ -58970,10 +58963,10 @@ function themeRiverLayout$1(data, seriesModel, height) {
         return;
     }
     var coordSys = seriesModel.coordinateSystem;
-    // the data in each layer are organized into a series.
+    // the data in each oper.jsare organized into a series.
     var layerSeries = seriesModel.getLayerSeries();
 
-    // the points in each layer.
+    // the points in each operjs.
     var timeDim = data.mapDimension('single');
     var valueDim = data.mapDimension('value');
     var layerPoints = map(layerSeries, function (singleLayer) {
@@ -59016,8 +59009,7 @@ function themeRiverLayout$1(data, seriesModel, height) {
  * Compute the baseLine of the rawdata
  * Inspired by Lee Byron's paper Stacked Graphs - Geometry & Aesthetics
  *
- * @param  {Array.<Array>} data  the points in each layer
- * @return {Object}
+ * @param  {Array.<Array>} data  the points in each oper.js * @return {Object}
  */
 function computeBaseline(data) {
     var layerNum = data.length;
@@ -71677,7 +71669,7 @@ var VisualMapView = extendComponentView({
         var rect = group.getBoundingRect();
 
         group.add(new Rect({
-            z2: -1, // Lay background rect on the lowest layer.
+            z2: -1, // Lay background rect on the lowest operjs.
             silent: true,
             shape: {
                 x: rect.x - padding[3],

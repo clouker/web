@@ -6,13 +6,15 @@
     <link rel="stylesheet" th:href="@{/css/ace.css}"/>
     <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}"/>
     <script th:src="@{/plugin/ajax/ajax.1.7.js}"></script>
-    <script th:src="@{/js/app.js}"></script>
+    <!--<import th:replace="common/plugin :: sweetalert"/>-->
     <import th:replace="common/plugin :: sweetalert2"/>
     <import th:replace="common/plugin :: sweetalert2-animate"/>
     <import th:replace="common/plugin :: sweetalert2-font-awesome"/>
     <import th:replace="common/plugin :: jquery"/>
     <!--<import th:replace="common/plugin :: vue"/>-->
 
+    <script th:src="@{/js/app.js}"></script>
+    <script th:src="@{/js/oper.js}"></script>
     <script th:src="@{/plugin/iCheck/icheck.min.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/CommonUtil.js}"></script>
     <script th:src="@{/plugin/jquery/underscore.js}"></script>
@@ -33,29 +35,35 @@
         input[type='search'] {
             width: calc(40%);
         }
+        #ava{
+            border: 1px solid gray;
+            border-radius: 100%;
+        }
     </style>
 </head>
 <body>
 <div style="height:80px;border:3px solid  peru;border-radius: 10px"></div>
 <div class="page-content" style="padding: 0px;">
     <div class="nav">
-        <input type="search"/>
+        <input type="search" class="search-input"/>
         <button class="btn btn-info search-btn">搜索</button>
         <button class="btn btn-success export">导出</button>
         <button class="btn btn-bold input-lg add">添加</button>
     </div>
     <div id="paging"></div>
+    <div id='msg'></div>
 </div>
 </div>
 <script id="addDiv" type="text/html">
     <form class="add-user" method="post" th:action="@{/user/add}">
-        <label>昵&nbsp;&nbsp;&nbsp;称：<input name="name" placeholder="请输入昵称" type="text"/></label>
-        <label>用户名：<input name="userName" placeholder="请输入用户名" type="text"/></label>
-        <label>邮&nbsp;&nbsp;&nbsp;箱：<input placeholder="请输入邮箱" type="email"/></label>
-        <label>头&nbsp;&nbsp;&nbsp;像：<img id="ava" width="150px" height="150px">
-            <input type="file" accept="image/*" onchange="ConvertToBase64Img(event)" class="hidden avatar"/></label>
-        <label>身份证：<input placeholder="请输入邮箱" type="email"/></label>
-        <label>邮&nbsp;&nbsp;&nbsp;箱：<input placeholder="请输入邮箱" type="email"/></label>
+        <label>昵&nbsp;&nbsp;&nbsp;称：<input name="$name" placeholder="请输入昵称" type="text" required/></label>
+        <label>用户名：<input name="user.userName" placeholder="请输入用户名" type="text" required/></label>
+        <label>邮&nbsp;&nbsp;&nbsp;箱：<input name='$email' placeholder="请输入邮箱" type="email" required/></label>
+        <label>头&nbsp;&nbsp;&nbsp;像：<img id='ava' th:src="@{images/ava.jpg}" width="150px" height="150px">
+            <input name='user.avatar' type="file" accept="image/*" onchange="ConvertToBase64Img(event)" class="hidden avatar"/></label>
+        <label>身份证：<input name="$" placeholder="请输入身份证" type="number"/></label>
+        <label>邮&nbsp;&nbsp;&nbsp;箱：<input placeholder="请输入邮箱" type="range"/></label>
+        <input type="submit">
     </form>
 </script>
 </body>

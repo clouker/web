@@ -1,0 +1,42 @@
+/*弹出时给body加上这个,关闭时去掉*/
+.overhide {
+    overflow: hidden;
+}
+/*关键样式 遮罩层的*/
+.msgboxshadow {
+    position: fixed; /*固定定位*/
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: .5; /*背景透明度.这里没有兼容样式*/
+    background-color: #000; /*背景色*/
+    z-index: 10000; /*层级数仅小于内容弹出框*/
+}
+/*关键样式 弹出框最外层*/
+.msgboxbg {
+    display: none;
+    position: fixed; /*固定定位*/
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 10001; /*比遮罩层大1,要显示在遮罩层上面*/
+}
+/*内容层默认样式*/
+.msgboxcontent {
+    position: relative;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 2px 2px 40px #000000;
+    margin: 30px auto 0 auto;
+    width:250px;
+    height:150px;
+    overflow:auto;
+    text-indent:10px;
+    padding-top:5px;
+}
+
+关键样式

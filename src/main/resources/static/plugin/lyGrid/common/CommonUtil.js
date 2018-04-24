@@ -225,7 +225,7 @@
 		 */
 		exportExcel : function(datas, columnsTitle, fileName) {
 			if (!this.notNull(datas) || datas.length == 0) {
-				layer.msg('没有数据导出!', {
+				oper.msg('没有数据导出!', {
 					icon : 2
 				});
 				return;
@@ -419,14 +419,14 @@
 				error : function(XMLHttpRequest, textStatus, errorThrown) {
 					var obj = JSON.parse(XMLHttpRequest.responseText); 
 					if(obj==null||obj==undefined){
-						 layer.open({ 
+						 oper.open({
 							 type : 1, 
 							 title : "出错啦！", 
 							 area : [ '800px','400px' ], 
 							 content : "<div id='layerError' style='color:red'>" + obj.message + "</div>"
 						 });
 					}else{
-						layer.alert('出现异常！', obj.message);
+						oper.alert('出现异常！', obj.message);
 					}
 				}
 		};
@@ -438,14 +438,14 @@
 			error : function(XMLHttpRequest, textStatus, errorThrown) {
 				var obj = JSON.parse(XMLHttpRequest.responseText); 
 				if(obj==null||obj==undefined){
-					 layer.open({ 
+					 oper.open({
 						 type : 1, 
 						 title : "出错啦！", 
 						 area : [ '800px','400px' ], 
 						 content : "<div id='layerError' style='color:red'>" + obj.message + "</div>"
 					 });
 				}else{
-					layer.alert('出现异常！', obj.message);
+					oper.alert('出现异常！', obj.message);
 				}
 			}
 		};

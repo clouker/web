@@ -11,9 +11,10 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.utils.Page;
+import org.clc.utils.StringUtil;
 
 import java.sql.*;
-import java.util.Properties;
+import java.util.*;
 
 @Slf4j
 @Intercepts(@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class,}))
@@ -30,24 +31,67 @@ public class MybatisInterceptor implements Interceptor {
 		String id = mappedStatement.getId();
 		Connection connection = (Connection) invocation.getArgs()[0];
 		BoundSql boundSql = statementHandler.getBoundSql();
+		String sql = "";
 		if (id.matches(".+ByPage$") && boundSql.getParameterObject() instanceof Page) {// 拦截分页方法
-			startPage(connection, boundSql, metaObject);
+			sql = startPage(connection, boundSql, metaObject);
 		} else if (id.matches("\\S+.insert\\w*") && boundSql.getParameterObject() instanceof Pojo) {
+			Pojo pojo = (Pojo) boundSql.getParameterObject();
+			Map<String, Object> cols = new HashMap<>();
+			cols.put("table", pojo.getTable());
 			ResultSet catalogs = connection.getMetaData().getColumns(null, "%", "SYS_USER", "%");
 			while (catalogs.next()) {
 				if (catalogs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes"))
 					continue;
 				String column_name = catalogs.getString("COLUMN_NAME");
-				String type_name = catalogs.getString("TYPE_NAME");
-				int column_size = catalogs.getInt("COLUMN_SIZE");
-				System.out.println("column_name: " + column_name + "\ttype_name: " + type_name + "\tcolumn_size:" + column_size);
+				if (pojo.containsKey("$" + StringUtil.underline2camel(column_name)))
+					cols.put(column_name, pojo.get(column_name));
+				// String type_name = catalogs.getString("TYPE_NAME");
+				// int column_size = catalogs.getInt("COLUMN_SIZE");
 			}
-			Pojo pojo = (Pojo) boundSql.getParameterObject();
-			goInsert();
+			sql = goInsert(cols);
 		}
+		metaObject.setValue("delegate.boundSql.sql", sql);
 		return invocation.proceed();
 	}
 
+	/**
+	 * 分页业务处理
+	 *
+	 * @param connection
+	 * @param boundSql
+	 * @param metaObject
+	 * @throws SQLException
+	 */
+	private String startPage(Connection connection, BoundSql boundSql, MetaObject metaObject) throws SQLException {
+		Page page = (Page) boundSql.getParameterObject();
+		PreparedStatement countStatement = connection.prepareStatement("SELECT COUNT(0) FROM " + page.getTable());
+		ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
+		parameterHandler.setParameters(countStatement);
+		ResultSet rs = countStatement.executeQuery();
+		if (rs.next())
+			page.setRowCount(rs.getInt(1));
+		log.info("<==      Total: " + page.getRowCount());
+		// 拼装分页sql
+		return "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getPageSize();
+	}
+
+	/**
+	 * 封装insert SQL
+	 * @param cols
+	 * @return
+	 */
+	private String goInsert(Map<String, Object> cols) {
+		StringBuilder sql = new StringBuilder("insert into " + cols.get("table"));
+		StringBuilder key = new StringBuilder("(");
+		StringBuilder val = new StringBuilder("(");
+		cols.forEach((k, v) -> {
+			key.append(k + ",");
+			val.append(v + ",");
+		});
+		sql.append(key.deleteCharAt(key.lastIndexOf(",")).append(")"));
+		sql.append(val.deleteCharAt(val.lastIndexOf(",")).append(")"));
+		return sql.toString();
+	}
 
 	//region 拦截器需要拦截的对象
 	@Override
@@ -62,29 +106,4 @@ public class MybatisInterceptor implements Interceptor {
 
 	}
 	//endregion
-
-	/**
-	 * 分页业务处理
-	 *
-	 * @param connection
-	 * @param boundSql
-	 * @param metaObject
-	 * @throws SQLException
-	 */
-	private void startPage(Connection connection, BoundSql boundSql, MetaObject metaObject) throws SQLException {
-		Page page = (Page) boundSql.getParameterObject();
-		PreparedStatement countStatement = connection.prepareStatement("SELECT COUNT(0) FROM " + page.getTable());
-		ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
-		parameterHandler.setParameters(countStatement);
-		ResultSet rs = countStatement.executeQuery();
-		if (rs.next())
-			page.setRowCount(rs.getInt(1));
-		log.info("<==      Total: " + page.getRowCount());
-		// 拼装分页sql
-		String _sql = "SELECT " + page.getCols() + " " + boundSql.getSql() + " limit " + page.start() + "," + page.getPageSize();
-		metaObject.setValue("delegate.boundSql.sql", _sql);
-	}
-
-	private void goInsert() {
-	}
-}  
+}

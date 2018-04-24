@@ -57,43 +57,58 @@ window.onload = function () {
         setNumber: true,// 是否显示序号
         pageSize: 10, // 每页显示多少条数据
         checkbox: true,// 是否显示复选框
-        checkValue: 'id', // 当checkbox为true时，需要设置存放checkbox的值字段 默认存放字段id的值
+        checkValue: 'id',
         checkbox: true,
         // selectPageSize: [10, 20, 50],
         goPage: true,
         jsonUrl: '/user/findByPage', //jsondata
-        data: {//传给后台的参数
+        data: {
         },
         trRowClick: function (index, data) { // 双击行事件.index行索引,data行数据JSON.stringify(data)
         }
     });
+    $('.search-btn').click(function () {
+        if ($('.search-input').val().length == 0)
+            return swal("请输入条件");
+        grid.setOptions({data: {search: $('.search-input').val()}})
+    })
     // $(".export").click(function () {
     //     exportTable();
     // })
-    // $(".add").click(function () {
-    //     var $addDiv = document.getElementById('addDiv').innerHTML;
-    //     //igm是指分别用于指定区分大小写的匹配、全局匹配和多行匹配。
-    //     var reg = new RegExp('\\[([^\\[\\]]*?)\\]', 'igm');
-    //     var target = $addDiv.replace(reg, function (node, key) {
-    //         return {'data': '标题', 'data1': '说的'}[key];
-    //     });
-    //     swal({
-    //         title: "添加用户",
-    //         html: $addDiv,
-    //         showConfirmButton: false,
-    //         backdrop: 'rgba(0,0,123,0.4) url("/images/cool.gif") center left no-repeat'
-    //     });
-    // })
+    $(".add").click(function () {
+        // var $addDiv = document.getElementById('addDiv').innerHTML;
+        //igm是指分别用于指定区分大小写的匹配、全局匹配和多行匹配。
+        // var reg = new RegExp('\\[([^\\[\\]]*?)\\]', 'igm');
+        // var target = $addDiv.replace(reg, function (node, key) {
+        //     return {'data': '标题', 'data1': '说的'}[key];
+        // })
+        oper({
+            title: '<h3>用户添加</h3>',
+            html: $('#addDiv').html(),
+            backgroud: "RGBA(114,115,244,0.5) url(/images/cool.gif) no-repeat left center"
+        })
+        ;
+        // swal({
+        //     title: "添加用户",
+        //     html: $('#addDiv').html(),
+        //     // showConfirmButton: false,
+        //     backdrop: 'rgba(0,0,123,0.4) url("/images/cool.gif") center left no-repeat'
+        // }).then(function (isConfirm) {
+        //     if (isConfirm.value) {
+        //         $('.add-user').submit(function (e) {
+        //             var form = $(this);
+        //         });
+        //     }
+        // })
+    })
 }
 
 function exportTable() {
     console.log(grid.getColumn());
-    // layer.alert('待开发。。。');
+    // oper.jsalert('待开发。。。');
     // grid.exportData();
     return;
 }
-
-
 
 function gridOptions() {// 绑定查询按扭
     //以下每一个配置都可以放到基本属性表格对象,参考上的表格例子配置
@@ -104,35 +119,34 @@ function gridOptions() {// 绑定查询按扭
     grid.setOptions({
         beforeComplete: function (conf) {
             var s = "加载之前触发,当前表格配置参数 " + JSON.stringify(conf);
-            // layer.alert(s);
+            // operjs.alert(s);
         }
     });
     grid.setOptions({
         afterComplete: function (column, currentData) {
             var s = "加载之后触发,当前页数据是 " + JSON.stringify(currentData);
-            // layer.alert(s);
+            // oper.jsalert(s);
         }
     });
-    // layer.alert("当前选中多选框的值 " + JSON.stringify(grid.getSelectedCheckbox()));
-    // layer.alert("当前先中的值 " + JSON.stringify(grid.selectRow()));
+    // operjs.alert("当前选中多选框的值 " + JSON.stringify(grid.getSelectedCheckbox()));
+    // oper.jsalert("当前先中的值 " + JSON.stringify(grid.selectRow()));
     // //数据上移,可设置参数url  grid.lyGridUp(url); 如果不设置,不请求后台
     // grid.lyGridUp();
     // //数据下移,可设置参数url  grid.lyGridDown(url ); 如果不设置,不请求后台
     // grid.lyGridDown(location.pathname.substr(0, 4) + '/user/findByPage');
-    // layer.alert("当前表格所有数据 " + JSON.stringify(grid.resultJSONData()));
-    // layer.alert("当前表格表头 " + JSON.stringify(grid.getColumn()));
+    // oper.jsalert("当前表格所有数据 " + JSON.stringify(grid.resultJSONData()));
+    // oper.jsalert("当前表格表头 " + JSON.stringify(grid.getColumn()));
 }
 
 function ConvertToBase64Img(e) {
-    var file = e.target.files[0];
-    console.info(file);//图片文件
-    console.log(e.target.value);
+    var file = e.target.files[0];//图片文件
+    if (file.size > 1)
+        return new oper("图片尺寸过大！！！");
     var reader = new FileReader();
     reader.onload = (function () {
         return function () {
-            //this.result就是base64的数据了
             $("#ava")[0].src = this.result;
-        };
+        }
     })();
     reader.readAsDataURL(e.target.files[0]);
 }
