@@ -8,13 +8,13 @@ window.onload = function () {
         }, {
             colkey: "AVATAR",
             name: "头像",
-            renderData: function (rowindex, data, rowdata, column) {
-                if (data)
-                    return '<img src="data:image/jpeg|png|gif;base64,' + data + '" style="width: 43px;height: 33px;"  alt="暂无图片" />';
-                return '<img src="' + '/images/default.jpg" style="width: 43px;height: 33px;"  title="默认图标"/>';
+            renderData: function (rowindex, data) {
+                if (data)/*data:image/jpeg|png|gif;base64,*/
+                    return '<img style="width: 35px;height:35px;border-radius: 80%" src="' + data + '" style="width: 43px;"/>';
+                return '<img src="' + '/images/ava.jpg" style="width: 35px;height:35px;border-radius: 80%" title="默认图标"/>';
             }
         }, {
-            colkey: "SFZH",
+            colkey: "ID_CARD",
             name: "身份证号"
         }, {
             colkey: "EMAIL",
@@ -22,10 +22,7 @@ window.onload = function () {
         }, {
             colkey: "UPDATE_TIME",
             name: "执行时间",
-            isSort: true,
-            renderData: function (rowindex, data, rowdata, column) {
-                return new Date(data).format("yyyy-MM-dd hh:mm:ss");
-            }
+            isSort: true
         }, {
             colkey: "description",
             name: "执行描述",
@@ -54,24 +51,23 @@ window.onload = function () {
             }
         }],
         async: false, // 默认为同步
-        setNumber: true,// 是否显示序号
+        setNumber: true,
         pageSize: 10, // 每页显示多少条数据
         checkbox: true,// 是否显示复选框
         checkValue: 'id',
         checkbox: true,
-        // selectPageSize: [10, 20, 50],
+        selectPageSize: [10, 20, 50],
         goPage: true,
-        jsonUrl: '/user/findByPage', //jsondata
-        data: {
-        },
-        trRowClick: function (index, data) { // 双击行事件.index行索引,data行数据JSON.stringify(data)
+        jsonUrl: '/user/findByPage',
+        data: {},
+        trRowClick: function (index, data) {
         }
     });
     $('.search-btn').click(function () {
-        if ($('.search-input').val().length == 0)
-            return swal("请输入条件");
+        // if ($('.search-input').val().length == 0)
+        //     return swal("请输入条件");
         grid.setOptions({data: {search: $('.search-input').val()}})
-    })
+    });
     // $(".export").click(function () {
     //     exportTable();
     // })
@@ -111,7 +107,6 @@ function exportTable() {
 }
 
 function gridOptions() {// 绑定查询按扭
-    //以下每一个配置都可以放到基本属性表格对象,参考上的表格例子配置
     grid.setOptions({
         pageSize: 20
     });
@@ -140,12 +135,13 @@ function gridOptions() {// 绑定查询按扭
 
 function ConvertToBase64Img(e) {
     var file = e.target.files[0];//图片文件
-    if (file.size > 1)
+    if (file.size > 1024 * 1024)
         return new oper("图片尺寸过大！！！");
     var reader = new FileReader();
     reader.onload = (function () {
         return function () {
             $("#ava")[0].src = this.result;
+            $(".avatar").val(this.result);
         }
     })();
     reader.readAsDataURL(e.target.files[0]);

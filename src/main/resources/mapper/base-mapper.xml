@@ -10,29 +10,9 @@
     -->
     <select id="find" resultType="org.clc.kernel.mysql.pojo.Pojo" flushCache="false">
         select ${cols} from ${table}
-        <where>
-            <if test="where != '' and where != null">
-                ${where}
-            </if>
-        </where>
-        <if test="order != '' and order != null">
-            order by ${order}
-            <if test="sort != '' and sort != null">
-                ${sort}
-            </if>
-        </if>
     </select>
     <select id="findByPage" resultType="org.clc.kernel.mysql.pojo.Pojo">
-        from ${table}
-        <if test="where != '' and where != null">
-            where ${where}
-        </if>
-        <if test="order != '' and order != null">
-            order by ${order}
-            <if test="sort != '' and sort != null">
-                ${sort}
-            </if>
-        </if>
+        select ${cols} from ${table}
     </select>
     
     <insert id="insert" useGeneratedKeys="true">

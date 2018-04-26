@@ -1,555 +1,405 @@
 /**
- * js表格分页工具组件
+ * js表格分页工具
  */
-CommnUtil = {
-    /**
-     * 判断某对象不为空..返回true 否则 false
-     */
-    notNull: function (obj) {
-        if (obj === null || obj === undefined || obj === "undefined" || obj === "" || obj === "[]" || obj === "{}")
-            return false;
-        else
-            return true;
-    },
-
-    /**
-     * 判断某对象不为空..返回obj 否则 ""
-     */
-    notEmpty: function (obj) {
-        if (obj === null || obj === undefined || obj === "undefined" || obj === "" || obj === "[]" || obj === "{}")
-            return '';
-        else
-            return obj;
-    },
-
-    /**
-     * in_array判断一个值是否在数组中
-     */
-    in_array: function (array, string) {
-        for (var s = 0; s < array.length; s++)
-            if (array[s].toString() == string)
-                return true;
-        return false;
-    }
-};
-lyGrid = (function (params) {
+lyGrid = (function (options) {
+    var grid = document.getElementById('paging');
+    if (options.id)
+        grid = document.getElementById(options.id);
+    if (!grid) return;
     var confs = {
         l_column: [],
-        pagId: 'paging',            // 加载表格存放位置的ID
-        width: '100%',              // 表格高度
-        height: '100%',             // 表格宽度
-        tHeadHeight: '28px',        // 表格的thead高度
-        tBodyHeight: '27px',        // 表格body的每一行高度
-        caption: '',
-        jsonUrl: '',                // 访问后台地址
-        isFixed: false,             // 是否固定表头
-        usePage: true,              // 是否分页
-        serNumber: false,           // 是否显示序号
-        local: false,               // 是否本地分页,即返回所有数据,让前端分页
-        localData: [],              // 本地数据集
-        records: 'records',         // 分页数据
-        pageNow: 'pageNow',         // 当前页码 或 当前第几页
-        totalPages: 'pageCount',    // 总页数
-        totalRecords: 'rowCount',   // 总记录数
-        pagecode: '10',             // 分页时，最多显示几个页码
-        async: false,               // 默认为同步
-        data: '',                   // 发送给后台的数据 是json数据 例如{nama:"a",age:"100"}....
-        pageSize: 10,               // 每页显示多少条数据
-        checkbox: false,            // 是否显示复选框
-        checkValue: 'id',           // 当checkbox为true时，需要设置存放checkbox的值字段 默认存放字段id的值
-        treeGrid : {
-            type : 1,               // 1 表示后台已经处理好父类带children集合 2 表示没有处理,由前端处理树形式
-            tree : false,           // 是否显示树
-            name : 'name',          // 以哪个字段 的树形式 如果是多个 name,key
-            id : "id",
-            pid : "pid"
-        },
-    // 树形式 {tree : false,//是否显示树 name : 'name'}//以哪个字段 的树形式
+        dymCol: false,
+        width: '100%',
+        height: '100%',
+        theadHeight: '28px',
+        tbodyHeight: '27px',
+        jsonUrl: '',
+        isFixed: false,
+        usePage: true,
+        setNumber: false,
+        selectPageSize: [10, 20, 30, 40, 50, 100],
+        goPage: false,
+        local: false,
+        records: 'records',
+        pageNow: 'pageNow',
+        totalPages: 'pageCount',
+        totalRecords: 'rowCount',
+        pagecode: '10',
+        async: false,
+        data: {order: '', sort: ''},
+        pageSize: 10,
+        checkbox: false,
+        checkValue: 'id',
+        trRowClick: null,
+        beforeComplete: null,
+        afterComplete: null,
+        treeGrid: {
+            type: 1,
+            id: "id",
+            pid: "pid",
+            name: 'name',
+            checkChild: false,
+            tree: false, hide: false
+        }
     };
     var l_col = {
-        colkey : null,
-        name : null,
-        width : 'auto',
-        theadClass : '',
-        tbodyClass : '',
-        height : 'auto',
-        align : 'center',
-        hide : false,
-        isSort : false,
-        hasTitle: false,
-        renderData : null
-    // 渲染数据function( rowindex ,data, rowdata, colkey)
+        colkey: null,
+        name: null,
+        width: 'auto',
+        theadClass: '',
+        tbodyClass: '',
+        height: 'auto',
+        align: 'center',
+        hide: false,
+        isSort: false,
+        renderData: null
     };
-    var l_treeGrid = {
-        tree : false,// 是否显示树
-        name : 'name',// 以哪个字段 的树形式
-        id : "id",
-        pid : "pid"
-    };
-    var conf = $.extend(confs, params);
+    var conf = clc.extend(confs, options);
     var l_tree = conf.treeGrid;
     var col = [];
-    for (var i = 0; i < conf.l_column.length; i++) {
+    for (var i = 0; i < conf.l_column.length; i++)
         col.push(l_col);
-    }
-    // var column = jQuery.extend(true, col, confs.l_column);
-    for (var i = 0; i < col.length; i++) {
-        for ( var p in col[i])
+    for (var i = 0; i < col.length; i++)
+        for (var p in col[i])
             if (col[i].hasOwnProperty(p) && (!conf.l_column[i].hasOwnProperty(p)))
                 conf.l_column[i][p] = col[i][p];
-    }
-    ;
     var column = conf.l_column;
-    var init = function() {
+    var init = function () {
+        if (conf.beforeComplete) conf.beforeComplete(conf);
         createHtml();
-        // fixhead();
-    };
-    var extend = function(o, n, override) {
-        for ( var p in n)
-            if (n.hasOwnProperty(p) && (!o.hasOwnProperty(p) || override))
-                o[p] = n[p];
+        if (conf.afterComplete) conf.afterComplete(column, currentData);
+        lyickeck()
     };
     var returnData = '';
-    var jsonRequest = function() {
-        var json = {};
-        var p = {
-            pageSize : conf.pageSize
-        };
-        var d = $.extend(p, conf.data);
-        if (conf.local) {
-            json.records = conf.localData;
-            json.pageSize = conf.pageSize;
-            //json.pageNow = 1;
-            json.pageNow = returnData.pageNow||1;
-            json.totalRecords = json.records.length;
-            if(json.pageNow * json.pageSize > json.totalRecords && json.pageNow >1){
-                json.pageNow = json.pageNow - 1;
-            }
-            json.totalPages = 0;
-        } else {
-            json = '';
-            $.ajax({
-                type : 'POST',
-                async : conf.async,
-                data : d,
-                url : conf.jsonUrl,
-                dataType : 'json',
-                success : function(data) {
-                    json = data;
-                },
-                error : function(msg) {
-                    alert("系统暂无数据！");
-                    json = '';
-                }
-            });
-        }
-        return json;
-    };
-    var divid = "";
     var tee = "1-0";
-    var createHtml = function() {
+    var createHtml = function () {
         var jsonData = jsonRequest();
-        if (jsonData == '') {
+        if (jsonData == '')
             return;
-        }
         returnData = jsonData;
-        var id = conf.pagId;
-        divid = typeof (id) == "string" ? document.getElementById(id) : id;
-        if (divid == "" || divid == undefined || divid == null) {
-            // console.error("找不到 id= " + id + " 选择器！");
-            return;
-        }
-
-        divid.innerHTML = '';
-        if (conf.isFixed) {// 不固定表头
-            cHeadTable(divid);
-        }
-        cBodyTh(divid);
-        cBodytb(divid, returnData);
-        if (conf.usePage) {// 是否分页
-            fenyeDiv(divid, returnData);
-        }
+        grid.innerHTML = '';
+        if (String(conf.isFixed) == "true")
+            cHeadTable();
+        cBodyTh();
+        cBodytb(returnData);
+        if (String(conf.usePage) == "true")
+            fenyeDiv(returnData)
     };
-
-    // 如果是本地分页,排序时,,要导出一个js插件underscore.js
-    var replayData = function(o, key, sort) {
+    var replayData = function (o, key, sort) {
+        if (conf.beforeComplete) conf.beforeComplete(conf);
         if (o) {
-            if (!(returnData != '' && returnData.records.length > 0)) {
+            if (!(returnData != '' && returnData.records.length > 0))
                 returnData = jsonRequest();
-            }
             var _array = _.sortBy(returnData.records, key);
-            if (sort == "asc") {
+            if (sort == "asc")
                 returnData.records = _array.reverse();
-            } else {
-                returnData.records = _array;
-            }
-
-        } else {
+            else
+                returnData.records = _array
+        } else
             returnData = jsonRequest();
-        }
-        var id = conf.pagId;
-        divid = typeof (id) == "string" ? document.getElementById(id) : id;
-        cBodytb(divid, returnData);
-        if (conf.usePage) {// 是否分页
-            fenyeDiv(divid, returnData);
-        }
+        cBodytb(returnData);
+        if (String(conf.usePage) == "true")
+            fenyeDiv(returnData);
+        else
+            $("#" + grid.id + " div.fenyeDiv").remove();
+        lyickeck();
+        if (conf.afterComplete) conf.afterComplete(column, currentData)
     };
-
-    var cHeadTable = function(divid) {
-        var table = document.createElement("table");// 1.创建一个table表
-        table.id = "table_head";// 2.设置id属性
-
-        if (!conf.checkbox) {
-            if (!conf.serNumber) {
-                table.className = "pp-list table table-striped table-bordered table-radius";
-
-            }else{
-                table.className = "pp-list table table-striped table-bordered table-radius-hasSerNumber";
-            }
-        }else{
-            if (!conf.serNumber) {
-                table.className = "pp-list table table-striped table-bordered table-radius table-radius-hasCheckbox";
-            }else{
-
-                table.className = "pp-list table table-striped table-bordered table-radius-hasSerNumber table-radius-hasCheckbox";
-            }
-        }
-
-        table.setAttribute("style", "margin-bottom: 0px;");
-        divid.appendChild(table);
-        if(conf.caption != ''){
-            var caption = document.createElement('caption');
-            table.appendChild(caption);
-            caption.setAttribute("class","text-center");
-            caption.innerHTML = conf.caption;
-        }
+    var cHeadTable = function () {
+        var table = document.createElement("table");
+        table.id = "table_head";
+        table.className = "pp-list table table-striped table-bordered";
+        table.style.marginBottom = '0px';
+        grid.appendChild(table);
         var thead = document.createElement('thead');
         table.appendChild(thead);
         var tr = document.createElement('tr');
-        tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
+        tr.style.lineHeight = conf.tbodyHeight;
         thead.appendChild(tr);
         var cn = "";
-        if (!conf.serNumber) {
+        if (String(conf.setNumber) == "false")
             cn = "none";
-        }
         var th = document.createElement('th');
         th.setAttribute("style", "text-align:center;width: 15px;vertical-align: middle;display: " + cn + ";");
         tr.appendChild(th);
         var cbk = "";
-        if (!conf.checkbox) {
+        if (String(conf.checkbox) == "false")
             cbk = "none";
-        }
         var cth = document.createElement('th');
-        cth.setAttribute("style",
-                "text-align:center;width: 28px;vertical-align: middle;text-align:center;display: " + cbk + ";");
+        cth.setAttribute("style", "text-align:center;width: 28px;vertical-align: middle;text-align:center;display: " + cbk + ";");
         var chkbox = document.createElement("INPUT");
         chkbox.type = "checkbox";
-        chkbox.setAttribute("pagId", conf.pagId);
-        chkbox.onclick = checkboxbind.bind();
-        cth.appendChild(chkbox); // 第一列添加复选框
+        chkbox.className = "i-checks";
+        chkbox.setAttribute("pagId", grid.id);
+        cth.appendChild(chkbox);
         tr.appendChild(cth);
-        $.each(column, function(o) {
+        clc.each(column, function (o) {
             if (!column[o].hide || column[o].hide == undefined) {
                 var th = document.createElement('th');
                 th.className = column[o].theadClass;
-                var at = "text-align:" + column[o].align + ";width: " + column[o].width
-                        + ";height:" + conf.theadHeight + ";vertical-align: middle;";
-                if (column[o].isSort) {
-                    th.innerHTML = column[o].name + '<span class="wj-glyph-up"title="' + column[o].colkey
-                    + ',asc"></span>';
-                    th.onclick = sortBind.bind();
-                    at += "cursor:pointer;";
-                } else {
+                th.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;");
+                if (column[o].isSort)
+                    th.innerHTML = column[o].name + '<span class="wj-glyph-up"></span>';
+                else
                     th.innerHTML = column[o].name;
-                }
-                th.setAttribute("style", at);
-                tr.appendChild(th);
+                tr.appendChild(th)
             }
-        });
+        })
     };
-    var cBodyTh = function(divid) {
+    var cBodyTh = function () {
         var tdiv = document.createElement("div");
         var h = '';
         var xy = "hidden";
         if (conf.height == "100%") {
-            if (!conf.isFixed) {// //不固定表头
+            if (String(conf.isFixed) == "false")
                 h = "auto";
-            } else {
+            else {
                 xy = "auto";
-                h = $(window).height() - $("#table_head").offset().top
-                        - $('#table_head').find('th:last').eq(0).height();
-                if (conf.usePage) {// 是否分页
+                h = $(window).height() - $("#" + (grid.id) + " #table_head").offset().top - $("#" + (grid.id) + " #table_head").find('th:last').eq(0).height();
+                if (String(conf.usePage) == "true")
                     h -= 55;
-                }
-                h += "px";
+                h += "px"
             }
-        } else {
+        } else
             h = conf.height;
-        }
-
-        tdiv.setAttribute("style", 'overflow-y: ' + xy + '; height: ' + h + '; background: white;top:0px;z-index:-1;position: absolute;');
+        tdiv.setAttribute("style", 'overflow-y: ' + xy + '; height: ' + h + '; background: white;');
         tdiv.className = "t_table";
-        divid.appendChild(tdiv);
-
-        var table2 = document.createElement("table");// 1.创建一个table表
-
+        grid.appendChild(tdiv);
+        var table2 = document.createElement("table");
         table2.id = "mytable";
-        if (!conf.checkbox) {
-            if (!conf.serNumber) {
-                table2.className = "pp-list table table-striped table-bordered table-radius";
-            }else{
-                table2.className = "pp-list table table-striped table-bordered table-radius-hasSerNumber";
-            }
-        }else{
-            if (!conf.serNumber) {
-                table2.className = "pp-list table table-striped table-bordered table-radius table-radius-hasCheckbox";
-            }else{
-                table2.className = "pp-list table table-striped table-bordered table-radius-hasSerNumber table-radius-hasCheckbox";
-            }
-        }
-        table2.setAttribute("style", "table-layout: fixed;margin-bottom: 0px;width:" + conf.width);
-        divid.appendChild(table2);
-        var thead = document.createElement("thead");// 1.创建一个thead
+        table2.className = "pp-list table table-striped table-bordered table-hover";
+        table2.setAttribute("style", "margin-bottom: 0px;width:" + conf.width);
+        tdiv.appendChild(table2);
+        var thead = document.createElement("thead");
         table2.appendChild(thead);
-        if (!conf.isFixed) {// 不固定表头
+        if (String(conf.isFixed) == "false") {
             var tr = document.createElement('tr');
             tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
             thead.appendChild(tr);
             var cn = "";
-            if (!conf.serNumber)
+            if (String(conf.setNumber) == "false")
                 cn = "none";
             var th = document.createElement('th');
             th.setAttribute("style", "text-align:center;width: 15px;vertical-align: middle;display: " + cn + ";");
             tr.appendChild(th);
             var cbk = "";
-            if (!conf.checkbox)
+            if (String(conf.checkbox) == "false")
                 cbk = "none";
             var cth = document.createElement('th');
             cth.setAttribute("style", "text-align:center;width: 28px;vertical-align: middle;text-align:center;display: " + cbk + ";");
             var chkbox = document.createElement("INPUT");
             chkbox.type = "checkbox";
-            chkbox.setAttribute("pagId", conf.pagId);
-            chkbox.onclick = checkboxbind.bind();
-            cth.appendChild(chkbox); // 第一列添加复选框
+            chkbox.className = "i-checks";
+            chkbox.setAttribute("pagId", grid.id);
+            cth.appendChild(chkbox);
             tr.appendChild(cth);
-            $.each(column, function(o) {
-                if (!column[o].hide || column[o].hide == undefined) {
-                    var th = document.createElement('th');
-                    th.className = column[o].theadClass;
-                    var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:"
-                            + conf.theadHeight + ";vertical-align: middle;";
-                    if (column[o].isSort) {
-                        th.innerHTML = column[o].name + '<span class="wj-glyph-up" title="' + column[o].colkey
-                                + ',asc"></span>';
-                        th.onclick = sortBind.bind();
-                        at += "cursor:pointer;";
-                    } else {
-                        th.innerHTML = column[o].name;
-                    }
-                    th.setAttribute("style", at);
-                    tr.appendChild(th);
-                }
+            clc.each(column, function (o) {
+                var th = document.createElement('th');
+                th.className = column[o].theadClass;
+                var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;";
+                if (column[o].isSort) {
+                    th.innerHTML = column[o].name + '<span class="wj-glyph-up" title="' + column[o].colkey + ',asc"></span>';
+                    th.onclick = sortBind.bind();
+                    at += "cursor:pointer;"
+                } else
+                    th.innerHTML = column[o].name;
+                if (column[o].hide == true) at += "display:" + (column[o].hide ? 'none' : 'block');
+                th.setAttribute("style", at);
+                tr.appendChild(th)
             });
+            if (conf.dymCol) {
+                var ico = document.createElement("i");
+                ico.className = "fa fa-thumb-tack";
+                ico.setAttribute("style", "float: right;margin-top: 3px;cursor: pointer;");
+                ico.onclick = dmycol.bind();
+                tr.lastChild.appendChild(ico)
+            }
         }
     };
-
-    var currentData;// 当前页数据
-    var cBodytb = function(divId, jsonData) {
-        $('#' + divId.id + ' table > tbody').remove();
-        $('#' + divId.id + ' div:eq(1)').remove();
-        var tbody = document.createElement("tbody");// 1.创建一个thead
-        // to add for test
-        tbody.id="mytable";
-        divId.getElementsByTagName('table')[0].appendChild(tbody);
-        var json = _getValueByName(jsonData, conf.records);
+    var currentData;
+    var cBodytb = function (jsonData) {
+        $('#' + grid.id + ' table > tbody').remove();
+        var tbody = document.createElement("tbody");
+        grid.getElementsByTagName('table')[0].appendChild(tbody);
+        var json = CommonUtil._getValueByName(jsonData, conf.records);
         var d = 0;
         var e = json.length;
-        if (conf.local) {
-            pNow = parseInt(_getValueByName(jsonData, conf.pageNow), 10);
+        if (String(conf.local) == "true") {
+            pNow = parseInt(CommonUtil._getValueByName(jsonData, conf.pageNow), 10);
             d = (pNow - 1) * conf.pageSize;
-            //e = pNow * conf.pageSize - 1;  //possibly a bug?
-            e = pNow * conf.pageSize;
+            e = pNow * conf.pageSize
         }
-        currentData = new Array();// 当前页数据
-
+        currentData = new Array();
         for (; d < e; d++) {
             var rowdata = json[d];
             currentData.push(rowdata);
-            if (CommnUtil.notNull(rowdata)) {
+            if (CommonUtil.notNull(rowdata)) {
                 var tr = document.createElement('tr');
+                tr.ondblclick = trRowDBClick.bind();
                 tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
                 var sm = parseInt(tee.substring(tee.lastIndexOf("-") + 1), 10) + 1;
                 tee = tee.substring(0, tee.lastIndexOf("-"));
                 tee = tee + "-" + sm;
                 tr.setAttribute("d-tree", tee);
-
                 tbody.appendChild(tr);
                 var cn = "";
-                if (!conf.serNumber) {
-                    cn = "none";
+                if (String(conf.setNumber) == "false") {
+                    cn = "none"
                 }
                 var ntd_d = tr.insertCell(-1);
                 ntd_d.setAttribute("style", "text-align:center;width: 15px;display: " + cn + ";");
                 var rowindex = tr.rowIndex;
-
                 ntd_d.innerHTML = rowindex;
                 var cbk = "";
-                if (!conf.checkbox) {
-                    cbk = "none";
+                if (String(conf.checkbox) == "false") {
+                    cbk = "none"
                 }
                 var td_d = tr.insertCell(-1);
                 td_d.setAttribute("style", "text-align:center;width: 28px;display: " + cbk + ";");
                 var chkbox = document.createElement("INPUT");
                 chkbox.type = "checkbox";
-                // ******** 树的上下移动需要
-                chkbox.setAttribute("cid", _getValueByName(rowdata, l_tree.id));
-                chkbox.setAttribute("pid", _getValueByName(rowdata, l_tree.pid));
-                // ******** 树的上下移动需要
+                chkbox.className = "i-checks";
+                chkbox.setAttribute("cid", CommonUtil._getValueByName(rowdata, l_tree.id));
+                chkbox.setAttribute("pid", CommonUtil._getValueByName(rowdata, l_tree.pid));
                 chkbox.setAttribute("_l_key", "checkbox");
-                chkbox.value = _getValueByName(rowdata, conf.checkValue);
-                chkbox.onclick = highlight.bind(this);
-                td_d.appendChild(chkbox); // 第一列添加复选框
-                $.each(
-                        column,
-                        function(o) {
-                            if (!column[o].hide || column[o].hide == undefined) {
-                                var td_o = tr.insertCell(-1);
-                                td_o.className = column[o].tbodyClass;
-                                td_o.setAttribute(
-                                            "style",
-                                            "text-align:"
-                                                    + column[o].align
-                                                    + ";width: "
-                                                    + column[o].width
-                                                    + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;");
-                                var clm = column[o].colkey;
-                                var data = CommnUtil.notEmpty(_getValueByName(rowdata, clm));
-                                if(column[o].hasTitle){
-                                    td_o.setAttribute("title",data);
-                                }
-                                if (l_tree.tree) {
-                                    var lt = l_tree.name.split(",");
-                                    if (CommnUtil.in_array(lt, clm)) {
-                                        var divtree = document.createElement("div");
-                                        divtree.className = "ly_tree";
-                                        divtree.setAttribute("style",
-                                                "padding-top:5px;margin-left:5px;text-align:"
-                                                        + column[o].align + ";");
-                                        var img = document.createElement('img');
-                                        img.src = rootPath + "/images/tree/nolines_minus.gif";
-                                        img.onclick = datatree.bind();
-                                        divtree.appendChild(img);
-                                        td_o.appendChild(divtree);
-                                        var divspan = document.createElement("span");
-                                        divspan.className = "l_test";
-                                        divspan.setAttribute("style", "line-height:" + conf.tbodyHeight
-                                                + ";");
-
-                                        if (column[o].renderData) {
-                                            divspan.innerHTML = column[o].renderData(rowindex, data,
-                                                    rowdata, clm);
-                                                     if(column[o].hasTitle){
-                                                        divspan.setAttribute("title",column[o].renderData(rowindex, data,rowdata, clm));
-                                                     }
-                                        } else {
-                                            divspan.innerHTML = data;
-                                        }
-                                        td_o.appendChild(divspan);
-                                    } else {
-                                        if (column[o].renderData) {
-                                            td_o.innerHTML = column[o].renderData(rowindex, data, rowdata,
-                                                    clm);
-                                                    if(column[o].hasTitle){
-                                                        td_o.setAttribute("title",column[o].renderData(rowindex, data, rowdata,clm));
-                                                    }
-                                        } else {
-                                            td_o.innerHTML = data;
-                                        }
-                                    }
-                                    ;
-                                } else {
-                                    if (column[o].renderData) {
-                                        td_o.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
-                                         if(column[o].hasTitle){
-                                             td_o.setAttribute("title",column[o].renderData(rowindex, data, rowdata,clm));
-                                         }
-
-                                    } else {
-                                        td_o.innerHTML = data;
-                                    }
-                                };
+                chkbox.value = CommonUtil._getValueByName(rowdata, conf.checkValue);
+                td_d.appendChild(chkbox);
+                $.each(column, function (o) {
+                    var td_o = tr.insertCell(-1);
+                    td_o.className = column[o].tbodyClass;
+                    var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;";
+                    var colkey = column[o].colkey;
+                    var data = CommonUtil.notEmpty(CommonUtil._getValueByName(rowdata, colkey));
+                    if (String(l_tree.tree) == "true") {
+                        var lt = l_tree.name.split(",");
+                        if (CommonUtil.in_array(lt, colkey)) {
+                            var itree = document.createElement("i");
+                            if (String(l_tree.hide) == "true") itree.className = "fa fa-arrows"; else itree.className = "fa fa-arrows-h";
+                            itree.onclick = datatree.bind();
+                            td_o.appendChild(itree);
+                            var divspan = document.createElement("span");
+                            divspan.className = "l_test";
+                            divspan.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
+                            if (column[o].renderData) {
+                                var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                divspan.innerHTML = fn(rowindex, data, rowdata, colkey)
+                            } else {
+                                divspan.innerHTML = data
                             }
-                        });
-                if (l_tree.tree) {
+                            td_o.appendChild(divspan)
+                        } else {
+                            if (column[o].renderData) {
+                                var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                td_o.innerHTML = fn(rowindex, data, rowdata, colkey)
+                            } else {
+                                td_o.innerHTML = data
+                            }
+                        }
+                    } else {
+                        if (column[o].renderData) {
+                            var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                            td_o.innerHTML = fn(rowindex, data, rowdata, colkey)
+                        } else {
+                            td_o.innerHTML = data
+                        }
+                    }
+                    ;
+                    if (column[o].hide == true) at += "display:" + (column[o].hide ? 'none' : 'block');
+                    td_o.setAttribute("style", at)
+                });
+                if (String(l_tree.tree) == "true") {
                     if (l_tree.type == 1) {
                         tee = tee + "-0";
-                        treeHtml(tbody, rowdata);// 树形式
+                        treeHtml(tbody, rowdata)
                     } else {
                         var obj = json[d];
                         delete json[d];
-                        nb = 20;
-                        treeSimpleHtml(tbody, json, obj);
+                        nb = 28;
+                        treeSimpleHtml(tbody, json, obj)
                     }
                 }
             }
-        };
+        }
     };
-    var fenyeDiv = function(divid, jsonData) {
-        var totalRecords = _getValueByName(jsonData, conf.totalRecords);
-        var totalPages = _getValueByName(jsonData, conf.totalPages);
-        var pageNow = _getValueByName(jsonData, conf.pageNow);
-        if (conf.local) {
-            totalRecords = jsonData.records.length;// 总行数
-            totalPages = Math.ceil(totalRecords / conf.pageSize);// 总页数
+    var fenyeDiv = function (jsonData) {
+        $("#" + grid.id + " div.fenyeDiv").remove();
+        var totalRecords = CommonUtil._getValueByName(jsonData, conf.totalRecords);
+        var totalPages = CommonUtil._getValueByName(jsonData, conf.totalPages);
+        var pageNow = CommonUtil._getValueByName(jsonData, conf.pageNow);
+        if (String(conf.local) == "true") {
+            totalRecords = jsonData.records.length;
+            totalPages = Math.ceil(totalRecords / conf.pageSize)
         }
         var bdiv = document.createElement("div");
+        bdiv.id = "fenyeDiv";
         bdiv.setAttribute("style", "vertical-align: middle;");
-
-        bdiv.className = "span12 center";
-        divid.appendChild(bdiv);
+        bdiv.className = "fenyeDiv span12 center";
+        grid.appendChild(bdiv);
         var btable = document.createElement("table");
         btable.width = "100%";
         bdiv.appendChild(btable);
-        if (totalPages == 0) {
-            var btr1 = document.createElement("tr");
-            btable.appendChild(btr1);
-            var btd_2 = document.createElement("td");
-            btd_2.style.border = "1px solid #e3e3e3"
-            btd_2.style.textAlign = "left";
-            btd_2.style.padding = "13px";
-            btd_2.setAttribute("colspan","2");
-            btd_2.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;没有查询到相应记录';
-            btr1.appendChild(btd_2);
-        }
         var btr = document.createElement("tr");
         btable.appendChild(btr);
         var btd_1 = document.createElement("td");
         btd_1.style.textAlign = "left";
-        btd_1.style.height = "80px";
         btr.appendChild(btd_1);
         var btddiv = document.createElement("div");
         btddiv.className = "pagination";
         btd_1.appendChild(btddiv);
         var divul = document.createElement("ul");
-        divul.style.paddingLeft ="0px";
         btddiv.appendChild(divul);
         var ulli = document.createElement("li");
         ulli.className = "prev";
-        ulli.style.listStyle = "none";
         divul.appendChild(ulli);
         var lia = document.createElement("a");
         lia.href = "javascript:void(0);";
-        lia.style.color = "#676a6c";
         ulli.appendChild(lia);
-        lia.innerHTML = '总<span style="color:#71B93B">&nbsp;' + totalRecords + '&nbsp;</span>条记录&nbsp;&nbsp;每页显示&nbsp;' + conf.pageSize
-                + '&nbsp;条&nbsp;&nbsp;共&nbsp;' + totalPages + '&nbsp;页';
+        lia.innerHTML = '总 ' + totalRecords + ' 条 每页 ' + conf.pageSize + ' 条 共 ' + totalPages + ' 页';
         var btd_1 = document.createElement("td");
         btd_1.style.textAlign = "right";
         btr.appendChild(btd_1);
         var divul_2 = document.createElement("ul");
         divul_2.className = "dataTables_paginate paging_bootstrap pagination";
         btd_1.appendChild(divul_2);
-
+        var ulli_8 = document.createElement("li");
+        divul_2.appendChild(ulli_8);
+        var lia_8_span = document.createElement("span");
+        lia_8_span.setAttribute("style", "padding: 1px 5px;");
+        lia_8_span.innerHTML = "每页显示";
+        ulli_8.appendChild(lia_8_span);
+        var lia_8_A = document.createElement("select");
+        lia_8_A.setAttribute("style", "border:0;");
+        lia_8_A.onchange = pageBind.bind();
+        lia_8_span.appendChild(lia_8_A);
+        var sp = conf.selectPageSize;
+        for (var it in sp) {
+            var op = new Option(sp[it], sp[it]);
+            lia_8_A.options.add(op);
+            if (sp[it] == conf.pageSize) {
+                op.selected = 'selected'
+            }
+        }
+        ;
+        if (String(conf.goPage) == "true") {
+            var ulli_8 = document.createElement("li");
+            divul_2.appendChild(ulli_8);
+            var ulli_input = document.createElement("input");
+            ulli_input.onkeydown = pageBind.bind();
+            ulli_input.className = "col-xs-1 text-center";
+            ulli_input.setAttribute("style", "WIDTH:40PX;margin-left: 10px;");
+            ulli_input.type = "text";
+            ulli_input.value = pageNow;
+            ulli_8.appendChild(ulli_input);
+            var lia_8_A = document.createElement("a");
+            lia_8_A.onclick = pageBind.bind();
+            lia_8_A.setAttribute("style", "margin-right: 10px;");
+            lia_8_A.href = "javascript:void(0);";
+            lia_8_A.className = "btn btn-sm btn-danger";
+            lia_8_A.innerHTML = 'GO';
+            lia_8_A.id = "page_go";
+            ulli_8.appendChild(lia_8_A)
+        }
+        ;
         if (pageNow > 1) {
             var ulli_2 = document.createElement("li");
             divul_2.appendChild(ulli_2);
@@ -558,7 +408,7 @@ lyGrid = (function (params) {
             lia_2.id = "pagNum_" + (pageNow - 1);
             lia_2.href = "javascript:void(0);";
             lia_2.innerHTML = '上一页';
-            ulli_2.appendChild(lia_2);
+            ulli_2.appendChild(lia_2)
         } else {
             var ulli_2 = document.createElement("li");
             ulli_2.className = "prev disabled";
@@ -566,7 +416,7 @@ lyGrid = (function (params) {
             var lia_2 = document.createElement("a");
             lia_2.href = "javascript:void(0);";
             lia_2.innerHTML = '上一页';
-            ulli_2.appendChild(lia_2);
+            ulli_2.appendChild(lia_2)
         }
         var pg = pagesIndex(conf.pagecode, pageNow, totalPages);
         var startpage = pg.start;
@@ -579,15 +429,9 @@ lyGrid = (function (params) {
             lia_3.href = "javascript:void(0);";
             lia_3.id = "pagNum_1";
             lia_3.innerHTML = '1...';
-            ulli_3.appendChild(lia_3);
+            ulli_3.appendChild(lia_3)
         }
-        /*
-         * if (endpage - startpage <= 0) { var ulli_4 =
-         * document.createElement("li"); ulli_4.className = "active";
-         * divul_2.appendChild(ulli_4); var lia_4 =
-         * document.createElement("a"); lia_4.href = "javascript:void(0);";
-         * lia_4.innerHTML = '1'; ulli_4.appendChild(lia_4); }
-         */
+        ;
         for (var i = startpage; i <= endpage; i++) {
             if (i == pageNow) {
                 var ulli_5 = document.createElement("li");
@@ -596,7 +440,7 @@ lyGrid = (function (params) {
                 var lia_5 = document.createElement("a");
                 lia_5.href = "javascript:void(0);";
                 lia_5.innerHTML = i;
-                ulli_5.appendChild(lia_5);
+                ulli_5.appendChild(lia_5)
             } else {
                 var ulli_5 = document.createElement("li");
                 divul_2.appendChild(ulli_5);
@@ -605,10 +449,8 @@ lyGrid = (function (params) {
                 lia_5.href = "javascript:void(0);";
                 lia_5.id = "pagNum_" + i;
                 lia_5.innerHTML = i;
-                ulli_5.appendChild(lia_5);
+                ulli_5.appendChild(lia_5)
             }
-            ;
-
         }
         if (endpage != totalPages) {
             var ulli_6 = document.createElement("li");
@@ -618,7 +460,7 @@ lyGrid = (function (params) {
             lia_6.href = "javascript:void(0);";
             lia_6.id = "pagNum_" + totalPages;
             lia_6.innerHTML = '...' + totalPages;
-            ulli_6.appendChild(lia_6);
+            ulli_6.appendChild(lia_6)
         }
         if (pageNow >= totalPages) {
             var ulli_7 = document.createElement("li");
@@ -627,7 +469,7 @@ lyGrid = (function (params) {
             var lia_7 = document.createElement("a");
             lia_7.href = "javascript:void(0);";
             lia_7.innerHTML = '下一页';
-            ulli_7.appendChild(lia_7);
+            ulli_7.appendChild(lia_7)
         } else {
             var ulli_7 = document.createElement("li");
             ulli_7.className = "next";
@@ -637,494 +479,431 @@ lyGrid = (function (params) {
             lia_7.href = "javascript:void(0);";
             lia_7.id = "pagNum_" + (pageNow + 1);
             lia_7.innerHTML = '下一页';
-            ulli_7.appendChild(lia_7);
-        };
+            ulli_7.appendChild(lia_7)
+        }
     };
-    var nb = '20';
-    var treeHtml = function(tbody, data) {
-        if (data == undefined)
-            return;
+    var nb = '28';
+    var treeHtml = function (tbody, data) {
+        if (data == undefined) return;
         var jsonTree = data.children;
         if (jsonTree == undefined || jsonTree == '' || jsonTree == null) {
-            tee = tee.substring(0, tee.lastIndexOf("-"));
         } else {
             var tte = false;
-            $.each(jsonTree, function(jt) {
-
+            $.each(jsonTree, function (jt) {
                 var tte = false;
-                if (jsonTree[jt].children != undefined && jsonTree[jt].children != ''
-                        && jsonTree[jt].children != null) {
-                    tte = true;
+                if (jsonTree[jt].children != undefined && jsonTree[jt].children != '' && jsonTree[jt].children != null) {
+                    tte = true
                 }
                 var tr = document.createElement('tr');
-                tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
+                var di = '';
+                if (String(l_tree.hide) == "true") di = 'display: none;';
+                tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";" + di);
                 var sm = parseInt(tee.substring(tee.lastIndexOf("-") + 1), 10) + 1;
                 tee = tee.substring(0, tee.lastIndexOf("-"));
                 tee = tee + "-" + sm;
                 tr.setAttribute("d-tree", tee);
                 tbody.appendChild(tr);
                 var cn = "";
-                if (!conf.serNumber) {
-                    cn = "none";
+                if (String(conf.setNumber) == "false") {
+                    cn = "none"
                 }
                 var ntd_d = tr.insertCell(-1);
                 ntd_d.setAttribute("style", "text-align:center;width: 15px;display: " + cn + ";");
                 var rowindex = tr.rowIndex;
                 ntd_d.innerHTML = rowindex;
                 var cbk = "";
-                if (!conf.checkbox) {
-                    cbk = "none";
+                if (String(conf.checkbox) == "false") {
+                    cbk = "none"
                 }
                 var td_d = tr.insertCell(-1);
                 td_d.setAttribute("style", "text-align:center;width: 28px;display: " + cbk + ";");
                 var chkbox = document.createElement("INPUT");
                 chkbox.type = "checkbox";
-                // ******** 树的上下移动需要
-                chkbox.setAttribute("cid", _getValueByName(jsonTree[jt], l_tree.id));
-                chkbox.setAttribute("pid", _getValueByName(jsonTree[jt], l_tree.pid));
-                // ******** 树的上下移动需要
+                chkbox.className = "i-checks";
+                chkbox.setAttribute("cid", CommonUtil._getValueByName(jsonTree[jt], l_tree.id));
+                chkbox.setAttribute("pid", CommonUtil._getValueByName(jsonTree[jt], l_tree.pid));
                 chkbox.setAttribute("_l_key", "checkbox");
-                chkbox.value = _getValueByName(jsonTree[jt], conf.checkValue);
-                chkbox.onclick = highlight.bind(this);
-                td_d.appendChild(chkbox); // 第一列添加复选框
-                $.each(column, function(o) {
+                chkbox.value = CommonUtil._getValueByName(jsonTree[jt], conf.checkValue);
+                td_d.appendChild(chkbox);
+                clc.each(column, function (o) {
                     if (!column[o].hide || column[o].hide == undefined) {
                         var td_o = tr.insertCell(-1);
-                        td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width
-                                + ";vertical-align: middle;");
+                        td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;");
                         var rowdata = jsonTree[jt];
-                        var clm = column[o].colkey;
-                        var data = CommnUtil.notEmpty(_getValueByName(rowdata, clm));
-
-                        if (l_tree.tree) {
+                        var colkey = column[o].colkey;
+                        var data = CommonUtil.notEmpty(CommonUtil._getValueByName(rowdata, colkey));
+                        if (String(l_tree.tree) == "true") {
                             var lt = l_tree.name.split(",");
-                            if (CommnUtil.in_array(lt, column[o].colkey)) {
-                                var divtree = document.createElement("div");
-                                divtree.className = "ly_tree";
-                                divtree.setAttribute("style", "padding-top:5px;margin-left:5px;text-align:"
-                                        + column[o].align + ";margin-left: " + nb + "px;");
+                            if (CommonUtil.in_array(lt, column[o].colkey)) {
+                                var itree = document.createElement("i");
+                                itree.onclick = datatree.bind();
                                 if (tte) {
-                                    var img = document.createElement('img');
-                                    img.src = rootPath + "/images/tree/nolines_minus.gif";
-                                    img.onclick = datatree.bind();
-                                    divtree.appendChild(img);
+                                    itree.className = "fa fa-arrows-h"
                                 }
-                                td_o.appendChild(divtree);
+                                td_o.appendChild(itree);
                                 var divspan = document.createElement("span");
                                 divspan.className = "l_test";
                                 divspan.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
                                 if (column[o].renderData) {
-                                    divspan.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
+                                    var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                    divspan.innerHTML = fn(rowindex, data, rowdata, colkey)
                                 } else {
-                                    divspan.innerHTML = data;
+                                    divspan.innerHTML = data
                                 }
-                                td_o.appendChild(divspan);
+                                td_o.appendChild(divspan)
                             } else {
                                 if (column[o].renderData) {
-                                    td_o.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
+                                    var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                    td_o.innerHTML = fn(rowindex, data, rowdata, colkey)
                                 } else {
-                                    td_o.innerHTML = data;
+                                    td_o.innerHTML = data
                                 }
                             }
-                            ;
                         } else {
                             if (column[o].renderData) {
-                                td_o.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
+                                var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                td_o.innerHTML = fn(rowindex, data, rowdata, colkey)
                             } else {
-                                td_o.innerHTML = data;
+                                td_o.innerHTML = data
                             }
-                        };
+                        }
                     }
                 });
                 if (tte) {
-                    // 1-1
                     tee = tee + "-0";
-                    nb = parseInt(nb, 10) + 20;
-                    treeHtml(tbody, jsonTree[jt]);
+                    nb = parseInt(nb, 10) + 28;
+                    treeHtml(tbody, jsonTree[jt])
                 }
-
             });
             tee = tee.substring(0, tee.lastIndexOf("-"));
-            nb = 20;
+            nb = 28
         }
     };
-    var img;
-    var treeSimpleHtml = function(tbody, jsonTree, obj) {
+    var itree;
+    var treeSimpleHtml = function (tbody, jsonTree, obj) {
         var tte = false;
-        tee = tee + "-0"
-        $.each(jsonTree, function(jt) {
-            if (CommnUtil.notNull(jsonTree[jt])) {
-                var jsb = _getValueByName(jsonTree[jt], l_tree.pid);
-                var ob = _getValueByName(obj, l_tree.id);
+        tee = tee + "-0";
+        clc.each(jsonTree, function (jt) {
+            if (CommonUtil.notNull(jsonTree[jt])) {
+                var jsb = CommonUtil._getValueByName(jsonTree[jt], l_tree.pid);
+                var ob = CommonUtil._getValueByName(obj, l_tree.id);
                 if (jsb == ob) {
                     tte = true;
                     var tr = document.createElement('tr');
-                    tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
+                    var di = '';
+                    if (String(l_tree.hide) == "true") di = 'display: none;';
+                    tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";" + di);
                     var sm = parseInt(tee.substring(tee.lastIndexOf("-") + 1), 10) + 1;
                     tee = tee.substring(0, tee.lastIndexOf("-"));
                     tee = tee + "-" + sm;
                     tr.setAttribute("d-tree", tee);
                     tbody.appendChild(tr);
                     var cn = "";
-                    if (!conf.serNumber) {
-                        cn = "none";
+                    if (String(conf.setNumber) == "false") {
+                        cn = "none"
                     }
                     var ntd_d = tr.insertCell(-1);
                     ntd_d.setAttribute("style", "text-align:center;width: 15px;display: " + cn + ";");
                     var rowindex = tr.rowIndex;
                     ntd_d.innerHTML = rowindex;
                     var cbk = "";
-                    if (!conf.checkbox) {
-                        cbk = "none";
+                    if (String(conf.checkbox) == "false") {
+                        cbk = "none"
                     }
                     var td_d = tr.insertCell(-1);
                     td_d.setAttribute("style", "text-align:center;width: 28px;display: " + cbk + ";");
                     var chkbox = document.createElement("INPUT");
                     chkbox.type = "checkbox";
-                    // ******** 树的上下移动需要
-                    chkbox.setAttribute("cid", _getValueByName(jsonTree[jt], l_tree.id));
-                    chkbox.setAttribute("pid", _getValueByName(jsonTree[jt], l_tree.pid));
-                    // ******** 树的上下移动需要
+                    chkbox.className = "i-checks";
+                    chkbox.setAttribute("cid", CommonUtil._getValueByName(jsonTree[jt], l_tree.id));
+                    chkbox.setAttribute("pid", CommonUtil._getValueByName(jsonTree[jt], l_tree.pid));
                     chkbox.setAttribute("_l_key", "checkbox");
-                    chkbox.value = _getValueByName(jsonTree[jt], conf.checkValue);
-                    chkbox.onclick = highlight.bind(this);
-                    td_d.appendChild(chkbox); // 第一列添加复选框
-                    $.each(column, function(o) {
+                    chkbox.value = CommonUtil._getValueByName(jsonTree[jt], conf.checkValue);
+                    td_d.appendChild(chkbox);
+                    $.each(column, function (o) {
                         if (!column[o].hide || column[o].hide == undefined) {
                             var td_o = tr.insertCell(-1);
-                            td_o.setAttribute("style", "text-align:" + column[o].align + ";width: "
-                                    + column[o].width + ";vertical-align: middle;");
+                            td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;");
                             var rowdata = jsonTree[jt];
-                            var clm = column[o].colkey;
-                            var data = CommnUtil.notEmpty(_getValueByName(rowdata, clm));
-
-                            if (l_tree.tree) {
+                            var colkey = column[o].colkey;
+                            var data = CommonUtil.notEmpty(CommonUtil._getValueByName(rowdata, colkey));
+                            if (String(l_tree.tree) == "true") {
                                 var lt = l_tree.name.split(",");
-                                if (CommnUtil.in_array(lt, column[o].colkey)) {
-                                    var divtree = document.createElement("div");
-                                    divtree.className = "ly_tree";
-                                    divtree.setAttribute("style", "padding-top:5px;margin-left:5px;text-align:"
-                                            + column[o].align + ";margin-left: " + nb + "px;");
-                                    img = document.createElement('img');
-                                    img.src = rootPath + "/images/tree/nolines_minus.gif";
-                                    img.onclick = datatree.bind();
-                                    divtree.appendChild(img);
-                                    td_o.appendChild(divtree);
+                                if (CommonUtil.in_array(lt, column[o].colkey)) {
+                                    td_o.setAttribute("style", "padding-left: " + nb + "px");
+                                    itree = document.createElement("i");
+                                    if (String(l_tree.hide) == "true") itree.className = "fa fa-arrows"; else itree.className = "fa fa-arrows-h";
+                                    itree.onclick = datatree.bind();
+                                    td_o.appendChild(itree);
                                     var divspan = document.createElement("span");
                                     divspan.className = "l_test";
                                     divspan.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
                                     if (column[o].renderData) {
-                                        divspan.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
+                                        var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                        divspan.innerHTML = fn(rowindex, data, rowdata, colkey)
                                     } else {
-                                        divspan.innerHTML = data;
+                                        divspan.innerHTML = data
                                     }
-                                    td_o.appendChild(divspan);
+                                    td_o.appendChild(divspan)
                                 } else {
                                     if (column[o].renderData) {
-                                        td_o.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
+                                        var fn = new Function('return ' + column[o].renderData)(rowindex, data, rowdata, colkey);
+                                        td_o.innerHTML = fn(rowindex, data, rowdata, colkey)
                                     } else {
-                                        td_o.innerHTML = data;
+                                        td_o.innerHTML = data
                                     }
                                 }
-                                ;
                             } else {
                                 if (column[o].renderData) {
-                                    td_o.innerHTML = column[o].renderData(rowindex, data, rowdata, clm);
+                                    var fn = new Function('return ' + column[o].renderData);
+                                    td_o.innerHTML = fn(rowindex, data, rowdata, colkey)
                                 } else {
-                                    td_o.innerHTML = data;
+                                    td_o.innerHTML = data
                                 }
-                            };
+                            }
                         }
                     });
                     var o = jsonTree[jt];
                     delete jsonTree[jt];
-                    nb = parseInt(nb, 10) + 20;
+                    nb = parseInt(nb, 10) + 28;
                     treeSimpleHtml(tbody, jsonTree, o)
                 }
             }
         });
         if (!tte) {
-            if (CommnUtil.notNull(img))
-                img.remove(img.selectedIndex);
+            if (CommonUtil.notNull(itree)) itree.remove(itree.selectedIndex)
         }
         tee = tee.substring(0, tee.lastIndexOf("-"));
-        nb = parseInt(nb, 10) - 20;
+        nb = parseInt(nb, 10) - 28
     };
-    Array.prototype.ly_each = function(f) { // 数组的遍历
-        for (var i = 0; i < this.length; i++)
-            f(this[i], i, this);
-    };
-    var lyGridUp = function(jsonUrl) { // 上移所选行
-
-        var upOne = function(tr) { // 上移1行
-            // 有head去掉1
-            index = tr.rowIndex - 1;
-            if (index > 0) {
-                var ctr = divid.children[0].children.mytable.rows[index - 1];
-                swapTr(tr, ctr);
-                getChkBox(tr).checked = true;
-            }
-        };
-        var arr = $A(divid.children[0].children.mytable.rows).reverse(); // 反选
-        if (arr.length > 0 && getChkBox(arr[arr.length - 1]).checked) {
-            for (var i = arr.length - 1; i >= 0; i--) {
-                if (getChkBox(arr[i]).checked) {
-                    arr.pop();
-                } else {
-                    break;
-                }
-            }
-        };
-        arr.reverse().ly_each(function(tr) {
-            var ck = getChkBox(tr);
-            if (ck.checked) {
-                var cd = ck.getAttribute("cid");
-                $("input:checkbox[pid='" + cd + "']").attr('checked', 'true');// 让子类选中
-                upOne(tr);
-            }
-        });
-        var row = rowline();// 数组对象默认是{"rowNum":row,"rowId":cbox};
-        var data = [];
-        $.each(row, function(i) {
-            data.push(conf.checkValue + "[" + i + "]=" + row[i].rowId);
-            data.push("rowId[" + i + "]=" + row[i].rowNum);
-        });
-        $.ajax({
-            type : 'POST',
-            data : data.join("&"),
-            url : jsonUrl,
-            dataType : 'json',
-        });
-    };
-    var lyGridDown = function(jsonUrl) { // 下移所选行
-
-        var downOne = function(tr) {
-            // 有head去掉1
-            index = tr.rowIndex - 1;
-            if (index < divid.children[0].children.mytable.rows.length - 1) {
-                swapTr(tr, divid.children[0].children.mytable.rows[index + 1]);
-                getChkBox(tr).checked = true;
-            }
-        };
-        var arr = $A(divid.children[0].children.mytable.rows);
-        if (arr.length > 0 && getChkBox(arr[arr.length - 1]).checked) {
-            for (var i = arr.length - 1; i >= 0; i--) {
-                if (getChkBox(arr[i]).checked) {
-                    arr.pop();
-                } else {
-                    break;
-                }
-            }
+    var uptr = function (getUp) {
+        if (getUp.css("display") == "none") {
+            return uptr(getUp.prev())
         }
-        arr.ly_each(function(tr) {
-            var ck = getChkBox(tr);
-            if (ck.checked) {
-                var cd = ck.getAttribute("cid");
-                $("input:checkbox[pid='" + cd + "']").attr('checked', 'true');// 让子类选中
+        return getUp
+    };
+    var downtr = function (getdown) {
+        if (getdown.css("display") == "none") {
+            return downtr(getdown.next())
+        }
+        return getdown
+    };
+    var lyGridUp = function (jsonUrl) {
+        var ck = $("#" + grid.id + " input[_l_key='checkbox']:checkbox:checked")[0];
+        if (ck) {
+            var onthis = $(ck).parent().parent().parent();
+            var getUp = onthis.prev();
+            var ck_tree = $(onthis).attr("d-tree");
+            var getUp_tree = $(getUp).attr("d-tree");
+            if (ck_tree.indexOf(getUp_tree) > -1) {
+                return
             }
-        });
-        arr.reverse().ly_each(function(tr) {
-            if (getChkBox(tr).checked)
-                downOne(tr);
-        });
-        var row = rowline();// 数组对象默认是{"rowNum":row,"rowId":cbox};
-        var data = [];
-        $.each(row, function(i) {
-            data.push(conf.checkValue + "[" + i + "]=" + row[i].rowId);
-            data.push("rowId[" + i + "]=" + row[i].rowNum);
-        });
-        $.ajax({
-            type : 'POST',
-            data : data.join("&"),
-            url : jsonUrl,
-            dataType : 'json',
-        });
+            var pup = uptr(getUp);
+            $(pup).before(onthis);
+            $(onthis).after($("tr[d-tree^='" + $(onthis).attr("d-tree") + "-']"));
+            var row = rowline();
+            var data = [];
+            $.each(row, function (i) {
+                data.push(conf.checkValue + "[" + i + "]=" + row[i].rowId);
+                data.push("rowId[" + i + "]=" + row[i].rowNum)
+            });
+            if (jsonUrl) $.ajax({type: 'POST', data: data.join("&"), url: jsonUrl, dataType: 'json',})
+        }
     };
-    var highlight = function() { // 设置行的背景色
-        var evt = arguments[0] || window.event;
-        var chkbox = evt.srcElement || evt.target;
-        var tr = chkbox.parentNode.parentNode;
-        chkbox.checked ? setBgColor(tr) : restoreBgColor(tr);
+    var lyGridDown = function (jsonUrl) {
+        var ck = $("#" + grid.id + " input[_l_key='checkbox']:checkbox:checked")[0];
+        if (ck) {
+            var onthis = $(ck).parent().parent().parent();
+            onthis.find("td").eq(2).find("i").removeClass("fa fa-arrows-h").addClass("fa fa-arrows");
+            var trd = $("tr[d-tree^='" + $(onthis).attr("d-tree") + "-']");
+            trd.hide();
+            var getdown = onthis.next();
+            var pup = downtr(getdown);
+            var ck_tree = $(onthis).attr("d-tree").split("-");
+            var downUp_tree = $(pup).attr("d-tree").split("-");
+            if (ck_tree.length != downUp_tree.length) return;
+            $(onthis).before(pup);
+            $(pup).after($("#" + (grid.id) + " tr[d-tree^='" + $(pup).attr("d-tree") + "-']"));
+            var row = rowline();
+            var data = [];
+            $.each(row, function (i) {
+                data.push(conf.checkValue + "[" + i + "]=" + row[i].rowId);
+                data.push("rowId[" + i + "]=" + row[i].rowNum)
+            });
+            if (jsonUrl) $.ajax({type: 'POST', data: data.join("&"), url: jsonUrl, dataType: 'json',})
+        }
     };
-    var selectRow = function(pagId) {
+    var highlight = function (event) {
+        var tr = event.parentNode.parentNode.parentNode;
+        event.checked ? setBgColor(tr) : restoreBgColor(tr);
+        var ttr = $(tr).attr("d-tree");
+        var tr_tree = $("#" + (grid.id) + " tr[d-tree^='" + ttr + "-']");
+        if (conf.treeGrid.checkChild) {
+            tr_tree.each(function () {
+                var cn = $(this).find("td").eq(1).find("div").eq(0);
+                var checkboxes = cn.find("input");
+                if (event.checked) {
+                    checkboxes.prop('checked', true);
+                    cn.addClass("checked");
+                    setBgColor(this)
+                } else {
+                    checkboxes.prop('checked', false);
+                    cn.removeClass("checked");
+                    restoreBgColor(this)
+                }
+            })
+        }
+    };
+    var selectRow = function (pagId) {
         var ck = getSelectedCheckbox(pagId);
-        var json = _getValueByName(returnData, conf.records);
+        var json = CommonUtil._getValueByName(returnData, conf.records);
         var ret = [];
-        $.each(json, function(d) {
-            $.each(ck, function(c) {
-                if (ck[c] == _getValueByName(json[d], conf.checkValue))
-                    ret.push(json[d]);
-            });
+        $.each(json, function (d) {
+            $.each(ck, function (c) {
+                if (ck[c] == CommonUtil._getValueByName(json[d], conf.checkValue)) ret.push(json[d])
+            })
         });
-        return ret;
+        return ret
     };
-    var trClick = function() { // 设置行的背景色 兼容性问题很大
-        /*
-         * var evt = arguments[0] || window.event; var tr = evt.srcElement ||
-         * evt.currentTarget; var chkbox = getChkBox(tr);
-         * if(chkbox.checked){ chkbox.checked = false; restoreBgColor(tr);
-         * }else{ chkbox.checked=true; setBgColor(tr); }
-         */
-    };
-    var checkboxbind = function() { // 全选/反选
-        var evt = arguments[0] || window.event;
-        var chkbox = evt.srcElement || evt.target;
-        var checkboxes = $("#" + chkbox.attributes.pagId.value + " input[_l_key='checkbox']");
-        if (chkbox.checked) {
-            checkboxes.prop('checked', true);
-        } else {
-            checkboxes.prop('checked', false);
-        }
-        checkboxes.each(function() {
-            var tr = this.parentNode.parentNode;
-            var chkbox = getChkBox(tr);
-            if (chkbox.checked) {
-                setBgColor(tr);
+    var trRowDBClick = function (event) {
+        if (conf.trRowClick) {
+            var tr = $(event.currentTarget)[0];
+            var checkboxes = $(event.currentTarget).find("input")[0];
+            var cn = $(checkboxes.parentNode);
+            if (checkboxes.checked) {
+                checkboxes.checked = false;
+                cn.removeClass("checked");
+                restoreBgColor(tr)
             } else {
-                restoreBgColor(tr);
+                checkboxes.checked = true;
+                cn.addClass("checked");
+                setBgColor(tr)
             }
-        });
-    };
-
-    var pageBind = function() { // 页数
-        var evt = arguments[0] || window.event;
-        var a = evt.srcElement || evt.target;
-        var page = a.id.split('_')[1];
-
-        if (conf.local) {
-            returnData.pageNow = parseInt(page, 10);
-            cBodytb(divid, returnData);
-            if (conf.usePage) {// 是否分页
-                fenyeDiv(divid, returnData);
-            }
-        } else {
-            conf.data = $.extend(conf.data, {
-                pageNow : page
-            });
-            replayData();
+            var rowdata = CommonUtil._getValueByName(returnData, conf.records);
+            conf.trRowClick(tr.rowIndex, rowdata[tr.rowIndex - 1])
         }
     };
-
-    var sortBind = function() {
+    var trClick = function () {
+    };
+    var checkboxbind = function (event) {
+        var checkboxes = $("#" + grid.id + " input[_l_key='checkbox']");
+        if (event.checked) {
+            checkboxes.prop('checked', true)
+        } else {
+            checkboxes.prop('checked', false)
+        }
+        checkboxes.each(function () {
+            var tr = this.parentNode.parentNode.parentNode;
+            var cn = $(this.parentNode);
+            if (event.checked) {
+                cn.addClass("checked");
+                setBgColor(tr)
+            } else {
+                cn.removeClass("checked");
+                restoreBgColor(tr)
+            }
+        })
+    };
+    var pageBind = function (e) {
+        var evt = arguments[0] || window.event;
+        var b = true;
+        if (evt.keyCode != undefined && evt.keyCode != 13) {
+            b = false
+        }
+        ;
+        if (b) {
+            var obj = evt.srcElement || evt.target;
+            var page = returnData.pageNow;
+            var pageSize = conf.pageSize;
+            if (obj.nodeName == "INPUT") {
+                page = obj.value
+            } else if (obj.nodeName == "SELECT") {
+                pageSize = obj.value
+            } else if (obj.id == "page_go") {
+                page = obj.previousSibling.value
+            } else if (obj.nodeName == "A") {
+                page = obj.id.split('_')[1]
+            }
+            if (isNaN(page)) return;
+            if (String(conf.local) == "true") {
+                returnData.pageNow = parseInt(page, 10);
+                conf = clc.extend(conf, {pageSize: parseInt(pageSize, 10)});
+                cBodytb(returnData);
+                if (String(conf.usePage) == "true") {
+                    fenyeDiv(returnData);
+                    lyickeck()
+                }
+            } else {
+                conf.data = clc.extend(conf.data, {pageNow: page, pageSize: pageSize});
+                replayData()
+            }
+        }
+    };
+    var sortBind = function () {
         var evt = arguments[0] || window.event;
         var th = evt.srcElement || evt.target;
         var t = th.title.split(",");
         if (t[0] == "") {
-            th = th.firstElementChild
-            t = th.title.split(",");
+            th = th.firstElementChild;
+            t = th.title.split(",")
         }
-        var sc = "";
+        var $sort = "";
         if (t[1] == "asc") {
             th.className = "wj-glyph-down";
             th.title = t[0] + ",desc";
-            sc = "desc";
+            $sort = "desc"
         } else {
             th.className = "wj-glyph-up";
             th.title = t[0] + ",asc";
-            sc = "asc";
+            $sort = "asc"
         }
-        conf.data = $.extend(conf.data, {
-            column : t[0],
-            sort : sc
-        });
-        if (conf.local)
-            replayData('0', t[0], sc);
-        else
-            replayData();
-    }
-
-    var datatree = function() { // 页数
+        conf.data = clc.extend(conf.data, {order: t[0], sort: $sort});
+        if (String(conf.local) == "true") replayData('0', t[0], sc); else replayData()
+    };
+    var datatree = function () {
         var evt = arguments[0] || window.event;
         var img = evt.srcElement || evt.target;
-        var ttr = img.parentElement.parentElement.parentElement.getAttribute('d-tree');
-        if (img.src.indexOf("nolines_plus.gif") > -1) {
-            img.src = rootPath + "/images/tree/nolines_minus.gif";
-            $("tr[d-tree^='" + ttr + "-']").show();
+        var ttr = img.parentElement.parentElement.getAttribute('d-tree');
+        if (img.className.indexOf("fa fa-arrows-h") > -1) {
+            img.className = "fa fa-arrows";
+            var tr = $("#" + (grid.id) + " tr[d-tree^='" + ttr + "-']");
+            tr.each(function () {
+                $(this).find("td").eq(2).find("i").removeClass("fa fa-arrows-h").addClass("fa fa-arrows")
+            });
+            tr.hide()
         } else {
-            img.src = rootPath + "/images/tree/nolines_plus.gif";
-            $("tr[d-tree^='" + ttr + "-']").hide();
+            img.className = "fa fa-arrows-h";
+            for (var m = 0; m < 20; m++) $("tr[d-tree='" + ttr + "-" + m + "']").show()
         }
     };
-
-    var swapTr = function(tr1, tr2) { // 交换tr1和tr2的位置
-        var target = (tr1.rowIndex < tr2.rowIndex) ? tr2.nextSibling : tr2;
-        var tBody = tr1.parentNode;
-        tBody.replaceChild(tr2, tr1);
-        tBody.insertBefore(tr1, target);
+    var getChkBox = function (tr) {
+        return tr.cells[1].firstChild.firstChild
     };
-
-    var getChkBox = function(tr) { // 从tr得到 checkbox对象
-        return tr.cells[1].firstChild;
-    };
-
-    var restoreBgColor = function(tr) {// 不勾选设置背景色
+    var restoreBgColor = function (tr) {
         for (var i = 0; i < tr.childNodes.length; i++) {
-            tr.childNodes[i].style.backgroundColor = "";
+            tr.childNodes[i].style.backgroundColor = ""
         }
     };
-
-    var setBgColor = function(tr) { // 设置背景色
+    var setBgColor = function (tr) {
         for (var i = 0; i < tr.childNodes.length; i++) {
-            tr.childNodes[i].style.backgroundColor = "#D4D4D4";
+            tr.childNodes[i].style.backgroundColor = "rgba(0,0,0,.075)"
         }
     };
-
-    function $A(arrayLike) { // 数值的填充
-        for (var i = 0, ret = []; i < arrayLike.length; i++)
-            ret.push(arrayLike[i]);
-        return ret;
-    };
-
-    Function.prototype.bind = function() { // 数据的绑定
-        var __method = this, args = $A(arguments), object = args.shift();
-        return function() {
-            return __method.apply(object, args.concat($A(arguments)));
-        };
-    };
-
-    var _getValueByName = function(data, name) {
-        if (!data || !name)
-            return null;
-        if (name.indexOf('.') == -1) {
-            return data[name];
-        } else {
-            try {
-                return new Function("data", "return data." + name + ";")(data);
-            } catch (e) {
-                return null;
-            }
-        }
-    };
-
-    var rowline = function() {
+    var rowline = function () {
         var cb = [];
-
-        var arr = $A(divid.children[0].children.mytable.rows);
-        for (var i = arr.length - 1; i >= 0; i--) {
+        var arr = $("#" + grid.id + " table  tr");
+        for (var i = arr.length - 1; i > 0; i--) {
             var cbox = getChkBox(arr[i]).value;
             var row = arr[i].rowIndex;
             var sort = {};
             sort.rowNum = row;
             sort.rowId = cbox;
-            cb.push(sort);
+            cb.push(sort)
         }
         ;
-        return cb.reverse();
+        return cb.reverse()
     };
-
-    /**
-     * 这是一个分页工具 主要用于显示页码,得到返回来的 开始页码和结束页码 pagecode 要获得记录的开始索引 即 开始页码 pageNow
-     * 当前页 pageCount 总页数
-     *
-     */
-    var pagesIndex = function(pagecode, pageNow, pageCount) {
-        /*
-         * var pagecode = _getValueByName(jsonData,conf.pagecode) ==
-         * undefined ? conf.pagecode
-         * :_getValueByName(jsonData,conf.pagecode); var sten =
-         * pagesIndex(pagecode, pageNow,totalPages); var
-         * startpage=sten.start; var endpage=sten.end;
-         */
+    var pagesIndex = function (pagecode, pageNow, pageCount) {
         pagecode = parseInt(pagecode, 10);
         pageNow = parseInt(pageNow, 10);
         pageCount = parseInt(pageCount, 10);
@@ -1132,159 +911,189 @@ lyGrid = (function (params) {
         var endpage = pageNow + pagecode / 2;
         if (startpage < 1) {
             startpage = 1;
-            if (pageCount >= pagecode)
-                endpage = pagecode;
-            else
-                endpage = pageCount;
+            if (pageCount >= pagecode) endpage = pagecode; else endpage = pageCount
         }
         if (endpage > pageCount) {
             endpage = pageCount;
-            if ((endpage - pagecode) > 0)
-                startpage = endpage - pagecode + 1;
-            else
-                startpage = 1;
-        };
-        var se = {
-            start : startpage,
-            end : endpage
-        };
-        return se;
-    };
-
-    /**
-     * 重新加载
-     */
-    var loadData = function() {
-        $.extend(conf, params);
-        replayData();
-    };
-
-    /**
-     * 查询时，设置参数查询
-     */
-    var setOptions = function(params) {
-        conf.data.pageNow=1;
-        var data;
-        if (params.data) {
-            data = $.extend(conf.data, params.data);
-            params.data = data;
+            if ((endpage - pagecode) > 0) startpage = endpage - pagecode + 1; else startpage = 1
         }
-        $.extend(conf, params);
-        replayData();
+        ;var se = {start: startpage, end: endpage};
+        return se
     };
-
-    /**
-     * 查询时，设置初始化查询
-     */
-    var setPageNow = function(param) {
-        conf.data.pageNow=param;
+    var loadData = function () {
+        clc.extend(conf, options);
+        replayData()
     };
-
-    /**
-     * 获取选中的值
-     */
-    var getSelectedCheckbox = function(pagId) {
+    var setOptions = function (options) {
+        var data;
+        if (options.data) {
+            data = clc.extend(conf.data, options.data);
+            options.data = data
+        }
+        if (options.pageSize) {
+            conf.data.pageSize = options.pageSize
+        }
+        conf = clc.extend(conf, options);
+        conf.data.pageNow = 1;
+        replayData()
+    };
+    var getSelectedCheckbox = function (pagId) {
         if (pagId == '' || pagId == undefined) {
-            pagId = conf.pagId;
+            pagId = grid.id
         }
         var arr = [];
-        $("#" + pagId + " input[_l_key='checkbox']:checkbox:checked").each(function() {
-            arr.push($(this).val());
+        $("#" + pagId + " input[_l_key='checkbox']:checkbox:checked").each(function () {
+            arr.push($(this).val())
         });
-        return arr;
+        return arr
     };
-
-    var selectTreeRow = function(pagId) {
+    var selectTreeRow = function (pagId) {
         var ck = getSelectedCheckbox(pagId);
-        var json = _getValueByName(returnData, conf.records);
+        var json = CommonUtil._getValueByName(returnData, conf.records);
         var ret = [];
-        $.each(json, function(d) {
-            $.each(ck, function(c) {
-
-                if (ck[c] == _getValueByName(json[d], conf.checkValue)) {
-                    ret.push(json[d]);
+        $.each(json, function (d) {
+            $.each(ck, function (c) {
+                if (ck[c] == CommonUtil._getValueByName(json[d], conf.checkValue)) {
+                    ret.push(json[d])
                 } else {
-                    $.each(json[d].children, function(child) {
-                        if (ck[c] == _getValueByName(json[d].children[child], conf.checkValue)) {
-                            ret.push(json[d].children[child]);
+                    $.each(json[d].children, function (child) {
+                        if (ck[c] == CommonUtil._getValueByName(json[d].children[child], conf.checkValue)) {
+                            ret.push(json[d].children[child])
                         }
                     })
                 }
-            });
+            })
         });
-        return ret;
+        return ret
     };
-
-    var getColumn = function() {
-        return column;
+    var getColumn = function () {
+        return column
     };
-
-    var exportData = function(url) {
-        var form = $("<form>");// 定义一个form表单
+    var exportData = function (url) {
+        var form = $("<form>");
         form.attr("style", "display:none");
         form.attr("target", "");
-        //form.attr("method", "post");  //移除导致乱码的因素
-        form.attr("action", rootPath + url);
-        $("body").append(form);// 将表单放置在web中
+        form.attr("method", "post");
+        form.attr("action", url);
+        $("body").append(form);
         var input1 = $("<input>");
         input1.attr("type", "hidden");
         input1.attr("name", "exportData");
         input1.attr("value", JSON.stringify(column));
-        console.log(form);
         form.append(input1);
         var par = conf.data;
-        for ( var p in par) {
+        for (var p in par) {
             var input1 = $("<input>");
             input1.attr("type", "hidden");
-            input1.attr("value", par[p]);
-            if (p.indexOf(".") > 0) {
-                p = p.split(".")[1];
-            }
             input1.attr("name", p);
-            form.append(input1);
+            input1.attr("value", par[p]);
+            form.append(input1)
         }
-        form.submit();// 表单提交
-    }
-
-    var getCurrentData = function() {
-        return currentData;
-    }
-
-    init();
-
-    return {
-        setOptions : setOptions,// 自定义条件查询
-        loadData : loadData,// 重新加载数据
-        getSelectedCheckbox : getSelectedCheckbox,// 获取选择的行的Checkbox值
-        selectRow : selectRow,// 选中行事件
-        selectTreeRow : selectTreeRow,
-        lyGridUp : lyGridUp,// 上移
-        lyGridDown : lyGridDown,// 下移
-        rowline : rowline,
-        resultJSONData : jsonRequest,// 返回列表的所有json数据
-        exportData : exportData,// 导出数据
-        getColumn : getColumn,// 获取表头
-        getCurrentData : getCurrentData,
-        setPageNow:setPageNow
-    // 获取表格的当前页json数据
+        form.submit()
     };
-});
-
-// 利用js让头部与内容对应列宽度一致。
-var fixhead = function() {
-    // 获取表格的宽度
-    /*
-     * $('#table_head').css('width',
-     * $('.t_table').find('table:first').eq(0).width());
-     */
-    for (var i = 0; i <= $('.t_table .pp-list tr:last').find('td:last').index(); i++) {
-        $('.pp-list th').eq(i).css('width', ($('.t_table .pp-list tr:last').find('td').eq(i).width()) + 2);
+    var getCurrentData = function () {
+        return currentData
+    };
+    var dmycolcheck = function (e) {
+        var u = $(e.target).attr("span_value");
+        if ($(e.target).attr("class").indexOf("checked") == -1) {
+            $(e.target).addClass("checked");
+            $(grid).find('table:eq(0) tr th:nth-child(' + (parseInt(u, 10) + 3) + ')').hide();
+            $(grid).find('table:eq(0) tr td:nth-child(' + (parseInt(u, 10) + 3) + ')').hide()
+        } else {
+            $(e.target).removeClass("checked");
+            $(grid).find('table:eq(0) tr th:nth-child(' + (parseInt(u, 10) + 3) + ')').show();
+            $(grid).find('table:eq(0) tr td:nth-child(' + (parseInt(u, 10) + 3) + ')').show()
+        }
+    };
+    var dmycol = function (e) {
+        if ($('#' + grid.id + ' #ul_dmycol').length > 0) {
+            $('#' + grid.id + ' #ul_dmycol').toggle()
+        } else {
+            var ul = document.createElement("ul");
+            ul.className = "dmycol-menu";
+            ul.id = "ul_dmycol";
+            var w = $(e.target.parentNode).width();
+            if (w < 130) {
+                var f = 130 - w;
+                ul.setAttribute("style", "margin-left:-" + f + "px;")
+            } else {
+                ul.setAttribute("style", "margin-left:0;width:" + w + "px")
+            }
+            $.each(column, function (i, o) {
+                var li = document.createElement("li");
+                var spanbox = document.createElement("span");
+                if (o.hide == true) spanbox.className = "span_checkbox checked"; else spanbox.className = "span_checkbox";
+                spanbox.setAttribute("span_value", i);
+                spanbox.name = o.colkey;
+                spanbox.onclick = dmycolcheck.bind();
+                li.appendChild(spanbox);
+                var sp = document.createElement("span");
+                sp.innerHTML = " " + o.name;
+                li.appendChild(sp);
+                ul.appendChild(li)
+            });
+            e.target.parentNode.insertBefore(ul, null)
+        }
+    };
+    var lyickeck = function () {
+        $('#' + grid.id + ' .i-checks').iCheck({
+            checkboxClass: 'icheckbox_square-green',
+            radioClass: 'iradio_square-green',
+        });
+        $("#" + grid.id + " th:eq(1) input[class*='i-checks']").on('ifChanged', function () {
+            checkboxbind(this)
+        });
+        $("#" + grid.id + " input[_l_key='checkbox']").on('ifChanged', function () {
+            highlight(this)
+        })
+    };
+    var jsonRequest = function () {
+        var json = {};
+        var p = {};
+        if (conf.data.pageSize) {
+            p.pageSize = conf.data.pageSize
+        } else {
+            p.pageSize = conf.pageSize
+        }
+        var d = clc.extend(conf.data, p);
+        if (String(conf.local) == "true") {
+            json.records = conf.jsonUrl;
+            json.pageSize = conf.pageSize;
+            json.pageNow = 1;
+            json.totalRecords = 0;
+            json.totalPages = 0
+        } else {
+            json = '';
+            $.ajax({
+                type: 'POST',
+                async: false,
+                data: d,
+                url: conf.jsonUrl,
+                dataType: 'json',
+                success: function (data) {
+                    json = data
+                },
+                error: function (msg) {
+                    json = ''
+                }
+            })
+        }
+        conf = clc.extend(conf, {pagecode: json.pagecode, pageSize: json.pageSize});
+        return json
+    };
+    init();
+    return {
+        setOptions: setOptions,
+        loadData: loadData,
+        getSelectedCheckbox: getSelectedCheckbox,
+        selectRow: selectRow,
+        selectTreeRow: selectTreeRow,
+        lyGridUp: lyGridUp,
+        lyGridDown: lyGridDown,
+        resultJSONData: jsonRequest,
+        exportData: exportData,
+        getColumn: getColumn,
+        getCurrentData: getCurrentData
     }
-    /*
-     * //当有横向滚动条时，需要此js，时内容滚动头部也能滚动。 //暂时不处理横向 $('.t_table').scroll(function() {
-     * $('#table_head').css('margin-left', -($('.t_table').scrollLeft())); });
-     */
-};
-$(window).resize(function() {
-    // fixhead();
-});
+})

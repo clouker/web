@@ -4,6 +4,7 @@
     <meta charset="UTF-8"/>
     <import th:replace="common/plugin :: bootstrap"/>
     <link rel="stylesheet" th:href="@{/css/ace.css}"/>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}"/>
     <script th:src="@{/plugin/ajax/ajax.1.7.js}"></script>
     <!--<import th:replace="common/plugin :: sweetalert"/>-->
@@ -18,7 +19,7 @@
     <script th:src="@{/plugin/iCheck/icheck.min.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/CommonUtil.js}"></script>
     <script th:src="@{/plugin/jquery/underscore.js}"></script>
-    <script th:src="@{/plugin/lyGrid/common/lyGrid.min.js}"></script>
+    <script th:src="@{/plugin/lyGrid.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/base64.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/jquery.serializejson.min.js}"></script>
     <!--<script th:src="@{/plugin/lyGrid/table-data.js}"></script>-->
@@ -35,9 +36,14 @@
         input[type='search'] {
             width: calc(40%);
         }
-        #ava{
+
+        #ava {
             border: 1px solid gray;
             border-radius: 100%;
+        }
+
+        label {
+            display: block;
         }
     </style>
 </head>
@@ -55,15 +61,30 @@
 </div>
 </div>
 <script id="addDiv" type="text/html">
-    <form class="add-user" method="post" th:action="@{/user/add}">
-        <label>昵&nbsp;&nbsp;&nbsp;称：<input name="$name" placeholder="请输入昵称" type="text" required/></label>
-        <label>用户名：<input name="user.userName" placeholder="请输入用户名" type="text" required/></label>
-        <label>邮&nbsp;&nbsp;&nbsp;箱：<input name='$email' placeholder="请输入邮箱" type="email" required/></label>
-        <label>头&nbsp;&nbsp;&nbsp;像：<img id='ava' th:src="@{images/ava.jpg}" width="150px" height="150px">
-            <input name='user.avatar' type="file" accept="image/*" onchange="ConvertToBase64Img(event)" class="hidden avatar"/></label>
-        <label>身份证：<input name="$" placeholder="请输入身份证" type="number"/></label>
-        <label>邮&nbsp;&nbsp;&nbsp;箱：<input placeholder="请输入邮箱" type="range"/></label>
-        <input type="submit">
+    <form class="add-user" method="post" th:action="@{/user/add}" enctype="multipart/form-data">
+        <label><span>昵&nbsp;&nbsp;&nbsp;称：</span><input name="$name" placeholder="请输入昵称" type="text" required/></label>
+
+        <label><span>用户名：</span><input name="$userName" placeholder="请输入用户名" type="text" required/></label>
+
+        <label><span>性别：</span><input name="$sex" type="radio" value="0" checked/>男
+            <input name="$sex" type="radio" value="1"/>女</label>
+
+        <label><span>邮&nbsp;&nbsp;&nbsp;箱：</span><input name='$email' placeholder="请输入邮箱" type="email"
+                                                        required/></label>
+
+        <label><span style="vertical-align: top">头&nbsp;&nbsp;&nbsp;像：</span><img id='ava' th:src="@{images/ava.jpg}"
+                                                                                  width="186px" height="186px">
+            <input type="file" accept="image/*" onchange="ConvertToBase64Img(event)"
+                   class="hidden"/>
+            <input name='$avatar' type="hidden" class="avatar"/></label>
+
+        <label><span>身份证：</span><input name="$idCard" placeholder="请输入身份证" type="number"/></label>
+
+        <label><span>手机号：</span><input name="$phone" placeholder="请输入手机号" type="tel"/></label>
+        <label><span style="vertical-align: top">备&nbsp;&nbsp;&nbsp;注：</span>
+            <textarea cols="20" rows="5" name="$comment" placeholder="备注信息"></textarea></label>
+
+        <input type="submit" value="添加">
     </form>
 </script>
 </body>

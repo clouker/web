@@ -1,4 +1,4 @@
-package org.clc.utils;
+package org.clc.common;
 
 /**
  * 文件路径指定

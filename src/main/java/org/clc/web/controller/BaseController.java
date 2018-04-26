@@ -1,6 +1,7 @@
 package org.clc.web.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.utils.Page;
 import org.clc.utils.RequestUtil;
@@ -20,7 +21,6 @@ public class BaseController {
 	//日志记录
 	protected static Logger logger = log;
 
-
 	/**
 	 * 获取请求实体
 	 */
@@ -39,13 +39,17 @@ public class BaseController {
 			pojo.put(k, sb.toString());
 		});
 		// 判断是否包含上传文件
-		if (request.getContentType() != null && request.getContentType().toString().startsWith("multipart/form-data")) {
-			Collection<Part> parts;
+		if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
 			try {
-				parts = request.getParts();
+				Collection<Part> parts = request.getParts();
 				parts.forEach(item -> {
-					if (item.getSize() != -1)
-						pojo.put("file", item);
+					if (item.getSubmittedFileName() != null) {
+						try {
+							pojo.put(item.getName(), IOUtils.toByteArray(item.getInputStream()));
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
 				});
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -108,6 +112,8 @@ public class BaseController {
 			page.setOrder(pageInfo.get("order").toString());
 		if (pageInfo.get("sort") != null)
 			page.setSort(pageInfo.get("sort").toString());
+		if (pageInfo.get("search") != null)
+			page.setSearchVal(pageInfo.get("search").toString());
 		page.setCols(cols);
 		return page;
 	}

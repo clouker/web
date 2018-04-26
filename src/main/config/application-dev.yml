@@ -41,7 +41,7 @@ mybatis:
   config-location: classpath:mapper/config/mybatis-config.xml
 #  configuration:
 #    interceptors:
-#      - org.clc.common.MybatisInterceptor
+#      - org.clc.common.mybatisPlugin.MybatisInterceptor
 logging:
   level:
     org.clc.kernel.mysql.mapper: debug

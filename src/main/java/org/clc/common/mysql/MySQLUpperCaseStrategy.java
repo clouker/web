@@ -41,7 +41,7 @@ public class MySQLUpperCaseStrategy/* extends PhysicalNamingStrategyStandardImpl
         return propertyName.toUpperCase();
     }
     private static String hump2upWithUnderline1(String propertyName) {
-        return propertyName.replaceAll("([A-Z])", "_$1").toUpperCase();
+        return Pattern.compile("([A-Z])").matcher(propertyName).replaceAll("_$0").toUpperCase();
     }
 
     public static void main(String[] args) {

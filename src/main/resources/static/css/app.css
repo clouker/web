@@ -1,42 +1,10 @@
-/*弹出时给body加上这个,关闭时去掉*/
-.overhide {
-    overflow: hidden;
+@font-face{
+    font-family:fontawesome-webfont;
+    src: url("/fonts/fontawesome-webfont.ttf"),/*.ttf(TrueType格式)：Windows和Mac上常见的字体格式，是一种原始格式，因此它并没有为网页进行优化处理。浏览器支持：IE9+,FireFox3.5+,Chrome4.0+,Safari3+,Opera10+,IOS Mobile Safari4.2+*/
+         url("/fonts/fontawesome-webfont.eot"),/*.eot(Embedded Open Type格式)：IE专用字体格式。浏览器支持：IE4+。 */
+         url("/fonts/fontawesome-webfont.woff"),/*.woff (Web Open Font格式): 针对网页进行特殊优化，因此是Web字体中最佳格式，它是一个开放的TrueType/OpenType的压缩版，同时支持元数据包的分离。浏览器支持：IE9+, FireFox3.5+, Chrome6+, Safari3.6+,Opera11.1+.*/
+         url("/fonts/fontawesome-webfont.svg");/*.svg(SVG格式)：基于SVG字体渲染的格式。浏览器支持：Chrome4+, Safari3.1+, Opera10.0+, IOS Mobile Safari3.2+。 */
+    font-style: normal;
+    font-weight: normal;
+    unicode-range: U+0-10FFFF;
 }
-/*关键样式 遮罩层的*/
-.msgboxshadow {
-    position: fixed; /*固定定位*/
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    opacity: .5; /*背景透明度.这里没有兼容样式*/
-    background-color: #000; /*背景色*/
-    z-index: 10000; /*层级数仅小于内容弹出框*/
-}
-/*关键样式 弹出框最外层*/
-.msgboxbg {
-    display: none;
-    position: fixed; /*固定定位*/
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 10001; /*比遮罩层大1,要显示在遮罩层上面*/
-}
-/*内容层默认样式*/
-.msgboxcontent {
-    position: relative;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 2px 2px 40px #000000;
-    margin: 30px auto 0 auto;
-    width:250px;
-    height:150px;
-    overflow:auto;
-    text-indent:10px;
-    padding-top:5px;
-}
-
-关键样式

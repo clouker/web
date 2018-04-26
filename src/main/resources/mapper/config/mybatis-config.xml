@@ -4,6 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <plugins>
-        <plugin interceptor="org.clc.common.MybatisInterceptor"></plugin>
+        <plugin interceptor="org.clc.common.mybatisPlugin.MybatisInterceptor"></plugin>
     </plugins>
 </configuration>

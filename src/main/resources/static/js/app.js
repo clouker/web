@@ -62,6 +62,12 @@ clc = {
         }
         return target;
     },
+    extend1 : function (o, n, override) {
+        for (var p in n)
+            if (n.hasOwnProperty(p) && (!o.hasOwnProperty(p) || override))
+                o[p] = n[p];
+        return o;
+    },
     each: function (obj, callback) {
         var length, i = 0;
         if (clc.isArrayLike(obj)) {
@@ -145,4 +151,9 @@ clc = {
         else
             return true;
     },
+    remove: function (obj) {
+        // if (document.contains(obj))
+        obj.parentElement.removeChild(obj)
+    },
+
 }
