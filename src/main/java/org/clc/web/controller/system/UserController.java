@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -39,7 +40,7 @@ public class UserController extends BaseController {
 	@PostMapping("findByPage")
 	@ApiOperation(value = "用户分页信息")
 	@ApiImplicitParam(name = "分页信息", value = "Page", dataType = "Page")
-	public Page findByPage() {
+	public Page findByPage() throws Exception {
 		Page page = page("SYS_USER", getPojo());
 		page.setWhere("USER_ID != '80'");
 		page.setSearchKeys("NAME");
@@ -48,12 +49,19 @@ public class UserController extends BaseController {
 		return page;
 	}
 
+	@ResponseBody
 	@PostMapping("add")
 	@Transactional
-	public Info add() {
+	@ApiOperation(value = "用户添加")
+	@ApiImplicitParam(name = "用户信息", value = "Pojo", dataType = "Pojo")
+	public Info add() throws Exception {
 		Pojo pojo = getPojo();
-		pojo.setTable("SYS_USER");
-		int code = userMapper.insert(pojo);
-		return Info.returnMsg(0, "Success");
+		if (pojo.size() > 0){
+			pojo.setTable("SYS_USER");
+			int code = userMapper.insert(pojo);
+			if (code > 0)
+				return Info.returnMsg(0, "Success");
+		}
+		return Info.returnMsg(1, "Failed");
 	}
 }

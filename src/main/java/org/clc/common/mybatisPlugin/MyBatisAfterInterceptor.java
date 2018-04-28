@@ -27,29 +27,65 @@ import java.util.Map;
 @Slf4j
 public class MyBatisAfterInterceptor {
 
-	public static void run(Invocation invocation) throws SQLException {
-		Object[] args = invocation.getArgs();
+	public static Object run(Invocation invocation) throws Exception {
 		// 获取到当前的Statement
-		Statement stmt = (Statement) args[0];
+		Statement stmt = (Statement) invocation.getArgs()[0];
 		// 通过Statement获得当前结果集
 		ResultSet resultSet = stmt.getResultSet();
-		ResultSetMetaData metaData = resultSet.getMetaData();
-		String tableName = metaData.getTableName(1);
-		System.out.println(tableName + metaData.getColumnCount());
-		StringBuilder sb = new StringBuilder(0);
-		for (int i = 1; i <= metaData.getColumnCount(); i++) {
-			sb.append(" ColumnName: " + metaData.getColumnName(i));
-			sb.append(" ColumnType: " + metaData.getColumnTypeName(i));
-			sb.append(" Precision: " + metaData.getPrecision(i) + "\n");
-		}
-		System.out.println(resultSet.getFetchSize());
-		List<Object> resultList = new ArrayList<>();
-		if (resultSet != null && resultSet.next()) {
-			while (resultSet.next()) {
-
-				String update_times = resultSet.getString("UPDATE_TIME");
-				System.out.println(update_times);
+		if (resultSet != null) {
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			List<Map<String, String>> keys = new ArrayList<>();
+			for (int i = 1; i <= metaData.getColumnCount(); i++) {
+				Map<String, String> col = new HashMap<>();
+				col.put("name", metaData.getColumnName(i));
+				col.put("type", metaData.getColumnTypeName(i));
+				keys.add(col);
 			}
+			return getResult(keys, resultSet);
 		}
+		return invocation.proceed();
+	}
+
+	/**
+	 * 处理返回集
+	 *
+	 * @param keys      (表字段和类型)
+	 * @param resultSet
+	 * @return
+	 */
+	private static List<Pojo> getResult(List<Map<String, String>> keys, ResultSet resultSet) throws SQLException {
+		List<Pojo> resultList = new ArrayList<>();
+		while (resultSet.next()) {
+			Pojo cols = new Pojo();
+			keys.forEach(key -> {
+				System.out.println(key.get("type"));
+				// underline2camel
+				String name = StringUtil.underline2camel(key.get("name"));
+				switch (key.get("type")) {
+					case "BLOB":
+						try {
+							cols.put(name, resultSet.getBlob(key.get("name")));
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						break;
+					case "TIMESTAMP":
+						try {
+							cols.put(name, resultSet.getTimestamp(key.get("name")));
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+						break;
+					default:// null->""
+						try {
+							cols.put(name, resultSet.getString(key.get("name")) != null ? resultSet.getString(key.get("name")) : "");
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+				}
+			});
+			resultList.add(cols);
+		}
+		return resultList;
 	}
 }

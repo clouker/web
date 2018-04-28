@@ -1,5 +1,6 @@
 package org.clc.web.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.clc.kernel.mysql.pojo.Pojo;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import java.io.BufferedReader;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
@@ -24,35 +26,53 @@ public class BaseController {
 	/**
 	 * 获取请求实体
 	 */
-	protected Pojo getPojo() {
+	protected Pojo getPojo() throws Exception {
+		Pojo pojo = null;
 		HttpServletRequest request = RequestUtil.getRequest();
-		Map<String, String[]> map = request.getParameterMap();
-		Pojo pojo = new Pojo();
-		map.forEach((k, v) -> {
-			StringBuffer sb = new StringBuffer();
-			if (v.length == 1)
-				sb.append(v[0]);
-			else {// 单key多val时，v以，相连
-				for (String s : v)
-					sb.append(s + ",");
-			}
-			pojo.put(k, sb.toString());
-		});
-		// 判断是否包含上传文件
-		if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
-			try {
-				Collection<Part> parts = request.getParts();
-				parts.forEach(item -> {
-					if (item.getSubmittedFileName() != null) {
-						try {
-							pojo.put(item.getName(), IOUtils.toByteArray(item.getInputStream()));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
+		String contentType = request.getContentType();
+		if (contentType != null) {
+			if (contentType.startsWith("application/json")) {
+				StringBuffer jb = new StringBuffer();
+				String line;
+				BufferedReader reader = request.getReader();
+				while ((line = reader.readLine()) != null)
+					jb.append(line);
+				ObjectMapper mapper = new ObjectMapper();
+				pojo = mapper.readValue(jb.toString(), Pojo.class);
+			} else {
+				Map<String, String[]> map = request.getParameterMap();
+				Pojo pojo1 = new Pojo();
+				map.forEach((k, v) -> {
+					StringBuffer sb = new StringBuffer();
+					if (v.length == 1)
+						sb.append(v[0]);
+					else// 单key多val时，v以，相连
+						for (String s : v)
+							sb.append(s + ",");
+					pojo1.put(k, sb.toString());
 				});
-			} catch (Exception e) {
-				e.printStackTrace();
+				if (pojo1.size() > 0)
+					pojo = pojo1;
+				// 判断是否包含上传文件
+				if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
+					Collection<Part> parts = request.getParts();
+					Pojo pojo2 = new Pojo();
+					parts.forEach(item -> {
+						if (item.getSubmittedFileName() != null) {
+							try {
+								pojo2.put(item.getName(), IOUtils.toByteArray(item.getInputStream()));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					if (pojo2.size() > 0) {
+						if (pojo.size() > 0)
+							pojo.putAll(pojo2);
+						else
+							pojo = pojo2;
+					}
+				}
 			}
 		}
 		return pojo;

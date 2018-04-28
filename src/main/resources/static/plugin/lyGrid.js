@@ -54,7 +54,7 @@ lyGrid = (function (options) {
         isSort: false,
         renderData: null
     };
-    var conf = clc.extend(confs, options);
+    var conf = app.extend(confs, options);
     var l_tree = conf.treeGrid;
     var col = [];
     for (var i = 0; i < conf.l_column.length; i++)
@@ -133,7 +133,7 @@ lyGrid = (function (options) {
         chkbox.setAttribute("pagId", grid.id);
         cth.appendChild(chkbox);
         tr.appendChild(cth);
-        clc.each(column, function (o) {
+        app.each(column, function (o) {
             if (!column[o].hide || column[o].hide == undefined) {
                 var th = document.createElement('th');
                 th.className = column[o].theadClass;
@@ -193,7 +193,7 @@ lyGrid = (function (options) {
             chkbox.setAttribute("pagId", grid.id);
             cth.appendChild(chkbox);
             tr.appendChild(cth);
-            clc.each(column, function (o) {
+            app.each(column, function (o) {
                 var th = document.createElement('th');
                 th.className = column[o].theadClass;
                 var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";height:" + conf.theadHeight + ";vertical-align: middle;";
@@ -221,11 +221,11 @@ lyGrid = (function (options) {
         $('#' + grid.id + ' table > tbody').remove();
         var tbody = document.createElement("tbody");
         grid.getElementsByTagName('table')[0].appendChild(tbody);
-        var json = CommonUtil._getValueByName(jsonData, conf.records);
+        var json = app._getValueByName(jsonData, conf.records);
         var d = 0;
         var e = json.length;
         if (String(conf.local) == "true") {
-            pNow = parseInt(CommonUtil._getValueByName(jsonData, conf.pageNow), 10);
+            pNow = parseInt(app._getValueByName(jsonData, conf.pageNow), 10);
             d = (pNow - 1) * conf.pageSize;
             e = pNow * conf.pageSize
         }
@@ -233,7 +233,7 @@ lyGrid = (function (options) {
         for (; d < e; d++) {
             var rowdata = json[d];
             currentData.push(rowdata);
-            if (CommonUtil.notNull(rowdata)) {
+            if (app.notNull(rowdata)) {
                 var tr = document.createElement('tr');
                 tr.ondblclick = trRowDBClick.bind();
                 tr.setAttribute("style", "line-height:" + conf.tbodyHeight + ";");
@@ -259,20 +259,20 @@ lyGrid = (function (options) {
                 var chkbox = document.createElement("INPUT");
                 chkbox.type = "checkbox";
                 chkbox.className = "i-checks";
-                chkbox.setAttribute("cid", CommonUtil._getValueByName(rowdata, l_tree.id));
-                chkbox.setAttribute("pid", CommonUtil._getValueByName(rowdata, l_tree.pid));
+                chkbox.setAttribute("cid", app._getValueByName(rowdata, l_tree.id));
+                chkbox.setAttribute("pid", app._getValueByName(rowdata, l_tree.pid));
                 chkbox.setAttribute("_l_key", "checkbox");
-                chkbox.value = CommonUtil._getValueByName(rowdata, conf.checkValue);
+                chkbox.value = app._getValueByName(rowdata, conf.checkValue);
                 td_d.appendChild(chkbox);
                 $.each(column, function (o) {
                     var td_o = tr.insertCell(-1);
                     td_o.className = column[o].tbodyClass;
                     var at = "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;word-break: keep-all;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;";
                     var colkey = column[o].colkey;
-                    var data = CommonUtil.notEmpty(CommonUtil._getValueByName(rowdata, colkey));
+                    var data = app.notEmpty(app._getValueByName(rowdata, colkey));
                     if (String(l_tree.tree) == "true") {
                         var lt = l_tree.name.split(",");
-                        if (CommonUtil.in_array(lt, colkey)) {
+                        if (app.in_array(lt, colkey)) {
                             var itree = document.createElement("i");
                             if (String(l_tree.hide) == "true") itree.className = "fa fa-arrows"; else itree.className = "fa fa-arrows-h";
                             itree.onclick = datatree.bind();
@@ -323,9 +323,9 @@ lyGrid = (function (options) {
     };
     var fenyeDiv = function (jsonData) {
         $("#" + grid.id + " div.fenyeDiv").remove();
-        var totalRecords = CommonUtil._getValueByName(jsonData, conf.totalRecords);
-        var totalPages = CommonUtil._getValueByName(jsonData, conf.totalPages);
-        var pageNow = CommonUtil._getValueByName(jsonData, conf.pageNow);
+        var totalRecords = app._getValueByName(jsonData, conf.totalRecords);
+        var totalPages = app._getValueByName(jsonData, conf.totalPages);
+        var pageNow = app._getValueByName(jsonData, conf.pageNow);
         if (String(conf.local) == "true") {
             totalRecords = jsonData.records.length;
             totalPages = Math.ceil(totalRecords / conf.pageSize)
@@ -520,21 +520,21 @@ lyGrid = (function (options) {
                 var chkbox = document.createElement("INPUT");
                 chkbox.type = "checkbox";
                 chkbox.className = "i-checks";
-                chkbox.setAttribute("cid", CommonUtil._getValueByName(jsonTree[jt], l_tree.id));
-                chkbox.setAttribute("pid", CommonUtil._getValueByName(jsonTree[jt], l_tree.pid));
+                chkbox.setAttribute("cid", app._getValueByName(jsonTree[jt], l_tree.id));
+                chkbox.setAttribute("pid", app._getValueByName(jsonTree[jt], l_tree.pid));
                 chkbox.setAttribute("_l_key", "checkbox");
-                chkbox.value = CommonUtil._getValueByName(jsonTree[jt], conf.checkValue);
+                chkbox.value = app._getValueByName(jsonTree[jt], conf.checkValue);
                 td_d.appendChild(chkbox);
-                clc.each(column, function (o) {
+                app.each(column, function (o) {
                     if (!column[o].hide || column[o].hide == undefined) {
                         var td_o = tr.insertCell(-1);
                         td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;");
                         var rowdata = jsonTree[jt];
                         var colkey = column[o].colkey;
-                        var data = CommonUtil.notEmpty(CommonUtil._getValueByName(rowdata, colkey));
+                        var data = app.notEmpty(app._getValueByName(rowdata, colkey));
                         if (String(l_tree.tree) == "true") {
                             var lt = l_tree.name.split(",");
-                            if (CommonUtil.in_array(lt, column[o].colkey)) {
+                            if (app.in_array(lt, column[o].colkey)) {
                                 var itree = document.createElement("i");
                                 itree.onclick = datatree.bind();
                                 if (tte) {
@@ -583,10 +583,10 @@ lyGrid = (function (options) {
     var treeSimpleHtml = function (tbody, jsonTree, obj) {
         var tte = false;
         tee = tee + "-0";
-        clc.each(jsonTree, function (jt) {
-            if (CommonUtil.notNull(jsonTree[jt])) {
-                var jsb = CommonUtil._getValueByName(jsonTree[jt], l_tree.pid);
-                var ob = CommonUtil._getValueByName(obj, l_tree.id);
+        app.each(jsonTree, function (jt) {
+            if (app.notNull(jsonTree[jt])) {
+                var jsb = app._getValueByName(jsonTree[jt], l_tree.pid);
+                var ob = app._getValueByName(obj, l_tree.id);
                 if (jsb == ob) {
                     tte = true;
                     var tr = document.createElement('tr');
@@ -615,10 +615,10 @@ lyGrid = (function (options) {
                     var chkbox = document.createElement("INPUT");
                     chkbox.type = "checkbox";
                     chkbox.className = "i-checks";
-                    chkbox.setAttribute("cid", CommonUtil._getValueByName(jsonTree[jt], l_tree.id));
-                    chkbox.setAttribute("pid", CommonUtil._getValueByName(jsonTree[jt], l_tree.pid));
+                    chkbox.setAttribute("cid", app._getValueByName(jsonTree[jt], l_tree.id));
+                    chkbox.setAttribute("pid", app._getValueByName(jsonTree[jt], l_tree.pid));
                     chkbox.setAttribute("_l_key", "checkbox");
-                    chkbox.value = CommonUtil._getValueByName(jsonTree[jt], conf.checkValue);
+                    chkbox.value = app._getValueByName(jsonTree[jt], conf.checkValue);
                     td_d.appendChild(chkbox);
                     $.each(column, function (o) {
                         if (!column[o].hide || column[o].hide == undefined) {
@@ -626,10 +626,10 @@ lyGrid = (function (options) {
                             td_o.setAttribute("style", "text-align:" + column[o].align + ";width: " + column[o].width + ";vertical-align: middle;");
                             var rowdata = jsonTree[jt];
                             var colkey = column[o].colkey;
-                            var data = CommonUtil.notEmpty(CommonUtil._getValueByName(rowdata, colkey));
+                            var data = app.notEmpty(app._getValueByName(rowdata, colkey));
                             if (String(l_tree.tree) == "true") {
                                 var lt = l_tree.name.split(",");
-                                if (CommonUtil.in_array(lt, column[o].colkey)) {
+                                if (app.in_array(lt, column[o].colkey)) {
                                     td_o.setAttribute("style", "padding-left: " + nb + "px");
                                     itree = document.createElement("i");
                                     if (String(l_tree.hide) == "true") itree.className = "fa fa-arrows"; else itree.className = "fa fa-arrows-h";
@@ -671,7 +671,7 @@ lyGrid = (function (options) {
             }
         });
         if (!tte) {
-            if (CommonUtil.notNull(itree)) itree.remove(itree.selectedIndex)
+            if (app.notNull(itree)) itree.remove(itree.selectedIndex)
         }
         tee = tee.substring(0, tee.lastIndexOf("-"));
         nb = parseInt(nb, 10) - 28
@@ -756,11 +756,11 @@ lyGrid = (function (options) {
     };
     var selectRow = function (pagId) {
         var ck = getSelectedCheckbox(pagId);
-        var json = CommonUtil._getValueByName(returnData, conf.records);
+        var json = app._getValueByName(returnData, conf.records);
         var ret = [];
         $.each(json, function (d) {
             $.each(ck, function (c) {
-                if (ck[c] == CommonUtil._getValueByName(json[d], conf.checkValue)) ret.push(json[d])
+                if (ck[c] == app._getValueByName(json[d], conf.checkValue)) ret.push(json[d])
             })
         });
         return ret
@@ -779,7 +779,7 @@ lyGrid = (function (options) {
                 cn.addClass("checked");
                 setBgColor(tr)
             }
-            var rowdata = CommonUtil._getValueByName(returnData, conf.records);
+            var rowdata = app._getValueByName(returnData, conf.records);
             conf.trRowClick(tr.rowIndex, rowdata[tr.rowIndex - 1])
         }
     };
@@ -827,14 +827,14 @@ lyGrid = (function (options) {
             if (isNaN(page)) return;
             if (String(conf.local) == "true") {
                 returnData.pageNow = parseInt(page, 10);
-                conf = clc.extend(conf, {pageSize: parseInt(pageSize, 10)});
+                conf = app.extend(conf, {pageSize: parseInt(pageSize, 10)});
                 cBodytb(returnData);
                 if (String(conf.usePage) == "true") {
                     fenyeDiv(returnData);
                     lyickeck()
                 }
             } else {
-                conf.data = clc.extend(conf.data, {pageNow: page, pageSize: pageSize});
+                conf.data = app.extend(conf.data, {pageNow: page, pageSize: pageSize});
                 replayData()
             }
         }
@@ -857,7 +857,7 @@ lyGrid = (function (options) {
             th.title = t[0] + ",asc";
             $sort = "asc"
         }
-        conf.data = clc.extend(conf.data, {order: t[0], sort: $sort});
+        conf.data = app.extend(conf.data, {order: t[0], sort: $sort});
         if (String(conf.local) == "true") replayData('0', t[0], sc); else replayData()
     };
     var datatree = function () {
@@ -921,19 +921,19 @@ lyGrid = (function (options) {
         return se
     };
     var loadData = function () {
-        clc.extend(conf, options);
+        app.extend(conf, options);
         replayData()
     };
     var setOptions = function (options) {
         var data;
         if (options.data) {
-            data = clc.extend(conf.data, options.data);
+            data = app.extend(conf.data, options.data);
             options.data = data
         }
         if (options.pageSize) {
             conf.data.pageSize = options.pageSize
         }
-        conf = clc.extend(conf, options);
+        conf = app.extend(conf, options);
         conf.data.pageNow = 1;
         replayData()
     };
@@ -949,15 +949,15 @@ lyGrid = (function (options) {
     };
     var selectTreeRow = function (pagId) {
         var ck = getSelectedCheckbox(pagId);
-        var json = CommonUtil._getValueByName(returnData, conf.records);
+        var json = app._getValueByName(returnData, conf.records);
         var ret = [];
         $.each(json, function (d) {
             $.each(ck, function (c) {
-                if (ck[c] == CommonUtil._getValueByName(json[d], conf.checkValue)) {
+                if (ck[c] == app._getValueByName(json[d], conf.checkValue)) {
                     ret.push(json[d])
                 } else {
                     $.each(json[d].children, function (child) {
-                        if (ck[c] == CommonUtil._getValueByName(json[d].children[child], conf.checkValue)) {
+                        if (ck[c] == app._getValueByName(json[d].children[child], conf.checkValue)) {
                             ret.push(json[d].children[child])
                         }
                     })
@@ -1056,7 +1056,7 @@ lyGrid = (function (options) {
         } else {
             p.pageSize = conf.pageSize
         }
-        var d = clc.extend(conf.data, p);
+        var d = app.extend(conf.data, p);
         if (String(conf.local) == "true") {
             json.records = conf.jsonUrl;
             json.pageSize = conf.pageSize;
@@ -1079,7 +1079,7 @@ lyGrid = (function (options) {
                 }
             })
         }
-        conf = clc.extend(conf, {pagecode: json.pagecode, pageSize: json.pageSize});
+        conf = app.extend(conf, {pagecode: json.pagecode, pageSize: json.pageSize});
         return json
     };
     init();

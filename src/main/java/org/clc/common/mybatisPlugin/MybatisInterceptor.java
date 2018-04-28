@@ -30,7 +30,7 @@ public class MybatisInterceptor implements Interceptor {
 		if (method.contains("StatementHandler.prepare"))// sql执行前拦截
 			MyBatisBeforeInterceptor.run(invocation);
 		else if (method.contains("ResultSetHandler.handleResultSets"))// sql执行后拦截
-			MyBatisAfterInterceptor.run(invocation);
+			return MyBatisAfterInterceptor.run(invocation);
 		return invocation.proceed();
 	}
 

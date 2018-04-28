@@ -1,5 +1,10 @@
 package org.clc.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
+
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Info {
     private int code;
     private String msg;

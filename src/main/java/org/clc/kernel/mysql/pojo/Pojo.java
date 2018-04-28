@@ -1,6 +1,7 @@
 package org.clc.kernel.mysql.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NonNull;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
  * 实体类
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Pojo extends HashMap<String, Object> {
 
     @JsonIgnore// 表名

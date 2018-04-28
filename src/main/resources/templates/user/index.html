@@ -17,7 +17,6 @@
     <script th:src="@{/js/app.js}"></script>
     <script th:src="@{/js/oper.js}"></script>
     <script th:src="@{/plugin/iCheck/icheck.min.js}"></script>
-    <script th:src="@{/plugin/lyGrid/common/CommonUtil.js}"></script>
     <script th:src="@{/plugin/jquery/underscore.js}"></script>
     <script th:src="@{/plugin/lyGrid.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/base64.js}"></script>
@@ -57,11 +56,10 @@
         <button class="btn btn-bold input-lg add">添加</button>
     </div>
     <div id="paging"></div>
-    <div id='msg'></div>
 </div>
 </div>
 <script id="addDiv" type="text/html">
-    <form class="add-user" method="post" th:action="@{/user/add}" enctype="multipart/form-data">
+    <form id="add-user" method="post" action="/user/add" enctype="multipart/form-data">
         <label><span>昵&nbsp;&nbsp;&nbsp;称：</span><input name="$name" placeholder="请输入昵称" type="text" required/></label>
 
         <label><span>用户名：</span><input name="$userName" placeholder="请输入用户名" type="text" required/></label>
@@ -78,13 +76,13 @@
                    class="hidden"/>
             <input name='$avatar' type="hidden" class="avatar"/></label>
 
-        <label><span>身份证：</span><input name="$idCard" placeholder="请输入身份证" type="number"/></label>
+        <label><span>身份证：</span><input name="$idCard" placeholder="请输入身份证" type="input" minlength="17" maxlength="18" required/></label>
 
-        <label><span>手机号：</span><input name="$phone" placeholder="请输入手机号" type="tel"/></label>
+        <label><span>手机号：</span><input name="$phone" placeholder="请输入手机号" type="tel" minlength="11" maxlength="11"/></label>
         <label><span style="vertical-align: top">备&nbsp;&nbsp;&nbsp;注：</span>
             <textarea cols="20" rows="5" name="$comment" placeholder="备注信息"></textarea></label>
 
-        <input type="submit" value="添加">
+        <input type="button" class="submit" onclick="app.submit('add-user')" value="添加">
     </form>
 </script>
 </body>

@@ -3,10 +3,10 @@ window.onload = function () {
     grid = lyGrid({
         // id: 'paging',
         l_column: [{
-            colkey: "NAME",
+            colkey: "name",
             name: "账号"
         }, {
-            colkey: "AVATAR",
+            colkey: "avatar",
             name: "头像",
             renderData: function (rowindex, data) {
                 if (data)/*data:image/jpeg|png|gif;base64,*/
@@ -14,25 +14,30 @@ window.onload = function () {
                 return '<img src="' + '/images/ava.jpg" style="width: 35px;height:35px;border-radius: 80%" title="默认图标"/>';
             }
         }, {
-            colkey: "ID_CARD",
+            colkey: "idCard",
             name: "身份证号"
         }, {
-            colkey: "EMAIL",
-            name: "邮箱"
-        }, {
-            colkey: "UPDATE_TIME",
-            name: "执行时间",
-            isSort: true
-        }, {
-            colkey: "description",
-            name: "执行描述",
-            renderData: function (rowindex, data, rowdata, column) {
-                if (data.indexOf("成功") > -1)
-                    return data;
-                return "<label class='red'>执行方法异常:</label>";
+            colkey: "sex",
+            name: "性别",
+            renderData: function (rowindex, data) {
+                if (data == 1)
+                    return '女';
+                else if (data == 0)
+                    return '男';
+                return '未知';
             }
         }, {
-            colkey: "LOCK_FLAG",
+            colkey: "email",
+            name: "邮箱"
+        }, {
+            colkey: "updateTime",
+            name: "更新时间",
+            isSort: true
+        }, {
+            colkey: "comment",
+            name: "描述"
+        }, {
+            colkey: "lockFlag",
             name: "是否启用",
             width: '90px',
             renderData: function (rowindex) {
@@ -44,16 +49,11 @@ window.onload = function () {
                 html += '<span class="lbl middle"></span></label>';
                 return html;
             }
-        }, {
-            name: "操作",
-            renderData: function () {
-                return "<label class='red'>测试渲染函数</label>";
-            }
         }],
         async: false, // 默认为同步
         setNumber: true,
-        pageSize: 10, // 每页显示多少条数据
-        checkbox: true,// 是否显示复选框
+        pageSize: 10,
+        checkbox: true,
         checkValue: 'id',
         checkbox: true,
         selectPageSize: [10, 20, 50],
@@ -71,6 +71,8 @@ window.onload = function () {
     // $(".export").click(function () {
     //     exportTable();
     // })
+
+
     $(".add").click(function () {
         // var $addDiv = document.getElementById('addDiv').innerHTML;
         //igm是指分别用于指定区分大小写的匹配、全局匹配和多行匹配。
@@ -82,8 +84,8 @@ window.onload = function () {
             title: '<h3>用户添加</h3>',
             html: $('#addDiv').html(),
             backgroud: "RGBA(114,115,244,0.5) url(/images/cool.gif) no-repeat left center"
-        })
-        ;
+        });
+
         // swal({
         //     title: "添加用户",
         //     html: $('#addDiv').html(),

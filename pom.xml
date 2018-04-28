@@ -80,6 +80,11 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>${swagger.version}</version>
@@ -110,6 +115,13 @@
 		</dependency>
 	</dependencies>
 	
+	<repositories>
+		<repository>
+			<id>nexus-aliyun</id>
+			<name>Nexus aliyun</name>
+			<url>http://maven.aliyun.com/nexus/content/repositories/central</url>
+		</repository>
+	</repositories>
 	<build>
 		<finalName>web</finalName>
 		<plugins>

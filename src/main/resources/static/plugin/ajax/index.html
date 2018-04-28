@@ -40,8 +40,6 @@ select file:<input type="file" id="file1" accept="*"/><br/>
 //            timeoutEvent: function (code, e) {
 //            }                 //请求超时处理事件
 //        })
-//
-//
 //        ajax.get('getAjax/',{name:'get请求成功',age:11},function (res) {
 //            console.log(res.name)
 //        })
@@ -49,23 +47,19 @@ select file:<input type="file" id="file1" accept="*"/><br/>
 //        ajax.post("api/cores/postAjax/",{name:'post请求测试成功',age:1},function(getData){
 //            console.log(getData.name);
 //        });
-//
 //        ajax.post("http://10.73.1.198:9876/api/cores/postAjax/",{name:'post请求测试成功',age:1},function(getData){
 //            console.log(getData.name);
 //        });
-//
 //        var formData = new FormData();
 //        formData.append("name", "post Form请求测试成功");
 //        formData.append("age", 11);
 //        ajax.postFormData("postForm/",formData,function (res) {
 //            console.log(res.name)
 //        })
-//
         //test post
-        ajax.postJSON("http://10.73.1.198:9876/api/cores/postAjax/",{name:'postJSON请求测试成功',age:1},function(getData){
+        this.postJSON("http://10.73.1.198:9876/api/cores/postAjax/",{name:'postJSON请求测试成功',age:1},function(getData){
             console.log(getData.name);
         });
-//
 //        //test ObtainBlob(确保地址正确)
 //        ajax.obtainBlob("get","http://10.73.1.198:9999/Scripts/lei.jpg", '', function (getData) {
 //            var reader = new FileReader();

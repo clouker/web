@@ -1,5 +1,5 @@
 var class2type = {};
-clc = {
+app = {
     append: function (parent, text) {
         if (typeof text === 'string') {
             var temp = document.createElement('div');
@@ -34,7 +34,7 @@ clc = {
             target = arguments[i] || {};
             i++;
         }
-        if (typeof target !== "object" && !clc.isFunction(target))
+        if (typeof target !== "object" && !app.isFunction(target))
             target = {};
         if (i === length) {
             target = this;
@@ -47,14 +47,14 @@ clc = {
                     copy = options[name];
                     if (target === copy)
                         continue;
-                    if (deep && copy && (clc.isPlainObject(copy) ||
+                    if (deep && copy && (app.isPlainObject(copy) ||
                         (copyIsArray = Array.isArray(copy)))) {
                         if (copyIsArray) {
                             copyIsArray = false;
                             clone = src && Array.isArray(src) ? src : [];
                         } else
-                            clone = src && clc.isPlainObject(src) ? src : {};
-                        target[name] = clc.extend(deep, clone, copy);
+                            clone = src && app.isPlainObject(src) ? src : {};
+                        target[name] = app.extend(deep, clone, copy);
                     } else if (copy !== undefined)
                         target[name] = copy;
                 }
@@ -62,7 +62,7 @@ clc = {
         }
         return target;
     },
-    extend1 : function (o, n, override) {
+    extend1: function (o, n, override) {
         for (var p in n)
             if (n.hasOwnProperty(p) && (!o.hasOwnProperty(p) || override))
                 o[p] = n[p];
@@ -70,7 +70,7 @@ clc = {
     },
     each: function (obj, callback) {
         var length, i = 0;
-        if (clc.isArrayLike(obj)) {
+        if (app.isArrayLike(obj)) {
             length = obj.length;
             for (; i < length; i++)
                 if (callback.call(obj[i], i, obj[i]) === false)
@@ -83,7 +83,7 @@ clc = {
     },
     isArrayLike: function (obj) {
         var length = !!obj && "length" in obj && obj.length,
-            type = clc.toType(obj);
+            type = app.toType(obj);
         if ((typeof obj === "function" && typeof obj.nodeType !== "number") || (obj != null && obj === obj.window))
             return false;
         return type === "array" || length === 0 ||
@@ -130,9 +130,6 @@ clc = {
                 return true;
         return false;
     },
-    /**
-     * 判断某对象不为空..返回true 否则 false
-     */
     notNull: function (obj) {
         if (obj === null)
             return false;
@@ -152,8 +149,45 @@ clc = {
             return true;
     },
     remove: function (obj) {
-        // if (document.contains(obj))
         obj.parentElement.removeChild(obj)
     },
-
+    submit: function (form_id) {
+        var data = document.getElementById(form_id);
+        // var $data = JSON.stringify($("#" + form_id).serializeArray());
+        var $data = JSON.stringify((app.formSerialize(data)));
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            contentType: 'application/json;charset=utf-8',
+            url: data.action,
+            data: $data,
+            success: function (result) {
+                console.log(typeof result);
+            }
+        });
+    },
+    formSerialize: function (obj) {
+        var arr = {};
+        for (var i = 0; i < obj.elements.length; i++) {
+            var feled = obj.elements[i];
+            switch (feled.type) {
+                case undefined:
+                case 'button':
+                case 'file':
+                case 'reset':
+                case 'submit':
+                    break;
+                case 'checkbox':
+                case 'radio':
+                    if (!feled.checked)
+                        break;
+                default:
+                    if (arr[feled.name])
+                        arr[feled.name] = arr[feled.name] + ',' + feled.value;
+                    else
+                        arr[feled.name] = feled.value
+            }
+        }
+        return arr
+    }
 }
