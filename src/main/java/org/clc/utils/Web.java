@@ -8,10 +8,14 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-public class Web {
+public class Web implements Callable<Map> {
 
-	public static void main(String[] args) {
+    private String url = "";
+    private String method = "get";
+
+    public static void main(String[] args) {
 //        String url = "http://www.androiddevtools.cn/";
 //        String url = "https://10minutemail.net/cdn/js/ads.js";
 //        String url = "https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css";
@@ -20,286 +24,302 @@ public class Web {
 //        String url = "https://www.xiaozhizy.com";
 //        String url = "http://v3.jiathis.com/code/images/counter.gif";
 //		String url = "https://spring.io";
-		String url = "http://sfz.ckd.cc/idcard.php";
+        String url = "http://sfz.ckd.cc/idcard.php";
 //        String url = "http://localhost/user";
 //        String url = "https://s7.addthis.com/l10n/client.zh.min.json";
 //        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1",8888));
-		Map<String, Object> response = get(url, null, null);
-		response.forEach((k, v) ->
-				System.out.println(k + " ------------ " + v)
-		);
-	}
+        Map<String, Object> response = get(url, null, null);
+        response.forEach((k, v) ->
+                System.out.println(k + " ------------ " + v)
+        );
+    }
 
-	public static Map<String, Object> get(String url, Map<String, String> param, Proxy proxy) {
-		return send(url, "GET", param, null, null, proxy);
-	}
+    public static Web init(String url, String method, String... args) {
+        if (url == null)
+            return null;
+        Web web = new Web();
+        if (method != null)
+            web.method = method;
+        System.out.println(web.hashCode());
+        return web;
+    }
 
-	public static Map<String, Object> post(String url, Map<String, String> param, Proxy proxy) {
-		return send(url, "POST", param, null, null, proxy);
-	}
+    @Override
+    public Map call() {
+        System.out.println(Thread.currentThread().getName());
+        if (this.method.equalsIgnoreCase("get"))
+            return get(this.url.length() > 0 ? this.url : null, null, null);
+        return null;
+    }
 
-	// region 通用请求方法
-	private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, ?> header, Map<String, HttpCookie> cookies, Proxy proxy) {
-		Map<String, Object> response = new HashMap<>();
-		try {
-			HttpURLConnection connection;
-			// 代理
-			if (proxy != null)
-				connection = (HttpURLConnection) new URL(url).openConnection(proxy);
-			else
-				connection = (HttpURLConnection) new URL(url).openConnection();
-			// 设置请求头
-			setHeader(connection, header);
-			connection.setReadTimeout(10000);
-			connection.setConnectTimeout(10000);
-			connection.setRequestMethod(method);
-			if (method.equals("POST")) {
-				// Post cannot use caches
-				connection.setUseCaches(false);
-				connection.setDoOutput(true);
-			}
+    public static Map<String, Object> get(String url, Map<String, String> param, Proxy proxy) {
+        return send(url, "GET", param, null, null, proxy);
+    }
 
-			connection.connect();
-			if (method.equals("POST")) {
-				setRequestBody(param);
-				OutputStream outputStream = connection.getOutputStream();
-				// 获取URLConnection对象对应的输出流
-				PrintWriter printWriter = new PrintWriter(outputStream);
-				// 发送请求参数
-				printWriter.print(param);
-				// flush输出流的缓冲
-				printWriter.flush();
-			}
-			System.out.println(connection.getResponseMessage());
-			int responseCode = connection.getResponseCode();
-			response.putIfAbsent("code", responseCode);
-			setResponseMsg(response, responseCode);
-			// 当请求格式不对or服务器报错,直接返回
-			if (400 <= responseCode)
-				return response;
-			response.putIfAbsent("contentLength", connection.getContentLength());
-			Map<String, List<String>> headerFields = connection.getHeaderFields();
-			response.putIfAbsent("headers", connection.getHeaderFields());
-			headerFields.forEach((k, v) -> {
-				System.out.println(k + "----" + v);
-			});
+    public static Map<String, Object> post(String url, Map<String, String> param, Proxy proxy) {
+        return send(url, "POST", param, null, null, proxy);
+    }
 
-			String contentType = connection.getContentType();
-			response.putIfAbsent("contentType", contentType);
-			response.putIfAbsent("content", responseContent(contentType, connection.getInputStream()));
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+    // region 通用请求方法
+    private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, ?> header, Map<String, HttpCookie> cookies, Proxy proxy) {
+        if (url == null)
+            return null;
+        Map<String, Object> response = new HashMap<>();
+        try {
+            HttpURLConnection connection;
+            // 代理
+            if (proxy != null)
+                connection = (HttpURLConnection) new URL(url).openConnection(proxy);
+            else
+                connection = (HttpURLConnection) new URL(url).openConnection();
+            // 设置请求头
+            setHeader(connection, header);
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(10000);
+            connection.setRequestMethod(method);
+            if (method.equals("POST")) {// Post cannot use caches
+                connection.setUseCaches(false);
+                connection.setDoOutput(true);
+            }
 
-		}
-		return response;
-	}
-	// endregion
+            connection.connect();
+            if (method.equals("POST")) {
+                setRequestBody(param);
+                OutputStream outputStream = connection.getOutputStream();
+                PrintWriter printWriter = new PrintWriter(outputStream);// 获取URLConnection对象对应的输出流
+                printWriter.print(param);// 发送请求参数
+                printWriter.flush();// flush输出流的缓冲
+            }
+            System.out.println(connection.getResponseMessage());
+            int responseCode = connection.getResponseCode();
+            response.putIfAbsent("code", responseCode);
+            setResponseMsg(response, responseCode);
+            // 当请求格式不对or服务器报错,直接返回
+            if (400 <= responseCode)
+                return response;
+            response.putIfAbsent("contentLength", connection.getContentLength());
+            Map<String, List<String>> headerFields = connection.getHeaderFields();
+            response.putIfAbsent("headers", connection.getHeaderFields());
+            headerFields.forEach((k, v) -> {
+                System.out.println(k + "----" + v);
+            });
 
-	private static void setRequestBody(Map<String, ?> param) {
-	}
+            String contentType = connection.getContentType();
+            response.putIfAbsent("contentType", contentType);
+            response.putIfAbsent("content", responseContent(contentType, connection.getInputStream()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
 
-	//region 添加响应内容
-	private static Object responseContent(String contentType, InputStream inputStream) throws IOException {
-		if (contentType.startsWith("text/html") || contentType.contains("application/json"))
-			return getContentWithHtml(inputStream);
-		else if (contentType.contains("image"))
-			return getIMGStr(inputStream);
-		return null;
-	}
-	//endregion
+        }
+        return response;
+    }
+    // endregion
 
-	//region 文本内容解析
-	private static String getContentWithHtml(InputStream inputStream) throws IOException {
-		char[] buffer = new char[inputStream.available()];
-		StringBuilder out = new StringBuilder();
-		InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
-		while (true) {
-			int rsz = isr.read(buffer, 0, buffer.length);
-			if (rsz < 0)
-				break;
-			out.append(buffer, 0, rsz);
-		}
-		System.out.println(out.toString());
-//            ByteArrayOutputStream result = new ByteArrayOutputStream();
-//            byte[] buffer = new byte[1024];
-//            int length;
-//            while ((length = is.read(buffer)) != -1)
-//                result.write(buffer, 0, length);
-//            System.out.println(result.toString("UTF-8"));
-		return out.toString();
-	}
-	//endregion
+    private static void setRequestBody(Map<String, ?> param) {
+    }
 
-	//region 图片解析(Base64字符串)
-	private static String getIMGStr(InputStream input) throws IOException {
-		byte[] data = new byte[input.available()];
-		input.read(data);
-		return new BASE64Encoder().encode(data);
-	}
-	//endregion
+    //region 添加响应内容
+    private static Object responseContent(String contentType, InputStream inputStream) throws IOException {
+        if (contentType.startsWith("text/html") || contentType.contains("application/json"))
+            return getContentWithHtml(inputStream);
+        else if (contentType.contains("image"))
+            return getIMGStr(inputStream);
+        return null;
+    }
+    //endregion
 
-	//region base64字符串转化成图片
-	public static boolean GenerateImage(String imgStr) {
-		if (imgStr == null) // 图像数据为空
-			return false;
-		BASE64Decoder decoder = new BASE64Decoder();
-		try {
-			// Base64解码
-			byte[] b = decoder.decodeBuffer(imgStr);
-			for (int i = 0; i < b.length; ++i) {
-				if (b[i] < 0)// 调整异常数据
-					b[i] += 256;
-			}
-			// 生成jpeg图片
-			String imgFilePath = "d:\\222.jpg";
-			OutputStream out = new FileOutputStream(imgFilePath);
-			out.write(b);
-			out.flush();
-			out.close();
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	//endregion
+    //region 文本内容解析
+    private static String getContentWithHtml(InputStream inputStream) throws IOException {
+        char[] buffer = new char[inputStream.available()];
+        StringBuilder out = new StringBuilder();
+        InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
+        while (true) {
+            int rsz = isr.read(buffer, 0, buffer.length);
+            if (rsz < 0)
+                break;
+            out.append(buffer, 0, rsz);
+        }
+        // ByteArrayOutputStream result = new ByteArrayOutputStream();
+        // byte[] buffer = new byte[1024];
+        // int length;
+        // while ((length = is.read(buffer)) != -1)
+        // result.write(buffer, 0, length);
+        // System.out.println(result.toString("UTF-8"));
+        return out.toString();
+    }
+    //endregion
 
-	//region 设置请求头
-	private static void setHeader(URLConnection connection, Map<String, ?> header) {
-		connection.setRequestProperty("", "");
-		connection.setRequestProperty("connection", "Keep-Alive");
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.61 Safari/537.36");
-	}
-	//endregion
+    //region 图片解析(Base64字符串)
+    private static String getIMGStr(InputStream input) throws IOException {
+        byte[] data = new byte[input.available()];
+        input.read(data);
+        return new BASE64Encoder().encode(data);
+    }
+    //endregion
 
-	//region 设置响应消息
-	private static void setResponseMsg(Map<String, Object> response, int responseCode) {
-		String msg = "";
-		switch (responseCode) {
-			//-----------------------1xx(临时响应)-----------------------
-			case 100:
-				msg = "continue:请求者应当继续提出请求,服务器返回此代码表示已收到请求的第一部分,正在等待其余部分";
-				break;
-			case 101:
-				msg = "switchProtocol:请求者已要求服务器切换协议,服务器已确认并准备切换";
-				break;
-			//-----------------------2xx(成功)-----------------------
-			case 200:
-				msg = "success:服务器已成功处理了请求";
-				break;
-			case 201:
-				msg = "created:请求成功并且服务器创建了新的资源";
-				break;
-			case 202:
-				msg = "已接受:服务器已接受请求,但尚未处理";
-				break;
-			case 203:
-				msg = "非授权信息:服务器已成功处理了请求,但返回的信息可能来自另一来源";
-				break;
-			case 204:
-				msg = "无内容:服务器成功处理了请求,但没有返回任何内容";
-				break;
-			case 205:
-				msg = "重置内容:服务器成功处理了请求,但没有返回任何内容";
-				break;
-			case 206:
-				msg = "部分内容:服务器成功处理了部分 GET 请求";
-				break;
-			//-----------------------3xx(重定向)-----------------------
-			case 300:
-				msg = "多种选择:针对请求,服务器可执行多种操作,服务器可根据请求者 (user agent) 选择一项操作,或提供操作列表供请求者选择";
-				break;
-			case 301:
-				msg = "永久移动:请求的网页已永久移动到新位置,服务器返回此响应(对 GET 或 HEAD 请求的响应)时，会自动将请求者转到新位置";
-				break;
-			case 302:
-				msg = "临时移动:服务器目前从不同位置的网页响应请求,但请求者应继续使用原有位置来进行以后的请求";
-				break;
-			case 303:
-				msg = "查看其他位置:请求者应当对不同的位置使用单独的 GET 请求来检索响应时,服务器返回此代码";
-				break;
-			case 304:
-				msg = "未修改:自从上次请求后,请求的网页未修改过,服务器返回此响应时,不会返回网页内容";
-				break;
-			case 305:
-				msg = "must use proxy:请求者只能使用代理访问请求";
-				break;
-			case 307:
-				msg = "临时重定向:服务器目前从不同位置的网页响应请求,但请求者应继续使用原有位置来进行以后的请求";
-				break;
-			//-----------------------4xx(请求错误)-----------------------
-			case 400:
-				msg = "错误请求:服务器不理解请求的语法";
-				break;
-			case 401:
-				msg = "未授权:请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应";
-				break;
-			case 403:
-				msg = "禁止:服务器拒绝请求";
-				break;
-			case 404:
-				msg = "未找到:服务器找不到请求的内容";
-				break;
-			case 405:
-				msg = "方法禁用:禁用请求中指定的方法";
-				break;
-			case 406:
-				msg = "不接受:无法使用请求的内容特性响应请求的网页";
-				break;
-			case 407:
-				msg = "需要代理授权:此状态代码与 401 (未授权)类似,但指定请求者应当授权使用代理";
-				break;
-			case 408:
-				msg = "request time out:服务器等候请求时发生超时";
-				break;
-			case 409:
-				msg = "冲突:服务器在完成请求时发生冲突,服务器必须在响应中包含有关冲突的信息";
-				break;
-			case 410:
-				msg = "已删除:如果请求的资源已永久删除,服务器就会返回此响应";
-				break;
-			case 411:
-				msg = "需要有效长度:服务器不接受不含有效内容长度标头字段的请求";
-				break;
-			case 412:
-				msg = "未满足前提条件:服务器未满足请求者在请求中设置的其中一个前提条件";
-				break;
-			case 413:
-				msg = "请求实体过大:服务器无法处理请求,因为请求实体过大,超出服务器的处理能力";
-				break;
-			case 414:
-				msg = "URL is too long:请求的 URI(通常为网址(过长,服务器无法处理";
-				break;
-			case 415:
-				msg = "不支持的媒体类型:请求的格式不受请求页面的支持";
-				break;
-			case 416:
-				msg = "请求范围不符合要求:如果页面无法提供请求的范围,则服务器会返回此状态代码";
-				break;
-			case 417:
-				msg = "未满足期望值:服务器未满足'期望'请求标头字段的要求";
-				break;
-			//-----------------------5xx(服务器错误)-----------------------
-			case 500:
-				msg = "服务器内部错误:服务器遇到错误,无法完成请求";
-				break;
-			case 501:
-				msg = "尚未实施:服务器不具备完成请求的功能.例如,服务器无法识别请求方法时可能会返回此代码";
-				break;
-			case 502:
-				msg = "错误网关:服务器作为网关或代理,从上游服务器收到无效响应";
-				break;
-			case 503:
-				msg = "服务不可用:服务器目前无法使用(由于超载或停机维护).通常,这只是暂时状态";
-				break;
-			case 504:
-				msg = "网关超时:服务器作为网关或代理,但是没有及时从上游服务器收到请求";
-				break;
-			case 505:
-				msg = "HTTP 版本不受支持:服务器不支持请求中所用的 HTTP 协议版本";
-				break;
-		}
-		response.putIfAbsent("msg", msg);
-	}
-	//endregion
+    //region base64字符串转化成图片
+    public static boolean GenerateImage(String imgStr) {
+        if (imgStr == null) // 图像数据为空
+            return false;
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            // Base64解码
+            byte[] b = decoder.decodeBuffer(imgStr);
+            for (int i = 0; i < b.length; ++i) {
+                if (b[i] < 0)// 调整异常数据
+                    b[i] += 256;
+            }
+            // 生成jpeg图片
+            String imgFilePath = "d:\\222.jpg";
+            OutputStream out = new FileOutputStream(imgFilePath);
+            out.write(b);
+            out.flush();
+            out.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    //endregion
+
+    //region 设置请求头
+    private static void setHeader(URLConnection connection, Map<String, ?> header) {
+        connection.setRequestProperty("", "");
+        connection.setRequestProperty("connection", "Keep-Alive");
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.61 Safari/537.36");
+    }
+    //endregion
+
+
+    //region 设置响应消息
+    private static void setResponseMsg(Map<String, Object> response, int responseCode) {
+        String msg = "";
+        switch (responseCode) {
+            //-----------------------1xx(临时响应)-----------------------
+            case 100:
+                msg = "continue:请求者应当继续提出请求,服务器返回此代码表示已收到请求的第一部分,正在等待其余部分";
+                break;
+            case 101:
+                msg = "switchProtocol:请求者已要求服务器切换协议,服务器已确认并准备切换";
+                break;
+            //-----------------------2xx(成功)-----------------------
+            case 200:
+                msg = "success:服务器已成功处理了请求";
+                break;
+            case 201:
+                msg = "created:请求成功并且服务器创建了新的资源";
+                break;
+            case 202:
+                msg = "已接受:服务器已接受请求,但尚未处理";
+                break;
+            case 203:
+                msg = "非授权信息:服务器已成功处理了请求,但返回的信息可能来自另一来源";
+                break;
+            case 204:
+                msg = "无内容:服务器成功处理了请求,但没有返回任何内容";
+                break;
+            case 205:
+                msg = "重置内容:服务器成功处理了请求,但没有返回任何内容";
+                break;
+            case 206:
+                msg = "部分内容:服务器成功处理了部分 GET 请求";
+                break;
+            //-----------------------3xx(重定向)-----------------------
+            case 300:
+                msg = "多种选择:针对请求,服务器可执行多种操作,服务器可根据请求者 (user agent) 选择一项操作,或提供操作列表供请求者选择";
+                break;
+            case 301:
+                msg = "永久移动:请求的网页已永久移动到新位置,服务器返回此响应(对 GET 或 HEAD 请求的响应)时，会自动将请求者转到新位置";
+                break;
+            case 302:
+                msg = "临时移动:服务器目前从不同位置的网页响应请求,但请求者应继续使用原有位置来进行以后的请求";
+                break;
+            case 303:
+                msg = "查看其他位置:请求者应当对不同的位置使用单独的 GET 请求来检索响应时,服务器返回此代码";
+                break;
+            case 304:
+                msg = "未修改:自从上次请求后,请求的网页未修改过,服务器返回此响应时,不会返回网页内容";
+                break;
+            case 305:
+                msg = "must use proxy:请求者只能使用代理访问请求";
+                break;
+            case 307:
+                msg = "临时重定向:服务器目前从不同位置的网页响应请求,但请求者应继续使用原有位置来进行以后的请求";
+                break;
+            //-----------------------4xx(请求错误)-----------------------
+            case 400:
+                msg = "错误请求:服务器不理解请求的语法";
+                break;
+            case 401:
+                msg = "未授权:请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应";
+                break;
+            case 403:
+                msg = "禁止:服务器拒绝请求";
+                break;
+            case 404:
+                msg = "未找到:服务器找不到请求的内容";
+                break;
+            case 405:
+                msg = "方法禁用:禁用请求中指定的方法";
+                break;
+            case 406:
+                msg = "不接受:无法使用请求的内容特性响应请求的网页";
+                break;
+            case 407:
+                msg = "需要代理授权:此状态代码与 401 (未授权)类似,但指定请求者应当授权使用代理";
+                break;
+            case 408:
+                msg = "request time out:服务器等候请求时发生超时";
+                break;
+            case 409:
+                msg = "冲突:服务器在完成请求时发生冲突,服务器必须在响应中包含有关冲突的信息";
+                break;
+            case 410:
+                msg = "已删除:如果请求的资源已永久删除,服务器就会返回此响应";
+                break;
+            case 411:
+                msg = "需要有效长度:服务器不接受不含有效内容长度标头字段的请求";
+                break;
+            case 412:
+                msg = "未满足前提条件:服务器未满足请求者在请求中设置的其中一个前提条件";
+                break;
+            case 413:
+                msg = "请求实体过大:服务器无法处理请求,因为请求实体过大,超出服务器的处理能力";
+                break;
+            case 414:
+                msg = "URL is too long:请求的 URI(通常为网址(过长,服务器无法处理";
+                break;
+            case 415:
+                msg = "不支持的媒体类型:请求的格式不受请求页面的支持";
+                break;
+            case 416:
+                msg = "请求范围不符合要求:如果页面无法提供请求的范围,则服务器会返回此状态代码";
+                break;
+            case 417:
+                msg = "未满足期望值:服务器未满足'期望'请求标头字段的要求";
+                break;
+            //-----------------------5xx(服务器错误)-----------------------
+            case 500:
+                msg = "服务器内部错误:服务器遇到错误,无法完成请求";
+                break;
+            case 501:
+                msg = "尚未实施:服务器不具备完成请求的功能.例如,服务器无法识别请求方法时可能会返回此代码";
+                break;
+            case 502:
+                msg = "错误网关:服务器作为网关或代理,从上游服务器收到无效响应";
+                break;
+            case 503:
+                msg = "服务不可用:服务器目前无法使用(由于超载或停机维护).通常,这只是暂时状态";
+                break;
+            case 504:
+                msg = "网关超时:服务器作为网关或代理,但是没有及时从上游服务器收到请求";
+                break;
+            case 505:
+                msg = "HTTP 版本不受支持:服务器不支持请求中所用的 HTTP 协议版本";
+                break;
+        }
+        response.putIfAbsent("msg", msg);
+    }
+    //endregion
 }

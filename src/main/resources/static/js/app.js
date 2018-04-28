@@ -98,7 +98,7 @@ app = {
     _getValueByName: function (data, name) {
         if (!data || !name)
             return null;
-        if (name.indexOf('.') == -1)
+        if (name.indexOf('.') === -1)
             return data[name];
         else {
             try {
@@ -146,14 +146,13 @@ app = {
         else if (obj.length === 0)
             return false;
         else
-            return true;
+            return true
     },
     remove: function (obj) {
         obj.parentElement.removeChild(obj)
     },
     submit: function (form_id) {
         var data = document.getElementById(form_id);
-        // var $data = JSON.stringify($("#" + form_id).serializeArray());
         var $data = JSON.stringify((app.formSerialize(data)));
         $.ajax({
             type: "post",
@@ -190,4 +189,4 @@ app = {
         }
         return arr
     }
-}
+};

@@ -37,6 +37,22 @@ public class BaseController {
 				BufferedReader reader = request.getReader();
 				while ((line = reader.readLine()) != null)
 					jb.append(line);
+				//jackson---JSON<==>POJO 操作类为ObjectMapper
+				/**
+				 * Class2JSON
+				 * @writeValue(File arg0, Object arg1)把arg1转成json序列，并保存到arg0文件中。
+				 * @writeValue(OutputStream arg0, Object arg1)把arg1转成json序列，并保存到arg0输出流中。
+				 * @writeValueAsBytes(Object arg0)把arg0转成json序列，并把结果输出成字节数组。
+				 * @writeValueAsString(Object arg0)把arg0转成json序列，并把结果输出成字符串
+				 *   pojo = {"name":"小民","age":20}
+				 *       pojo对象转JSON----mapper.writeValueAsString(pojo)
+				 *   list = [{"name":"小民","age":20}]
+				 *       list集合转JSON---mapper.writeValueAsString(list)
+				 * JSON2Class
+				 * @ObjectMapper支持从byte[]、File、InputStream、字符串等数据的JSON反序列化
+				 *   json = "{'name':'小民','age':20,}";
+				 *       mapper.readValue(json, Pojo.class)
+				 */
 				ObjectMapper mapper = new ObjectMapper();
 				pojo = mapper.readValue(jb.toString(), Pojo.class);
 			} else {
