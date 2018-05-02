@@ -6,14 +6,14 @@ window.onload = function () {
             colkey: "name",
             name: "账号"
         }, {
-            colkey: "avatar",
-            name: "头像",
-            renderData: function (rowindex, data) {
-                if (data)/*data:image/jpeg|png|gif;base64,*/
-                    return '<img style="width: 35px;height:35px;border-radius: 80%" src="' + data + '" style="width: 43px;"/>';
-                return '<img src="' + '/images/ava.jpg" style="width: 35px;height:35px;border-radius: 80%" title="默认图标"/>';
-            }
-        }, {
+        //     colkey: "avatar",
+        //     name: "头像",
+        //     renderData: function (rowindex, data) {
+        //         if (data)/*data:image/jpeg|png|gif;base64,*/
+        //             return '<img style="width: 35px;height:35px;border-radius: 80%" src="' + data + '" style="width: 43px;"/>';
+        //         return '<img src="' + '/images/ava.jpg" style="width: 35px;height:35px;border-radius: 80%" title="默认图标"/>';
+        //     }
+        // }, {
             colkey: "idCard",
             name: "身份证号"
         }, {
@@ -55,7 +55,6 @@ window.onload = function () {
         pageSize: 10,
         checkbox: true,
         checkValue: 'id',
-        checkbox: true,
         selectPageSize: [10, 20, 50],
         goPage: true,
         jsonUrl: '/user/findByPage',
@@ -71,7 +70,6 @@ window.onload = function () {
     // $(".export").click(function () {
     //     exportTable();
     // })
-
 
     $(".add").click(function () {
         // var $addDiv = document.getElementById('addDiv').innerHTML;

@@ -190,3 +190,25 @@ app = {
         return arr
     }
 };
+var $$ = function () {
+    var obj;
+    if (arguments.length > 0)
+        obj = document.getElementById(arguments[0]);
+    var init = function () {
+
+    };
+    var extend = function () {
+        app.extend()
+    };
+    var append = function (parent, text) {
+        app.append(parent, text)
+    };
+    var remove = function (obj) {
+        app.remove(obj)
+    };
+    var console = function () {
+        console.log("hello")
+    };
+    init();
+    return obj;
+}
