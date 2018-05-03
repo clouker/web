@@ -18,8 +18,7 @@ import java.util.Map;
 @Slf4j
 public class BaseController {
 
-	//系统路径符号
-	protected static final String PATH_FLAG = File.separator;
+
 	//日志记录
 	protected static Logger logger = log;
 
@@ -37,8 +36,7 @@ public class BaseController {
 				BufferedReader reader = request.getReader();
 				while ((line = reader.readLine()) != null)
 					jb.append(line);
-				//jackson---JSON<==>POJO 操作类为ObjectMapper
-				/**
+				/** jackson---JSON<==>POJO 操作类为ObjectMapper
 				 * Class2JSON
 				 * @writeValue(File arg0, Object arg1)把arg1转成json序列，并保存到arg0文件中。
 				 * @writeValue(OutputStream arg0, Object arg1)把arg1转成json序列，并保存到arg0输出流中。

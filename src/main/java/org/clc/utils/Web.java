@@ -8,9 +8,8 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
-public class Web implements Callable<Map> {
+public class Web {
 
     private String url = "";
     private String method = "get";
@@ -28,43 +27,31 @@ public class Web implements Callable<Map> {
 //        String url = "http://localhost/user";
 //        String url = "https://s7.addthis.com/l10n/client.zh.min.json";
 //        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1",8888));
-        Map<String, Object> response = get(url, null, null);
+        Map<String, Object> response = get(url, null, null, null, null);
         response.forEach((k, v) ->
                 System.out.println(k + " ------------ " + v)
         );
     }
 
-    public static Web init(String url, String method, String... args) {
-        if (url == null)
-            return null;
-        Web web = new Web();
-        if (method != null)
-            web.method = method;
-        System.out.println(web.hashCode());
-        return web;
+    public static Map<String, Object> get(String url, Map<String, String> param,
+                                          Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+        return send(url, "GET", param, header, null, proxy);
     }
 
-    @Override
-    public Map call() {
-        System.out.println(Thread.currentThread().getName());
-        if (this.method.equalsIgnoreCase("get"))
-            return get(this.url.length() > 0 ? this.url : null, null, null);
-        return null;
-    }
-
-    public static Map<String, Object> get(String url, Map<String, String> param, Proxy proxy) {
-        return send(url, "GET", param, null, null, proxy);
-    }
-
-    public static Map<String, Object> post(String url, Map<String, String> param, Proxy proxy) {
+    public static Map<String, Object> post(String url, Map<String, String> param,
+                                           Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
         return send(url, "POST", param, null, null, proxy);
     }
 
     // region 通用请求方法
-    private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, ?> header, Map<String, HttpCookie> cookies, Proxy proxy) {
-        if (url == null)
-            return null;
+    private static Map<String, Object> send(String url, String method, Map<String, ?> param,
+                                            Map<String, ?> header, List<HttpCookie> cookies, Proxy proxy) {
         Map<String, Object> response = new HashMap<>();
+        if (url == null) {
+            response.put("code", -1);
+            response.put("msg", "url为空...");
+            return response;
+        }
         try {
             HttpURLConnection connection;
             // 代理
