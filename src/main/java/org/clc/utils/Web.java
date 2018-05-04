@@ -5,14 +5,30 @@ import sun.misc.BASE64Encoder;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-public class Web {
+/**
+ * 简单web请求
+ *
+ * --支持多线程调用
+ * -----List<Callable<Object>> list = new ArrayList<>()
+ * -----list.add(Web.run[Get|Post]))
+ * -----ThreadPool.run(list)
+ *
+ * @Author clc
+ */
+public class Web implements Callable {
 
-    private String url = "";
-    private String method = "get";
+    private String url;
+    private Proxy proxy;
+    private String method;
+    private Map<String, String> param;
+    private Map<String, String> header;
+    private List<HttpCookie> cookie;
 
     public static void main(String[] args) {
 //        String url = "http://www.androiddevtools.cn/";
@@ -29,23 +45,75 @@ public class Web {
 //        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1",8888));
         Map<String, Object> response = get(url, null, null, null, null);
         response.forEach((k, v) ->
-                System.out.println(k + " ------------ " + v)
+                System.out.println(k/* + " ------------ " + v*/)
         );
     }
 
-    public static Map<String, Object> get(String url, Map<String, String> param,
-                                          Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
-        return send(url, "GET", param, header, null, proxy);
+    public static Web runGet(String url, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+        return run(url, "GET", param, header, cookie, proxy);
     }
 
-    public static Map<String, Object> post(String url, Map<String, String> param,
-                                           Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
-        return send(url, "POST", param, null, null, proxy);
+    public static Web runPost(String url, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+        return run(url, "POST", param, header, cookie, proxy);
     }
 
-    // region 通用请求方法
-    private static Map<String, Object> send(String url, String method, Map<String, ?> param,
-                                            Map<String, ?> header, List<HttpCookie> cookies, Proxy proxy) {
+    private static Web run(String url, String mothod, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+        Web web = new Web();
+        web.method = mothod;
+        web.url = url;
+        web.param = param;
+        web.proxy = proxy;
+        web.header = header;
+        web.cookie = cookie;
+        return web;
+    }
+
+    @Override
+    public Object call() {
+        StringBuilder sr = new StringBuilder(LocalDateTime.now().toString());
+        sr.append(" : ").append(Thread.currentThread().getName()).append(" --- ").append(this.toString());
+        Map<String, Object> response = Web.send(this.url, this.method, this.param, this.header, this.cookie, this.proxy);
+        sr.append("\n ==》Result: \n\t").append(response);
+//        System.out.println(sr);
+        return response;
+    }
+
+    public static Map<String, Object> get(String url) {
+        return get(url, null, null, null, null);
+    }
+
+    public static Map<String, Object> get(String url, Map<String, String> param) {
+        return get(url, param, null, null, null);
+    }
+
+    public static Map<String, Object> get(String url, Map<String, String> param, Map<String, String> header) {
+        return get(url, param, header, null, null);
+    }
+
+    public static Map<String, Object> get(String url, Map<String, String> param, Map<String, String> header, Proxy proxy) {
+        return get(url, param, header, null, proxy);
+    }
+
+    public static Map<String, Object> get(String url, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+        return send(url, "GET", param, header, cookie, proxy);
+    }
+
+    public static Map<String, Object> post(String url, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+        return send(url, "POST", param, header, cookie, proxy);
+    }
+
+    /**
+     * 请求方法
+     *
+     * @param url
+     * @param method
+     * @param param
+     * @param header
+     * @param cookies
+     * @param proxy
+     * @return ResponseInfo ---> （code、msg、header、contentLength、contentType）
+     */
+    private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookies, Proxy proxy) {
         Map<String, Object> response = new HashMap<>();
         if (url == null) {
             response.put("code", -1);
@@ -77,23 +145,16 @@ public class Web {
                 printWriter.print(param);// 发送请求参数
                 printWriter.flush();// flush输出流的缓冲
             }
-            System.out.println(connection.getResponseMessage());
             int responseCode = connection.getResponseCode();
             response.putIfAbsent("code", responseCode);
             setResponseMsg(response, responseCode);
-            // 当请求格式不对or服务器报错,直接返回
+            // 当请求格式不对、服务器报错,直接返回
             if (400 <= responseCode)
                 return response;
+            response.putIfAbsent("header", connection.getHeaderFields());
+            // connection.getContentLength() == -1  （服务端没设置content-length头）
             response.putIfAbsent("contentLength", connection.getContentLength());
-            Map<String, List<String>> headerFields = connection.getHeaderFields();
-            response.putIfAbsent("headers", connection.getHeaderFields());
-            headerFields.forEach((k, v) -> {
-                System.out.println(k + "----" + v);
-            });
-
-            String contentType = connection.getContentType();
-            response.putIfAbsent("contentType", contentType);
-            response.putIfAbsent("content", responseContent(contentType, connection.getInputStream()));
+            responseContent(response, connection.getContentType(), connection.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -101,18 +162,25 @@ public class Web {
         }
         return response;
     }
-    // endregion
 
+    // region post请求设置请求体
     private static void setRequestBody(Map<String, ?> param) {
     }
+    // endregion
 
     //region 添加响应内容
-    private static Object responseContent(String contentType, InputStream inputStream) throws IOException {
-        if (contentType.startsWith("text/html") || contentType.contains("application/json"))
-            return getContentWithHtml(inputStream);
-        else if (contentType.contains("image"))
-            return getIMGStr(inputStream);
-        return null;
+    private static void responseContent(Map<String, Object> response, String contentType, InputStream inputStream) throws IOException {
+        response.putIfAbsent("contentType", contentType);
+        Object content = null;
+        if (contentType != null) {
+            if (contentType.contains("image"))
+                content = getIMGStr(inputStream);
+            else if (contentType.contains("text") || contentType.contains("json") || contentType.contains("javascript"))
+                content = getContentWithHtml(inputStream);
+
+        } else
+            content = "无信息";
+        response.putIfAbsent("content", content);
     }
     //endregion
 
@@ -172,7 +240,6 @@ public class Web {
 
     //region 设置请求头
     private static void setHeader(URLConnection connection, Map<String, ?> header) {
-        connection.setRequestProperty("", "");
         connection.setRequestProperty("connection", "Keep-Alive");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.61 Safari/537.36");
     }
@@ -309,4 +376,23 @@ public class Web {
         response.putIfAbsent("msg", msg);
     }
     //endregion
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        if (this.url != null)
+            sb.append(" url: ").append(this.url);
+        if (this.param != null)
+            sb.append(" param: ").append(this.param);
+        if (this.method != null)
+            sb.append(" method: ").append(this.method);
+        if (this.header != null)
+            sb.append(" header: ").append(this.header);
+        if (this.cookie != null)
+            sb.append(" cookie: ").append(this.cookie);
+        if (this.proxy != null)
+            sb.append(" proxy: ").append(this.proxy);
+        sb.append(" ]");
+        return sb.toString();
+    }
 }

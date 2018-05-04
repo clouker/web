@@ -1,19 +1,17 @@
 package org.clc.utils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
 
 public class Job implements Callable {
 
     private Object task;
 
-    public Job(Object task) {
-        this.task = task;
-    }
-
     @Override
     public Object call() {
-        System.out.println(Thread.currentThread().getName());
-        return task;
+            System.out.println("111111111----" + 1 / 0);
+        System.out.println(LocalDateTime.now() + " : " + Thread.currentThread().getName());
+        return null;
     }
-
 }
