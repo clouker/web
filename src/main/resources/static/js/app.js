@@ -11,7 +11,7 @@ app = {
             parent.appendChild(frag);
         }
         else
-            parent.appendChild(text);
+            parent.appendChild(text)
     },
     isPlainObject: function (obj) {
         var proto, Ctor;
@@ -190,25 +190,37 @@ app = {
         return arr
     }
 };
-var $$ = function () {
+var a = function () {
     var obj;
-    if (arguments.length > 0)
-        obj = document.getElementById(arguments[0]);
+    var tmp;
+    if (arguments.length > 0) {
+        tmp = document.getElementsByTagName(arguments[0]);
+        if (tmp.length && tmp.length > 0) {
+            obj = new Array();
+            for (var i in tmp) {
+                if (typeof tmp[i] === 'object') {
+                    var element = tmp[i];
+                    element.extend = function () {
+                        return app.extend()
+                    };
+                    element.console = function () {
+                        // console.log('hello')
+                    };
+                    obj.push(tmp[i]);
+                }
+            }
+        }
+    }
+    var console = function () {
+        console.log('hello')
+    };
     var init = function () {
 
     };
-    var extend = function () {
-        app.extend()
-    };
-    var append = function (parent, text) {
-        app.append(parent, text)
-    };
-    var remove = function (obj) {
-        app.remove(obj)
-    };
-    var console = function () {
-        console.log("hello")
-    };
+    debugger;
     init();
     return obj;
+}
+var $$ = function () {
+    return new a(obj);
 }
