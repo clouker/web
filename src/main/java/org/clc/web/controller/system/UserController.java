@@ -3,7 +3,7 @@ package org.clc.web.controller.system;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.clc.common.Info;
+import org.clc.common.ResponseInfo;
 import org.clc.utils.Page;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.kernel.mysql.mapper.BaseMapper;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -54,14 +53,14 @@ public class UserController extends BaseController {
 	@Transactional
 	@ApiOperation(value = "用户添加")
 	@ApiImplicitParam(name = "用户信息", value = "Pojo", dataType = "Pojo")
-	public Info add() throws Exception {
+	public ResponseInfo add() throws Exception {
 		Pojo pojo = getPojo();
 		if (pojo.size() > 0){
 			pojo.setTable("SYS_USER");
 			int code = userMapper.insert(pojo);
 			if (code > 0)
-				return Info.returnMsg(0, "Success");
+				return ResponseInfo.returnMsg(0, "Success");
 		}
-		return Info.returnMsg(1, "Failed");
+		return ResponseInfo.returnMsg(1, "Failed");
 	}
 }
