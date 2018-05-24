@@ -13,11 +13,12 @@ public class StringUtil {
 		return camel2underline(source, false);
 	}
 
-	private static String camel2Underline(String propertyName) {
-		return Pattern.compile("([A-Z])").matcher(propertyName).replaceAll("_$0").toUpperCase();
+    public static String camel2Underline(String source, boolean toUpper) {
+        String targer = Pattern.compile("([A-Z])").matcher(source).replaceAll("_$0");
+        return toUpper ? targer.toUpperCase() : targer;
 	}
 
-	public static String camel2underline(String source, boolean toUpper) {
+    private static String camel2underline(String source, boolean toUpper) {
 		char[] chars = source.toCharArray();
 		StringBuilder targer = new StringBuilder(0);
 		boolean flag = true;

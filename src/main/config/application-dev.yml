@@ -3,12 +3,9 @@ spring:
   datasource:
       driver-class-name: com.mysql.jdbc.Driver
       # useSSL:高版本的MySQL是否进行ssl链接
-      #  url: jdbc:mysql://10.10.10.10:3306/myDB?characterEncoding=utf8&useSSL=false
-      # username: linb
-      # password: imissyou
-      url: jdbc:mysql://172.16.17.22:3306/xsrk_integral_dev?characterEncoding=utf8&useSSL=false
-      username: xsrk_integral_dev
-      password: Xsrk_integral@dev123!
+      url: jdbc:mysql://10.10.10.10:3306/myDB?characterEncoding=utf8&useSSL=false
+      username: linb
+      password: imissyou
 
   # ----------------------------mongo-------------------------- #
 #  data:

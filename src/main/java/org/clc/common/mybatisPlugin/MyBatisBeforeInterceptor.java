@@ -22,37 +22,40 @@ import java.util.Map;
 
 /**
  * 执行前拦截
+ *
  * @author linb
  */
 @Slf4j
 public class MyBatisBeforeInterceptor {
 
-	public static void run(Invocation invocation) throws SQLException {
-		StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
-		MetaObject metaObject = MetaObject.forObject(statementHandler, SystemMetaObject.DEFAULT_OBJECT_FACTORY, SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
-		MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
-		String id = mappedStatement.getId();
-		Connection connection = (Connection) invocation.getArgs()[0];
-		BoundSql boundSql = statementHandler.getBoundSql();
-		String sql = "";
-		if (id.matches(".+ByPage$") && boundSql.getParameterObject() instanceof Page) {// 拦截分页方法
-			sql = startPage(connection, boundSql, metaObject);
-		} else if (id.matches("\\S+.insert\\w*") && boundSql.getParameterObject() instanceof Pojo) {
-			Pojo pojo = (Pojo) boundSql.getParameterObject();
-			Map<String, Object> cols = new HashMap<>();
-			ResultSet catalogs = connection.getMetaData().getColumns(null, "%", "SYS_USER", "%");
-			while (catalogs.next()) {
-				if (catalogs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes"))
-					continue;
-				String column_name = catalogs.getString("COLUMN_NAME");
-				String column = "$" + StringUtil.underline2camel(column_name);
-				if (pojo.containsKey(column))
-					cols.put(column_name, pojo.get(column));
-			}
-			sql = goInsert(cols, pojo.getTable());
-		}
-		metaObject.setValue("delegate.boundSql.sql", sql);
-	}
+    public static void run(Invocation invocation) throws SQLException {
+        StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
+        MetaObject metaObject = MetaObject.forObject(statementHandler, SystemMetaObject.DEFAULT_OBJECT_FACTORY, SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
+        MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
+        String id = mappedStatement.getId();
+        Connection connection = (Connection) invocation.getArgs()[0];
+        BoundSql boundSql = statementHandler.getBoundSql();
+        String sql = "";
+        if (id.matches(".+ByPage$") && boundSql.getParameterObject() instanceof Page) {// 拦截分页方法
+            sql = startPage(connection, boundSql, metaObject);
+        } else if (id.matches("\\S+.insert\\w*") && boundSql.getParameterObject() instanceof Pojo) {
+            Pojo pojo = (Pojo) boundSql.getParameterObject();
+            Map<String, Object> cols = new HashMap<>();
+            ResultSet catalogs = connection.getMetaData().getColumns(null, "%", "SYS_USER", "%");
+            while (catalogs.next()) {
+                if (catalogs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes"))
+                    continue;
+                String column_name = catalogs.getString("COLUMN_NAME");
+                String column = "$" + StringUtil.underline2camel(column_name);
+                if (pojo.containsKey(column))
+                    cols.put(column_name, pojo.get(column));
+            }
+            sql = goInsert(cols, pojo.getTable());
+        }else if (id.matches(".+initTablesInfo$")){
+            sql = "show tables";
+        }
+        metaObject.setValue("delegate.boundSql.sql", sql);
+    }
 
 	/**
 	 * 分页业务处理
@@ -105,22 +108,23 @@ public class MyBatisBeforeInterceptor {
 		return sql.toString();
 	}
 
-	/**
-	 * 封装insert SQL
-	 *
-	 * @param cols
-	 * @return
-	 */
-	private static String goInsert(Map<String, Object> cols, String table) {
-		StringBuilder sql = new StringBuilder("insert into " + table);
-		StringBuilder key = new StringBuilder("(");
-		StringBuilder val = new StringBuilder("values(");
-		cols.forEach((k, v) -> {
-			key.append(k + ",");
-			val.append("'" + v + "',");
-		});
-		sql.append(key.deleteCharAt(key.lastIndexOf(",")).append(") "));
-		sql.append(val.deleteCharAt(val.lastIndexOf(",")).append(")"));
-		return sql.toString();
-	}
+    /**
+     * 封装insert SQL
+     *
+     * @param cols
+     * @return
+     */
+    private static String goInsert(Map<String, Object> cols, String table) {
+        StringBuilder sql = new StringBuilder("insert into " + table);
+        StringBuilder key = new StringBuilder("(");
+        StringBuilder val = new StringBuilder("values(");
+        String jdkVer = System.getProperty("java.version");
+        cols.forEach((k, v) -> {
+            key.append(k + ",");
+            val.append("'" + v + "',");
+        });
+        sql.append(key.deleteCharAt(key.lastIndexOf(",")).append(") "));
+        sql.append(val.deleteCharAt(val.lastIndexOf(",")).append(")"));
+        return sql.toString();
+    }
 }

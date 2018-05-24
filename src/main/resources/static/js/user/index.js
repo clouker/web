@@ -4,16 +4,19 @@ window.onload = function () {
         // id: 'paging',
         l_column: [{
             colkey: "name",
-            name: "账号"
+            name: "用户"
         }, {
-        //     colkey: "avatar",
-        //     name: "头像",
-        //     renderData: function (rowindex, data) {
-        //         if (data)/*data:image/jpeg|png|gif;base64,*/
-        //             return '<img style="width: 35px;height:35px;border-radius: 80%" src="' + data + '" style="width: 43px;"/>';
-        //         return '<img src="' + '/images/ava.jpg" style="width: 35px;height:35px;border-radius: 80%" title="默认图标"/>';
-        //     }
-        // }, {
+            colkey: "userName",
+            name: "Key"
+        }, {
+            //     colkey: "avatar",
+            //     name: "头像",
+            //     renderData: function (rowindex, data) {
+            //         if (data)/*data:image/jpeg|png|gif;base64,*/
+            //             return '<img style="width: 35px;height:35px;border-radius: 80%" src="' + data + '" style="width: 43px;"/>';
+            //         return '<img src="' + '/images/ava.jpg" style="width: 35px;height:35px;border-radius: 80%" title="默认图标"/>';
+            //     }
+            // }, {
             colkey: "idCard",
             name: "身份证号"
         }, {
@@ -62,6 +65,7 @@ window.onload = function () {
         trRowClick: function (index, data) {
         }
     });
+
     $('.search-btn').click(function () {
         // if ($('.search-input').val().length == 0)
         //     return swal("请输入条件");
@@ -97,6 +101,10 @@ window.onload = function () {
         //     }
         // })
     })
+};
+
+function seccess() {
+
 }
 
 function exportTable() {

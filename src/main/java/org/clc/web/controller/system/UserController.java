@@ -41,7 +41,7 @@ public class UserController extends BaseController {
 	@ApiImplicitParam(name = "分页信息", value = "Page", dataType = "Page")
 	public Page findByPage() throws Exception {
 		Page page = page("SYS_USER", getPojo());
-		page.setWhere("USER_ID != '80'");
+		page.setWhere("ID != '80'");
 		page.setSearchKeys("NAME");
 		List<Pojo> users = userMapper.findByPage(page);
 		page.setRecords(users);

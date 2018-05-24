@@ -49,17 +49,15 @@ public class MyBatisAfterInterceptor {
     /**
      * 处理返回集
      *
-     * @param keys      (表字段和类型)
+     * @param keys      字段和类型
      * @param resultSet
      * @return
      */
-    private static List<Pojo> getResult(List<Map<String, String>> keys, ResultSet resultSet) throws SQLException {
-        List<Pojo> resultList = new ArrayList<>();
+    private static List<Map> getResult(List<Map<String, String>> keys, ResultSet resultSet) throws Exception {
+        List<Map> resultList = new ArrayList<>();
         while (resultSet.next()) {
-            Pojo cols = new Pojo();
+            Map cols = new HashMap();
             keys.forEach(key -> {
-//				System.out.println(key.get("type"));
-                // underline2camel
                 String name = StringUtil.underline2camel(key.get("name"));
                 switch (key.get("type")) {
 //					case "BLOB":
@@ -76,7 +74,7 @@ public class MyBatisAfterInterceptor {
                             e.printStackTrace();
                         }
                         break;
-                    default:// null->""
+                    default:
                         try {
                             cols.put(name, resultSet.getString(key.get("name")) != null ? resultSet.getString(key.get("name")) : "");
                         } catch (SQLException e) {

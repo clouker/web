@@ -1,4 +1,9 @@
 var class2type = {};
+document.onreadystatechange = function (ev) {
+    if (document.readyState == 'complete') {
+        console.log(ev.target);
+    }
+};
 app = {
     append: function (parent, text) {
         if (typeof text === 'string') {
@@ -38,7 +43,7 @@ app = {
             target = {};
         if (i === length) {
             target = this;
-            i--;
+            i--
         }
         for (; i < length; i++) {
             if ((options = arguments[i]) != null) {
@@ -151,7 +156,7 @@ app = {
     remove: function (obj) {
         obj.parentElement.removeChild(obj)
     },
-    submit: function (form_id) {
+    submit: function (form_id, $success) {
         var data = document.getElementById(form_id);
         var $data = JSON.stringify((app.formSerialize(data)));
         $.ajax({
@@ -161,7 +166,9 @@ app = {
             url: data.action,
             data: $data,
             success: function (result) {
-                console.log(typeof result);
+                debugger;
+                if ($success != undefined)
+                    console.log(typeof result);
             }
         });
     },
@@ -190,37 +197,3 @@ app = {
         return arr
     }
 };
-var a = function () {
-    var obj;
-    var tmp;
-    if (arguments.length > 0) {
-        tmp = document.getElementsByTagName(arguments[0]);
-        if (tmp.length && tmp.length > 0) {
-            obj = new Array();
-            for (var i in tmp) {
-                if (typeof tmp[i] === 'object') {
-                    var element = tmp[i];
-                    element.extend = function () {
-                        return app.extend()
-                    };
-                    element.console = function () {
-                        // console.log('hello')
-                    };
-                    obj.push(tmp[i]);
-                }
-            }
-        }
-    }
-    var console = function () {
-        console.log('hello')
-    };
-    var init = function () {
-
-    };
-    debugger;
-    init();
-    return obj;
-}
-var $$ = function () {
-    return new a(obj);
-}

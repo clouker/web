@@ -5,6 +5,7 @@ import org.clc.utils.Page;
 import org.clc.kernel.mysql.pojo.Pojo;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface BaseMapper {
@@ -23,4 +24,6 @@ public interface BaseMapper {
     List<Pojo> findByPage(Page page);
 
 	int insert(Pojo pojo);
+
+    List<Map> initTablesInfo();
 }

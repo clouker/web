@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}"/>
     <script th:src="@{/plugin/ajax/ajax.1.7.js}"></script>
+
     <!--<import th:replace="common/plugin :: sweetalert"/>-->
     <import th:replace="common/plugin :: sweetalert2"/>
     <import th:replace="common/plugin :: sweetalert2-animate"/>
@@ -20,13 +21,8 @@
     <script th:src="@{/plugin/jquery/underscore.js}"></script>
     <script th:src="@{/plugin/lyGrid.js}"></script>
     <script th:src="@{/plugin/lyGrid/common/base64.js}"></script>
-    <script th:src="@{/plugin/lyGrid/common/jquery.serializejson.min.js}"></script>
-    <!--<script th:src="@{/plugin/lyGrid/table-data.js}"></script>-->
     <script th:src="@{/js/user/index.js}"></script>
     <style type="text/css">
-        .add-user {
-            margin-top: 15px;
-        }
 
         .add-user label {
             margin-top: 10px;
@@ -41,13 +37,16 @@
             border-radius: 100%;
         }
 
-        label {
+        .block {
             display: block;
         }
     </style>
 </head>
 <body>
-<div style="height:80px;border:3px solid  peru;border-radius: 10px"></div>
+<div style="height:80px;border:3px solid #6f8a3c;border-radius: 10px">
+    <div class="center">User Manage</div>
+    <div class="weather"></div>
+</div>
 <div class="page-content" style="padding: 0px;">
     <div class="nav">
         <input type="search" class="search-input"/>
@@ -56,33 +55,48 @@
         <button class="btn btn-bold input-lg add">添加</button>
     </div>
     <div id="paging"></div>
+    <canvas id="wolffy" width="380" height="480">
+        当前浏览器不支持canvas
+    </canvas>
 </div>
 </div>
+<script th:src="@{/plugin/wolffy.js}"></script>
 <script id="addDiv" type="text/html">
     <form id="add-user" method="post" action="/user/add" enctype="multipart/form-data">
-        <label><span>昵&nbsp;&nbsp;&nbsp;称：</span><input name="$name" placeholder="请输入昵称" type="text" required/></label>
-
-        <label><span>用户名：</span><input name="$userName" placeholder="请输入用户名" type="text" required/></label>
-
-        <label><span>性别：</span><input name="$sex" type="radio" value="0" checked/>男
+        <label class="block">
+            <span>昵&nbsp;&nbsp;&nbsp;称：</span>
+            <input name="$name" placeholder="请输入昵称" type="text" required/>
+        </label>
+        <label class="block">
+            <span>用户名：</span>
+            <input name="$userName" placeholder="请输入用户名" type="text" required/>
+        </label>
+        <label class="block">
+            <span>性别：</span>
+            <input name="$sex" type="radio" value="0" checked/>男
             <input name="$sex" type="radio" value="1"/>女</label>
-
-        <label><span>邮&nbsp;&nbsp;&nbsp;箱：</span><input name='$email' placeholder="请输入邮箱" type="email"
-                                                        required/></label>
-
-        <label><span style="vertical-align: top">头&nbsp;&nbsp;&nbsp;像：</span><img id='ava' th:src="@{images/ava.jpg}"
-                                                                                  width="186px" height="186px">
-            <input type="file" accept="image/*" onchange="ConvertToBase64Img(event)"
-                   class="hidden"/>
+        <label class="block">
+            <span>邮&nbsp;&nbsp;&nbsp;箱：</span>
+            <input name='$email' placeholder="请输入邮箱" type="email" required/>
+        </label>
+        <label class="block">
+            <span style="vertical-align: top">头&nbsp;&nbsp;&nbsp;像：</span>
+            <img id='ava' th:src="@{images/ava.jpg}" width="186px" height="186px"/>
+            <input type="file" accept="image/*" onchange="ConvertToBase64Img(event)" class="hidden"/>
             <input name='$avatar' type="hidden" class="avatar"/></label>
-
-        <label><span>身份证：</span><input name="$idCard" placeholder="请输入身份证" type="input" minlength="17" maxlength="18" required/></label>
-
-        <label><span>手机号：</span><input name="$phone" placeholder="请输入手机号" type="tel" minlength="11" maxlength="11"/></label>
-        <label><span style="vertical-align: top">备&nbsp;&nbsp;&nbsp;注：</span>
-            <textarea cols="20" rows="5" name="$comment" placeholder="备注信息"></textarea></label>
-
-        <input type="button" class="submit" onclick="app.submit('add-user')" value="添加">
+        <label class="block">
+            <span>身份证：</span>
+            <input name="$idCard" placeholder="请输入身份证" type="input" minlength="17" maxlength="18" required/>
+        </label>
+        <label class="block">
+            <span>手机号：</span>
+            <input name="$phone" placeholder="请输入手机号" type="tel" minlength="11" maxlength="11"/>
+        </label>
+        <label class="block">
+            <span style="vertical-align: top">备&nbsp;&nbsp;&nbsp;注：</span>
+            <textarea cols="20" rows="5" name="$comment" placeholder="备注信息"></textarea>
+        </label>
+        <input type="button" class="submit add" value="添加">
     </form>
 </script>
 </body>
