@@ -1,18 +1,19 @@
 package org.clc.utils;
 
-import lombok.extern.slf4j.Slf4j;
 import org.clc.kernel.mysql.pojo.Pojo;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-@Slf4j
 public class RequestUtil {
 
-    public static HttpServletRequest request = null;
+    private static Logger log = LoggerFactory.getLogger(RequestUtil.class);
+
+    private static HttpServletRequest request = null;
 
     /**
      * 获取request
@@ -129,10 +130,9 @@ public class RequestUtil {
             }
         } else if (ip.length() > 15) {
             String[] ips = ip.split(",");
-            for (int index = 0; index < ips.length; index++) {
-                String strIp = (String) ips[index];
-                if (!("unknown".equalsIgnoreCase(strIp))) {
-                    ip = strIp;
+            for (String ip1 : ips) {
+                if (!("unknown".equalsIgnoreCase(ip1))) {
+                    ip = ip1;
                     break;
                 }
             }

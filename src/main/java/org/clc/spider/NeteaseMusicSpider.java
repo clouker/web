@@ -1,15 +1,18 @@
 package org.clc.spider;
 
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@Slf4j
 public class NeteaseMusicSpider {
+
+    private Logger log = LoggerFactory.getLogger(NeteaseMusicSpider.class);
+
     /**
      * 一个cron表达式有至少6个（也可能7个）有空格分隔的时间元素。
      * 秒（0~59）

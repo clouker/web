@@ -136,7 +136,6 @@ public class Web implements Callable {
                 connection.setUseCaches(false);
                 connection.setDoOutput(true);
             }
-
             connection.connect();
             if (method.equals("POST")) {
                 setRequestBody(param);
@@ -157,8 +156,6 @@ public class Web implements Callable {
             responseContent(response, connection.getContentType(), connection.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-
         }
         return response;
     }

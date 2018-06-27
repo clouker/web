@@ -55,8 +55,7 @@ public class FileUtil {
 	 * @return
 	 */
 	public static InputStream string2InputStream(String strFile) {
-		ByteArrayInputStream stream = new ByteArrayInputStream(strFile.getBytes());
-		return stream;
+		return new ByteArrayInputStream(strFile.getBytes());
 	}
 
 	/**
@@ -68,7 +67,7 @@ public class FileUtil {
 	 */
 	public static String inputStream2String(InputStream is) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(is));
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		String line;
 		while ((line = in.readLine()) != null)
 			buffer.append(line);
@@ -84,12 +83,11 @@ public class FileUtil {
 	public static String inputStream2String2(InputStream is) {
 		String allContent = null;
 		try {
-			allContent = new String();
-			InputStream ins = is;
+			allContent = "";
 			ByteArrayOutputStream outputstream = new ByteArrayOutputStream();
 			byte[] str_b = new byte[1024];
 			int i;
-			while ((i = ins.read(str_b)) > 0)
+			while ((i = is.read(str_b)) > 0)
 				outputstream.write(str_b, 0, i);
 			allContent = outputstream.toString();
 		} catch (Exception e) {
@@ -116,11 +114,11 @@ public class FileUtil {
 		is.close();
 	}
 
-	public static final InputStream byte2Input(byte[] buf) {
+	public static InputStream byte2Input(byte[] buf) {
 		return new ByteArrayInputStream(buf);
 	}
 
-	public static final byte[] input2byte(InputStream inStream) throws Exception {
+	public static byte[] input2byte(InputStream inStream) throws Exception {
 		ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
 		byte[] buff = new byte[100];
 		int rc;
@@ -185,19 +183,18 @@ public class FileUtil {
 			int count = 0;
 			// byte[] x = Value.getBytes(this.Charset);
 			// byte[] x = file2byte("");
-			byte[] x = value;
-			while (count < x.length) {
-				byte c = x[count];
+			while (count < value.length) {
+				byte c = value[count];
 				count++;
 				d[0] = (byte) ((c & 0xFC) >> 2);
 				d[1] = (byte) ((c & 0x3) << 4);
-				if (count < x.length) {
-					c = x[count];
+				if (count < value.length) {
+					c = value[count];
 					count++;
 					d[1] = (byte) (d[1] + (byte) ((c & 0xF0) >> 4));
 					d[2] = (byte) ((c & 0xF) << 2);
-					if (count < x.length) {
-						c = x[count];
+					if (count < value.length) {
+						c = value[count];
 						count++;
 						d[2] = (byte) (d[2] + ((c & 0xC0) >> 6));
 						d[3] = (byte) (c & 0x3F);
@@ -341,22 +338,19 @@ public class FileUtil {
 	}
 
 	public static List<File> fileList(String path, boolean recursiveFlag) {
-		List<File> fileLists = new ArrayList<File>();
+		List<File> fileLists = new ArrayList<>();
 		if (!(path.endsWith("/") || path.endsWith("\\")))
 			path += "/";
 		File dir = new File(path);
 		String[] list = dir.list();
 		if (list != null) {
-			for (int i = 0; i < list.length; i++) {
-				File f = new File(path + list[i]);
+			for (String aList : list) {
+				File f = new File(path + aList);
 				if (f.isFile())
 					fileLists.add(f);
 				else {
-					if (recursiveFlag) {
-						List<File> child_files = fileList(f.getPath(), recursiveFlag);
-						for (int j = 0; j < child_files.size(); j++)
-							fileLists.add(child_files.get(j));
-					}
+					if (recursiveFlag)
+						fileLists.addAll(fileList(f.getPath(), recursiveFlag));
 				}
 			}
 		}
@@ -370,8 +364,8 @@ public class FileUtil {
 		File dir = new File(path);
 		String[] list = dir.list();
 		if (list != null) {
-			for (int i = 0; i < list.length; i++) {
-				File f = new File(path + list[i]);
+			for (String aList : list) {
+				File f = new File(path + aList);
 				if (!f.isFile())
 					fileLists.add(f);
 			}
@@ -391,7 +385,7 @@ public class FileUtil {
 	}
 
 	public static String encode(byte[] input) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		int outputCharCount = 0;
 		for (int i = 0; i < input.length; i += 3) {
 			int remaining = Math.min(3, input.length - i);

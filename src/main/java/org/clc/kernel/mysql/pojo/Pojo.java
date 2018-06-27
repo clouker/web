@@ -2,15 +2,11 @@ package org.clc.kernel.mysql.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import lombok.NonNull;
-
 import java.util.HashMap;
 
 /**
  * 实体类
  */
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Pojo extends HashMap<String, Object> {
 
@@ -34,6 +30,16 @@ public class Pojo extends HashMap<String, Object> {
     public Pojo(String table) {
         this.table = table;
     }
+    public String getTable() {
+        return table;
+    }
+    public void setCols(String cols) {
+        this.cols = cols;
+    }
+    public void setTable(String table) {
+        this.table = table;
+    }
+
 }
 
 

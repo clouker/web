@@ -9,16 +9,11 @@ import java.util.regex.Pattern;
 
 public class StringUtil {
 
-	public static String camel2underline(String source) {
+	public static String camel2underline$lower(String source) {
 		return camel2underline(source, false);
 	}
 
-    public static String camel2Underline(String source, boolean toUpper) {
-        String targer = Pattern.compile("([A-Z])").matcher(source).replaceAll("_$0");
-        return toUpper ? targer.toUpperCase() : targer;
-	}
-
-    private static String camel2underline(String source, boolean toUpper) {
+	private static String camel2underline(String source, boolean toUpper) {
 		char[] chars = source.toCharArray();
 		StringBuilder targer = new StringBuilder(0);
 		boolean flag = true;
@@ -29,9 +24,13 @@ public class StringUtil {
 				continue;
 			}
 			if (64 < c && c < 91)
-				targer.append("_" + (char) (c + 32));
+				targer.append("_").append((char) (c + 32));
 		}
-		return toUpper ? targer.toString().toUpperCase() : targer.toString();
+		return toUpper ? targer.toString().toUpperCase() : targer.toString().toLowerCase();
+	}
+
+    public static String camel2Underline$upper(String source) {
+        return source.replaceAll("([A-Z])","_$0").toUpperCase();
 	}
 
 	public static String underline2camel(String source) {
@@ -54,11 +53,12 @@ public class StringUtil {
 			inStream.close();
 			MessageDigest md5 = inStream.getMessageDigest();
 			byte[] digest = md5.digest();
-			for (int i = 0; i < digest.length; i++) {
-				rtn.append(Integer.toString((digest[i] & 0xf0) >> 4, 16));
-				rtn.append(Integer.toString(digest[i] & 0x0f, 16));
+			for (byte aDigest : digest) {
+				rtn.append(Integer.toString((aDigest & 0xf0) >> 4, 16));
+				rtn.append(Integer.toString(aDigest & 0x0f, 16));
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return rtn.toString();
 	}

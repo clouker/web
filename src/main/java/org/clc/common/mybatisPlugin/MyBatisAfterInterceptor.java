@@ -1,19 +1,12 @@
 package org.clc.common.mybatisPlugin;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.executor.parameter.ParameterHandler;
-import org.apache.ibatis.executor.statement.StatementHandler;
-import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.Invocation;
-import org.apache.ibatis.reflection.DefaultReflectorFactory;
-import org.apache.ibatis.reflection.MetaObject;
-import org.apache.ibatis.reflection.SystemMetaObject;
-import org.clc.kernel.mysql.pojo.Pojo;
-import org.clc.utils.Page;
 import org.clc.utils.StringUtil;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +17,10 @@ import java.util.Map;
  *
  * @author linb
  */
-@Slf4j
-public class MyBatisAfterInterceptor {
+class MyBatisAfterInterceptor {
 
-    public static Object run(Invocation invocation) throws Exception {
-        // 获取到当前的Statement
+    static Object run(Invocation invocation) throws Exception {
+        // 获取当前Statement
         Statement stmt = (Statement) invocation.getArgs()[0];
         // 通过Statement获得当前结果集
         ResultSet resultSet = stmt.getResultSet();
@@ -49,14 +41,14 @@ public class MyBatisAfterInterceptor {
     /**
      * 处理返回集
      *
-     * @param keys      字段和类型
+     * @param keys   字段和类型
      * @param resultSet
      * @return
      */
-    private static List<Map> getResult(List<Map<String, String>> keys, ResultSet resultSet) throws Exception {
-        List<Map> resultList = new ArrayList<>();
+    private static List<Map<String, java.io.Serializable>> getResult(List<Map<String, String>> keys, ResultSet resultSet) throws Exception {
+        List<Map<String, java.io.Serializable>> resultList = new ArrayList<>();
         while (resultSet.next()) {
-            Map cols = new HashMap();
+            Map<String, java.io.Serializable> cols = new HashMap<>();
             keys.forEach(key -> {
                 String name = StringUtil.underline2camel(key.get("name"));
                 switch (key.get("type")) {

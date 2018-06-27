@@ -30,8 +30,7 @@ public class Encode {
 	private static String toHex(byte[] bytes) {
 		final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 		StringBuilder ret = new StringBuilder(bytes.length * 2);
-		for (int i = 0; i < bytes.length; i++)
-			ret.append(HEX_DIGITS[(bytes[i] >> 4) & 0x0f]).append(HEX_DIGITS[bytes[i] & 0x0f]);
+		for (byte aByte : bytes) ret.append(HEX_DIGITS[(aByte >> 4) & 0x0f]).append(HEX_DIGITS[aByte & 0x0f]);
 		return ret.toString();
 	}
 

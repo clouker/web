@@ -83,7 +83,7 @@ public class WebUtils {
         CloseableHttpResponse response = null;
         CookieStore cookieStore = new BasicCookieStore();
         if (cookies != null)
-            cookies.forEach(cookie -> cookieStore.addCookie(cookie));
+            cookies.forEach(cookieStore::addCookie);
         try {
             httpClient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
             response = httpClient.execute(getHttpUriRequest(url, params, headers, method));
@@ -167,11 +167,8 @@ public class WebUtils {
      * @param headers
      */
     private static void setHeader(HttpUriRequest request, Map<String, String> headers) {
-        if (headers != null) {
-            headers.forEach((k, v) -> {
-                request.setHeader(k, v);
-            });
-        }
+        if (headers != null)
+            headers.forEach(request::setHeader);
         request.setHeader("Connection", "keep-alive");
 //        request.setHeader("Accept-Encoding","gzip, deflate");
         request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36");

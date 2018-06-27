@@ -1,6 +1,5 @@
 package org.clc.utils;
 
-import lombok.Data;
 import org.apache.http.cookie.Cookie;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +12,6 @@ import java.util.List;
 /**
  * 定义请求返回对象
  */
-@Data
 public class Response extends HashMap{
     private int statusCode;
     private String statusStr;
@@ -27,7 +25,7 @@ public class Response extends HashMap{
      * @return
      */
     public String getElementById(String id) {
-        Document document = Jsoup.parse(getContent() != null ? getContent() : "");
+        Document document = Jsoup.parse(this.content != null ? this.content : "");
         Element element = document.getElementById(id);
         return element != null ? element.toString() : "";
     }
@@ -39,7 +37,7 @@ public class Response extends HashMap{
      * @return
      */
     public String getElementsByClass(String className) {
-        Document document = Jsoup.parse(getContent() != null ? getContent() : "");
+        Document document = Jsoup.parse(this.content != null ? this.content : "");
         Elements element = document.getElementsByClass(className);
         return element != null ? element.toString() : "";
     }
@@ -61,7 +59,7 @@ public class Response extends HashMap{
      * @return
      */
     public Elements getElements(String query) {
-        Document document = Jsoup.parse(getContent() != null ? getContent() : "");
+        Document document = Jsoup.parse(this.content != null ? this.content : "");
         Elements element = document.select(query);
         return element != null ? element : new Elements();
     }
@@ -73,5 +71,4 @@ public class Response extends HashMap{
         this.statusCode = statusCode;
         this.contentType = contentType;
     }
-//    private Response(){}
 }

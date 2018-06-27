@@ -25,6 +25,7 @@ import java.util.List;
 @RequestMapping("user")
 public class UserController extends BaseController {
 
+	private static String table = "game";
 	@Autowired
 	private BaseMapper userMapper;
 
@@ -40,8 +41,8 @@ public class UserController extends BaseController {
 	@ApiOperation(value = "用户分页信息")
 	@ApiImplicitParam(name = "分页信息", value = "Page", dataType = "Page")
 	public Page findByPage() throws Exception {
-		Page page = page("SYS_USER", getPojo());
-		page.setWhere("ID != '80'");
+		Page page = page(table, getPojo());
+//		page.setWhere("ID != '80'");
 		page.setSearchKeys("NAME");
 		List<Pojo> users = userMapper.findByPage(page);
 		page.setRecords(users);
@@ -56,7 +57,7 @@ public class UserController extends BaseController {
 	public ResponseInfo add() throws Exception {
 		Pojo pojo = getPojo();
 		if (pojo.size() > 0){
-			pojo.setTable("SYS_USER");
+			pojo.setTable(table);
 			int code = userMapper.insert(pojo);
 			if (code > 0)
 				return ResponseInfo.returnMsg(0, "Success");

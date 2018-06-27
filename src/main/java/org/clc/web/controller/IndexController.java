@@ -15,7 +15,7 @@ public class IndexController extends BaseController {
     @ApiOperation(value = "首页", notes = "项目首页")
     public String index(Model model) {
 //        FindIterable<Document> documents = dao.getCollection().find();
-//        model.addAttribute("documents", documents);
+        model.addAttribute("documents", "documents");
         return "index";
     }
 }

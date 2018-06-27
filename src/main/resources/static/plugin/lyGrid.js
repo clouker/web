@@ -74,31 +74,31 @@ lyGrid = (function (options) {
     var tee = "1-0";
     var createHtml = function () {
         var jsonData = jsonRequest();
-        if (jsonData == '')
+        if (jsonData === '')
             return;
         returnData = jsonData;
         grid.innerHTML = '';
-        if (String(conf.isFixed) == "true")
+        if (String(conf.isFixed) === "true")
             cHeadTable();
         cBodyTh();
         cBodytb(returnData);
-        if (String(conf.usePage) == "true")
+        if (String(conf.usePage) === "true")
             fenyeDiv(returnData)
     };
     var replayData = function (o, key, sort) {
         if (conf.beforeComplete) conf.beforeComplete(conf);
         if (o) {
-            if (!(returnData != '' && returnData.records.length > 0))
+            if (!(returnData !== '' && returnData.records.length > 0))
                 returnData = jsonRequest();
             var _array = _.sortBy(returnData.records, key);
-            if (sort == "asc")
+            if (sort === "asc")
                 returnData.records = _array.reverse();
             else
                 returnData.records = _array
         } else
             returnData = jsonRequest();
         cBodytb(returnData);
-        if (String(conf.usePage) == "true")
+        if (String(conf.usePage) === "true")
             fenyeDiv(returnData);
         else
             $("#" + grid.id + " div.fenyeDiv").remove();
@@ -229,7 +229,7 @@ lyGrid = (function (options) {
             d = (pNow - 1) * conf.pageSize;
             e = pNow * conf.pageSize
         }
-        currentData = new Array();
+        currentData = [];
         for (; d < e; d++) {
             var rowdata = json[d];
             currentData.push(rowdata);
@@ -303,7 +303,6 @@ lyGrid = (function (options) {
                             td_o.innerHTML = data
                         }
                     }
-                    ;
                     if (column[o].hide == true) at += "display:" + (column[o].hide ? 'none' : 'block');
                     td_o.setAttribute("style", at)
                 });
@@ -379,7 +378,6 @@ lyGrid = (function (options) {
                 op.selected = 'selected'
             }
         }
-        ;
         if (String(conf.goPage) == "true") {
             var ulli_8 = document.createElement("li");
             divul_2.appendChild(ulli_8);
@@ -399,7 +397,6 @@ lyGrid = (function (options) {
             lia_8_A.id = "page_go";
             ulli_8.appendChild(lia_8_A)
         }
-        ;
         if (pageNow > 1) {
             var ulli_2 = document.createElement("li");
             divul_2.appendChild(ulli_2);
@@ -431,7 +428,6 @@ lyGrid = (function (options) {
             lia_3.innerHTML = '1...';
             ulli_3.appendChild(lia_3)
         }
-        ;
         for (var i = startpage; i <= endpage; i++) {
             if (i == pageNow) {
                 var ulli_5 = document.createElement("li");
@@ -810,7 +806,6 @@ lyGrid = (function (options) {
         if (evt.keyCode != undefined && evt.keyCode != 13) {
             b = false
         }
-        ;
         if (b) {
             var obj = evt.srcElement || evt.target;
             var page = returnData.pageNow;
@@ -900,7 +895,6 @@ lyGrid = (function (options) {
             sort.rowId = cbox;
             cb.push(sort)
         }
-        ;
         return cb.reverse()
     };
     var pagesIndex = function (pagecode, pageNow, pageCount) {
@@ -917,7 +911,7 @@ lyGrid = (function (options) {
             endpage = pageCount;
             if ((endpage - pagecode) > 0) startpage = endpage - pagecode + 1; else startpage = 1
         }
-        ;var se = {start: startpage, end: endpage};
+        var se = {start: startpage, end: endpage};
         return se
     };
     var loadData = function () {
@@ -1096,4 +1090,4 @@ lyGrid = (function (options) {
         getColumn: getColumn,
         getCurrentData: getCurrentData
     }
-})
+});

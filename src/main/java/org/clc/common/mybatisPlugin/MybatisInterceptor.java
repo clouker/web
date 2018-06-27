@@ -1,6 +1,5 @@
 package org.clc.common.mybatisPlugin;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.plugin.*;
@@ -9,7 +8,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Properties;
 
-@Slf4j
 @Intercepts({
 		@Signature(
 				type = StatementHandler.class,

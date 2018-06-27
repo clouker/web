@@ -1,6 +1,5 @@
 package org.clc.common.mybatisPlugin;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -12,6 +11,8 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.utils.Page;
 import org.clc.utils.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,10 +26,11 @@ import java.util.Map;
  *
  * @author linb
  */
-@Slf4j
-public class MyBatisBeforeInterceptor {
+class MyBatisBeforeInterceptor {
 
-    public static void run(Invocation invocation) throws SQLException {
+	private static Logger log = LoggerFactory.getLogger(MyBatisBeforeInterceptor.class);
+
+    static void run(Invocation invocation) throws SQLException {
         StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
         MetaObject metaObject = MetaObject.forObject(statementHandler, SystemMetaObject.DEFAULT_OBJECT_FACTORY, SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY, new DefaultReflectorFactory());
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
@@ -67,19 +69,19 @@ public class MyBatisBeforeInterceptor {
 	 */
 	private static  String startPage(Connection connection, BoundSql boundSql, MetaObject metaObject) throws SQLException {
 		Page page = (Page) boundSql.getParameterObject();
-		//统计sql
+		// 统计sql
 		StringBuilder countSql = new StringBuilder("SELECT COUNT(0) FROM " + page.getTable());
 		if (page.getWhere().length() > 0)
-			countSql.append(" where " + page.getWhere());
+			countSql.append(" where ").append(page.getWhere());
 		StringBuilder search = new StringBuilder(0);
 		if (page.getSearchVal().length() > 0) {
 			String[] searchKeys = page.getSearchKeys().split(",");
 			for (String searchKey : searchKeys)
-				search.append(searchKey + " like '%" + page.getSearchVal() + "%' and ");
+				search.append(searchKey).append(" like '%").append(page.getSearchVal()).append("%' and ");
 			if (countSql.indexOf("where") != -1)
-				countSql.append(" and " + search.substring(0, search.length() - 5));
+				countSql.append(" and ").append(search.substring(0, search.length() - 5));
 			else
-				countSql.append(" where " + search.substring(0, search.length() - 5));
+				countSql.append(" where ").append(search.substring(0, search.length() - 5));
 		}
 		PreparedStatement countStatement = connection.prepareStatement(countSql.toString());
 		ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
@@ -91,20 +93,20 @@ public class MyBatisBeforeInterceptor {
 		// 拼装分页sql
 		StringBuilder sql = new StringBuilder(boundSql.getSql());
 		if (page.getWhere().length() > 0)
-			sql.append(" where " + page.getWhere());
+			sql.append(" where ").append(page.getWhere());
 		if (search.length() > 0) {
 			if (sql.indexOf("where") != -1)
-				sql.append(" and " + search.substring(0, search.length() - 5));
+				sql.append(" and ").append(search.substring(0, search.length() - 5));
 			else
-				sql.append(" where " + search.substring(0, search.length() - 5));
+				sql.append(" where ").append(search.substring(0, search.length() - 5));
 		}
 		if (page.getOrder().length() > 0) {
-			sql.append(" order by " + page.getOrder());
+			sql.append(" order by ").append(page.getOrder());
 			if (page.getSort().length() > 0)
-				sql.append(" " + page.getSort());
+				sql.append(" ").append(page.getSort());
 		}
 
-		sql.append(" limit " + page.start() + "," + page.getPageSize());
+		sql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
 		return sql.toString();
 	}
 
@@ -120,8 +122,8 @@ public class MyBatisBeforeInterceptor {
         StringBuilder val = new StringBuilder("values(");
         String jdkVer = System.getProperty("java.version");
         cols.forEach((k, v) -> {
-            key.append(k + ",");
-            val.append("'" + v + "',");
+            key.append(k).append(",");
+            val.append("'").append(v).append("',");
         });
         sql.append(key.deleteCharAt(key.lastIndexOf(",")).append(") "));
         sql.append(val.deleteCharAt(val.lastIndexOf(",")).append(")"));
