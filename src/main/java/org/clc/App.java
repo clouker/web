@@ -32,8 +32,6 @@ public class App implements WebMvcConfigurer {
 
     /**
      * 注册拦截器
-     *
-     * @param registry
      */
     public void addInterceptors(InterceptorRegistry registry) {
 //        log.info("InterceptorRegistry : Start...");
@@ -44,8 +42,6 @@ public class App implements WebMvcConfigurer {
 
     /**
      * Swagger2 API
-     *
-     * @return
      */
     @Bean
     public Docket api() {
@@ -79,5 +75,4 @@ public class App implements WebMvcConfigurer {
 //        connector.setPort(0);
 //        return connector;
 //    }
-
 }

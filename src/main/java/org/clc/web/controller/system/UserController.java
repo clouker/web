@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("user")
 public class UserController extends BaseController {
 
-	private static String table = "game";
+	private static String table = "SYS_USER";
 	@Autowired
 	private BaseMapper userMapper;
 

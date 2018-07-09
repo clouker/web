@@ -27,7 +27,8 @@ class MyBatisAfterInterceptor {
         if (resultSet != null) {
             ResultSetMetaData metaData = resultSet.getMetaData();
             List<Map<String, String>> keys = new ArrayList<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
                 Map<String, String> col = new HashMap<>();
                 col.put("name", metaData.getColumnName(i));
                 col.put("type", metaData.getColumnTypeName(i));

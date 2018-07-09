@@ -1,7 +1,6 @@
 package org.clc.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.utils.Page;
 import org.clc.utils.RequestUtil;
@@ -16,10 +15,21 @@ import java.util.Map;
 
 public class BaseController {
 
-
 	//日志记录
 	protected static Logger log = LoggerFactory.getLogger(BaseController.class);
 
+	/* jackson 		JSON<==>POJO 操作类为ObjectMapper
+	 * Class2JSON
+	 * s@writeValue(File arg0, Object arg1)把arg1转成json序列，并保存到arg0文件中。
+	 * @writeValue(OutputStream arg0, Object arg1)把arg1转成json序列，并保存到arg0输出流中。
+	 * @writeValueAsBytes(Object arg0)把arg0转成json序列，并把结果输出成字节数组。
+	 * @writeValueAsString(Object arg0)把arg0转成json序列，并把结果输出成字符串
+	 *   pojo对象转JSON----mapper.writeValueAsString(pojo)  ======>    pojo = {"name":"小民","age":20}
+	 *   list集合转JSON---mapper.writeValueAsString(list)   ======>    list = [{"name":"小民","age":20}]
+	 * JSON2Class
+	 * @ObjectMapper支持从byte[]、File、InputStream、字符串等数据的JSON反序列化
+	 *   mapper.readValue(json, Pojo.class)      ======>     json = "{'name':'小民','age':20,}";
+	 */
 	/**
 	 * 获取请求实体
 	 */
@@ -34,18 +44,6 @@ public class BaseController {
 				BufferedReader reader = request.getReader();
 				while ((line = reader.readLine()) != null)
 					jb.append(line);
-				/** jackson---JSON<==>POJO 操作类为ObjectMapper
-				 * Class2JSON
-				 * @writeValue(File arg0, Object arg1)把arg1转成json序列，并保存到arg0文件中。
-				 * @writeValue(OutputStream arg0, Object arg1)把arg1转成json序列，并保存到arg0输出流中。
-				 * @writeValueAsBytes(Object arg0)把arg0转成json序列，并把结果输出成字节数组。
-				 * @writeValueAsString(Object arg0)把arg0转成json序列，并把结果输出成字符串
-				 *   pojo对象转JSON----mapper.writeValueAsString(pojo)  ======>    pojo = {"name":"小民","age":20}
-				 *   list集合转JSON---mapper.writeValueAsString(list)   ======>    list = [{"name":"小民","age":20}]
-				 * JSON2Class
-				 * @ObjectMapper支持从byte[]、File、InputStream、字符串等数据的JSON反序列化
-				 *   mapper.readValue(json, Pojo.class)      ======>     json = "{'name':'小民','age':20,}";
-				 */
 				ObjectMapper mapper = new ObjectMapper();
 				pojo = mapper.readValue(jb.toString(), Pojo.class);
 			} else {
@@ -69,7 +67,7 @@ public class BaseController {
 					parts.forEach(item -> {
 						if (item.getSubmittedFileName() != null) {
 							try {
-								upFiles.put(item.getName(), IOUtils.toByteArray(item.getInputStream()));
+								upFiles.put(item.getName(), item.getInputStream());
 							} catch (Exception e) {
 								e.printStackTrace();
 							}

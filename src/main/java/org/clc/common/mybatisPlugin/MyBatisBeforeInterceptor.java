@@ -14,10 +14,7 @@ import org.clc.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +33,7 @@ class MyBatisBeforeInterceptor {
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         String id = mappedStatement.getId();
         Connection connection = (Connection) invocation.getArgs()[0];
-        BoundSql boundSql = statementHandler.getBoundSql();
+		BoundSql boundSql = statementHandler.getBoundSql();
         String sql = "";
         if (id.matches(".+ByPage$") && boundSql.getParameterObject() instanceof Page) {// 拦截分页方法
             sql = startPage(connection, boundSql, metaObject);
@@ -105,9 +102,34 @@ class MyBatisBeforeInterceptor {
 			if (page.getSort().length() > 0)
 				sql.append(" ").append(page.getSort());
 		}
+		return getPageSql(sql,page);
+	}
 
-		sql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
-		return sql.toString();
+	/**
+	 * 封装分页sql - 多数据库支持
+	 */
+	private static String getPageSql(StringBuilder sql, Page page) {
+		StringBuilder pageSql = new StringBuilder(0);
+		switch (page.getDialect()){
+			case "postgresql":
+				pageSql.append(sql);
+				pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
+				break;
+			case "mysql":
+				pageSql.append(sql);
+				pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
+				break;
+			case "hsqldb":
+				pageSql.append(sql);
+				pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
+				break;
+			case "oracle":
+				pageSql.append("select * from ( select temp.*, rownum row_id from ( ").append(sql);
+				pageSql.append(" ) temp where rownum <= ").append(page.end());
+				pageSql.append(") where row_id > ").append(page.start());
+				break;
+		}
+		return pageSql.toString();
 	}
 
     /**

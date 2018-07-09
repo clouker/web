@@ -12,10 +12,10 @@
 		show tables and foreach -> desc ${table}
 	</select>
 	
-    <select id="find" resultType="org.clc.kernel.mysql.pojo.Pojo" flushCache="false">
+    <select id="find" resultType="pojo" flushCache="false">
         select ${cols} from ${table}
     </select>
-    <select id="findByPage" resultType="org.clc.kernel.mysql.pojo.Pojo">
+    <select id="findByPage" resultType="pojo">
         select ${cols} from ${table}
     </select>
     

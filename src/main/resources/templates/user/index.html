@@ -47,7 +47,7 @@
     <div class="center">User Manage</div>
     <div class="weather"></div>
 </div>
-<div class="page-content" style="padding: 0px;">
+<div class="page-content" style="padding: 0;">
     <div class="nav">
         <input type="search" class="search-input"/>
         <button class="btn btn-info search-btn">搜索</button>
@@ -58,7 +58,6 @@
     <canvas id="wolffy" width="380" height="480">
         当前浏览器不支持canvas
     </canvas>
-</div>
 </div>
 <script th:src="@{/plugin/wolffy.js}"></script>
 <script id="addDiv" type="text/html">
@@ -86,7 +85,7 @@
             <input name='$avatar' type="hidden" class="avatar"/></label>
         <label class="block">
             <span>身份证：</span>
-            <input name="$idCard" placeholder="请输入身份证" type="input" minlength="17" maxlength="18" required/>
+            <input name="$idCard" placeholder="请输入身份证" type="text" minlength="17" maxlength="18" required/>
         </label>
         <label class="block">
             <span>手机号：</span>

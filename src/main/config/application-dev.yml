@@ -3,9 +3,9 @@ spring:
   datasource:
       driver-class-name: com.mysql.jdbc.Driver
       # useSSL:高版本的MySQL是否进行ssl链接
-      url: jdbc:mysql://10.10.10.10:3306/myDB?characterEncoding=utf8&useSSL=false
-      username: linb
-      password: imissyou
+      url: jdbc:mysql://59.110.142.77:3306/sys_db?characterEncoding=utf8&useSSL=false
+      username: mysql
+      password: Yyy@mysql
 
   # ----------------------------mongo-------------------------- #
 #  data:
@@ -26,19 +26,16 @@ spring:
       date-format: 'yyyy-MM-dd HH:mm:ss'
       # 时区
       time-zone: GMT+8
-
   # --------------------------thymeleaf------------------------ #
   thymeleaf:
     cache: false
-    mode: LEGACYHTML5
+#    mode: LEGACYHTML5
 # ----------------------------mybatis-------------------------- #
 mybatis:
   # 加载mapper配置文件
   mapper-locations: classpath:mapper/*-mapper.xml
-  config-location: classpath:mapper/config/mybatis-config.xml
-#  configuration:
-#    interceptors:
-#      - org.clc.common.mybatisPlugin.MybatisInterceptor
+  type-aliases-package: org.clc.kernel.mysql.pojo
+# ----------------------------logging-------------------------- #
 logging:
   level:
     org.clc.kernel.mysql.mapper: debug
