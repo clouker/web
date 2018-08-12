@@ -11,7 +11,7 @@
 	<select id="initTablesInfo" resultType="java.util.Map">
 		show tables and foreach -> desc ${table}
 	</select>
-	
+
     <select id="find" resultType="pojo" flushCache="false">
         select ${cols} from ${table}
     </select>

@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.clc.common.ResponseInfo;
-import org.clc.utils.Page;
+import org.clc.pojo.Page;
 import org.clc.kernel.mysql.pojo.Pojo;
 import org.clc.kernel.mysql.mapper.BaseMapper;
 import org.clc.web.controller.BaseController;
@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("user")
 public class UserController extends BaseController {
 
-	private static String table = "SYS_USER";
+	private static String table = "user";
 	@Autowired
 	private BaseMapper userMapper;
 

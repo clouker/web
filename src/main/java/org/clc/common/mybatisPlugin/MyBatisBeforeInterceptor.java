@@ -9,7 +9,7 @@ import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.clc.kernel.mysql.pojo.Pojo;
-import org.clc.utils.Page;
+import org.clc.pojo.Page;
 import org.clc.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 class MyBatisBeforeInterceptor {
 
-	private static Logger log = LoggerFactory.getLogger(MyBatisBeforeInterceptor.class);
+    private static Logger log = LoggerFactory.getLogger(MyBatisBeforeInterceptor.class);
 
     static void run(Invocation invocation) throws SQLException {
         StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
@@ -33,11 +33,11 @@ class MyBatisBeforeInterceptor {
         MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
         String id = mappedStatement.getId();
         Connection connection = (Connection) invocation.getArgs()[0];
-		BoundSql boundSql = statementHandler.getBoundSql();
-        String sql = "";
-        if (id.matches(".+ByPage$") && boundSql.getParameterObject() instanceof Page) {// 拦截分页方法
+        BoundSql boundSql = statementHandler.getBoundSql();
+        String sql;
+        if (id.matches(".+ByPage$") && boundSql.getParameterObject() instanceof Page)// 拦截分页方法
             sql = startPage(connection, boundSql, metaObject);
-        } else if (id.matches("\\S+.insert\\w*") && boundSql.getParameterObject() instanceof Pojo) {
+        else if (id.matches("\\S+.insert\\w*") && boundSql.getParameterObject() instanceof Pojo) {
             Pojo pojo = (Pojo) boundSql.getParameterObject();
             Map<String, Object> cols = new HashMap<>();
             ResultSet catalogs = connection.getMetaData().getColumns(null, "%", "SYS_USER", "%");
@@ -50,87 +50,93 @@ class MyBatisBeforeInterceptor {
                     cols.put(column_name, pojo.get(column));
             }
             sql = goInsert(cols, pojo.getTable());
-        }else if (id.matches(".+initTablesInfo$")){
+        } else if (id.matches("\\S+.update\\w*")){
+            sql = goUpdate();
+        } else if (id.matches(".+initTablesInfo$")) {
             sql = "show tables";
-        }
+        } else sql = boundSql.getSql();
         metaObject.setValue("delegate.boundSql.sql", sql);
     }
 
-	/**
-	 * 分页业务处理
-	 *
-	 * @param connection
-	 * @param boundSql
-	 * @param metaObject
-	 * @throws SQLException
-	 */
-	private static  String startPage(Connection connection, BoundSql boundSql, MetaObject metaObject) throws SQLException {
-		Page page = (Page) boundSql.getParameterObject();
-		// 统计sql
-		StringBuilder countSql = new StringBuilder("SELECT COUNT(0) FROM " + page.getTable());
-		if (page.getWhere().length() > 0)
-			countSql.append(" where ").append(page.getWhere());
-		StringBuilder search = new StringBuilder(0);
-		if (page.getSearchVal().length() > 0) {
-			String[] searchKeys = page.getSearchKeys().split(",");
-			for (String searchKey : searchKeys)
-				search.append(searchKey).append(" like '%").append(page.getSearchVal()).append("%' and ");
-			if (countSql.indexOf("where") != -1)
-				countSql.append(" and ").append(search.substring(0, search.length() - 5));
-			else
-				countSql.append(" where ").append(search.substring(0, search.length() - 5));
-		}
-		PreparedStatement countStatement = connection.prepareStatement(countSql.toString());
-		ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
-		parameterHandler.setParameters(countStatement);
-		ResultSet rs = countStatement.executeQuery();
-		if (rs.next())
-			page.setRowCount(rs.getInt(1));
-		log.info("<==      Total: " + page.getRowCount());
-		// 拼装分页sql
-		StringBuilder sql = new StringBuilder(boundSql.getSql());
-		if (page.getWhere().length() > 0)
-			sql.append(" where ").append(page.getWhere());
-		if (search.length() > 0) {
-			if (sql.indexOf("where") != -1)
-				sql.append(" and ").append(search.substring(0, search.length() - 5));
-			else
-				sql.append(" where ").append(search.substring(0, search.length() - 5));
-		}
-		if (page.getOrder().length() > 0) {
-			sql.append(" order by ").append(page.getOrder());
-			if (page.getSort().length() > 0)
-				sql.append(" ").append(page.getSort());
-		}
-		return getPageSql(sql,page);
-	}
+    private static String goUpdate() {
+        return "";
+    }
 
-	/**
-	 * 封装分页sql - 多数据库支持
-	 */
-	private static String getPageSql(StringBuilder sql, Page page) {
-		StringBuilder pageSql = new StringBuilder(0);
-		switch (page.getDialect()){
-			case "postgresql":
-				pageSql.append(sql);
-				pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
-				break;
-			case "mysql":
-				pageSql.append(sql);
-				pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
-				break;
-			case "hsqldb":
-				pageSql.append(sql);
-				pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
-				break;
-			case "oracle":
-				pageSql.append("select * from ( select temp.*, rownum row_id from ( ").append(sql);
-				pageSql.append(" ) temp where rownum <= ").append(page.end());
-				pageSql.append(") where row_id > ").append(page.start());
-				break;
-		}
-		return pageSql.toString();
-	}
+    /**
+     * 分页业务处理
+     *
+     * @param connection
+     * @param boundSql
+     * @param metaObject
+     * @throws SQLException
+     */
+    private static String startPage(Connection connection, BoundSql boundSql, MetaObject metaObject) throws SQLException {
+        Page page = (Page) boundSql.getParameterObject();
+        // 统计sql
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(0) FROM " + page.getTable());
+        if (page.getWhere().length() > 0)
+            countSql.append(" where ").append(page.getWhere());
+        StringBuilder search = new StringBuilder(0);
+        if (page.getSearchVal().length() > 0) {
+            String[] searchKeys = page.getSearchKeys().split(",");
+            for (String searchKey : searchKeys)
+                search.append(searchKey).append(" like '%").append(page.getSearchVal()).append("%' and ");
+            if (countSql.indexOf("where") != -1)
+                countSql.append(" and ").append(search.substring(0, search.length() - 5));
+            else
+                countSql.append(" where ").append(search.substring(0, search.length() - 5));
+        }
+        PreparedStatement countStatement = connection.prepareStatement(countSql.toString());
+        ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
+        parameterHandler.setParameters(countStatement);
+        ResultSet rs = countStatement.executeQuery();
+        if (rs.next())
+            page.setRowCount(rs.getInt(1));
+        log.info("<==      Total: " + page.getRowCount());
+        // 拼装分页sql
+        StringBuilder sql = new StringBuilder(boundSql.getSql());
+        if (page.getWhere().length() > 0)
+            sql.append(" where ").append(page.getWhere());
+        if (search.length() > 0) {
+            if (sql.indexOf("where") != -1)
+                sql.append(" and ").append(search.substring(0, search.length() - 5));
+            else
+                sql.append(" where ").append(search.substring(0, search.length() - 5));
+        }
+        if (page.getOrder().length() > 0) {
+            sql.append(" order by ").append(page.getOrder());
+            if (page.getSort().length() > 0)
+                sql.append(" ").append(page.getSort());
+        }
+        return getPageSql(sql, page);
+    }
+
+    /**
+     * 封装分页sql - 多数据库支持
+     */
+    private static String getPageSql(StringBuilder sql, Page page) {
+        StringBuilder pageSql = new StringBuilder(0);
+        switch (page.getDialect()) {
+            case "postgresql":
+                pageSql.append(sql);
+                pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
+                break;
+            case "mysql":
+                pageSql.append(sql);
+                pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
+                break;
+            case "hsqldb":
+                pageSql.append(sql);
+                pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
+                break;
+            case "oracle":
+                pageSql.append("select * from ( select temp.*, rownum row_id from ( ").append(sql);
+                pageSql.append(" ) temp where rownum <= ").append(page.end());
+                pageSql.append(") where row_id > ").append(page.start());
+                break;
+        }
+        return pageSql.toString();
+    }
 
     /**
      * 封装insert SQL

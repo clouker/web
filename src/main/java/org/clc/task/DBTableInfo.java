@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 
-@Component
+//@Component
 @Api("InitDBTablesInfo")
 public class DBTableInfo {
 

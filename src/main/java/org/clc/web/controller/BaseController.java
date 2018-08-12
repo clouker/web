@@ -2,7 +2,7 @@ package org.clc.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.clc.kernel.mysql.pojo.Pojo;
-import org.clc.utils.Page;
+import org.clc.pojo.Page;
 import org.clc.utils.RequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,31 +113,31 @@ public class BaseController {
 	 * @param pageInfo 分页信息（页码|页容量）
 	 */
 	protected Page page(String table, Pojo pageInfo) {
-		return page(table, "*", pageInfo);
+		return page(table, pageInfo, "*");
 	}
 
 	/**
 	 * 分页信息整合
 	 *
 	 * @param table    表名
-	 * @param cols     返回固定字段
 	 * @param pageInfo 分页信息（页码|页容量）
+	 * @param cols     返回固定字段
 	 */
-	protected Page page(String table, String cols, Pojo pageInfo) {
+	protected Page page(String table, Pojo pageInfo, String cols) {
 		int start = 1;
 		int size = 10;
 		if (pageInfo.get("pageNow") != null && pageInfo.get("pageNow").toString().matches("[\\d]+"))
 			start = Integer.valueOf(pageInfo.get("pageNow").toString());
 		if (pageInfo.get("pageSize") != null && pageInfo.get("pageSize").toString().matches("[\\d]+"))
 			size = Integer.valueOf(pageInfo.get("pageSize").toString());
-		Page page = new Page(table, start, size);
-		if (pageInfo.get("order") != null)
+		Page page = new Page(table, start, size, cols);
+		if (pageInfo.get("order") != null){
 			page.setOrder(pageInfo.get("order").toString());
-		if (pageInfo.get("sort") != null)
-			page.setSort(pageInfo.get("sort").toString());
+			if (pageInfo.get("sort") != null)
+				page.setSort(pageInfo.get("sort").toString());
+		}
 		if (pageInfo.get("search") != null)
 			page.setSearchVal(pageInfo.get("search").toString());
-		page.setCols(cols);
 		return page;
 	}
 }
