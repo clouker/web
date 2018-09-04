@@ -5,6 +5,7 @@ import sun.misc.BASE64Encoder;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +112,7 @@ public class Web implements Callable {
      * @param header
      * @param cookies
      * @param proxy
-     * @return ResponseInfo ---> （code、msg、header、contentLength、contentType）
+     * @return Result ---> （code、msg、header、contentLength、contentType）
      */
     private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookies, Proxy proxy) {
         Map<String, Object> response = new HashMap<>();
@@ -185,7 +186,7 @@ public class Web implements Callable {
     private static String getContentWithHtml(InputStream inputStream) throws IOException {
         char[] buffer = new char[inputStream.available()];
         StringBuilder out = new StringBuilder();
-        InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
+        InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         while (true) {
             int rsz = isr.read(buffer, 0, buffer.length);
             if (rsz < 0)
@@ -205,7 +206,7 @@ public class Web implements Callable {
     //region 图片解析(Base64字符串)
     private static String getIMGStr(InputStream input) throws IOException {
         byte[] data = new byte[input.available()];
-        input.read(data);
+        int read = input.read(data);
         return new BASE64Encoder().encode(data);
     }
     //endregion

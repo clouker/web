@@ -2,7 +2,7 @@ package org.clc.web.controller.system;
 
 import org.clc.kernel.mysql.mapper.BaseMapper;
 import org.clc.web.controller.BaseController;
-import org.clc.common.PathCode;
+import org.clc.common.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +17,6 @@ public class MenuController extends BaseController {
 
     @GetMapping("index")
     public String index() {
-        return PathCode.MENU + PathCode.Index;
+        return Path.MENU + Path.Index;
     }
 }

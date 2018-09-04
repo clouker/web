@@ -8,6 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Objects;
 
 public class RequestUtil {
 
@@ -19,11 +20,11 @@ public class RequestUtil {
      * 获取request
      */
     public static HttpServletRequest getRequest() {
-        return request == null ? ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest() : request;
+        return request == null ? ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest() : request;
     }
 
     public RequestUtil() {
-        request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        request = RequestUtil.getRequest();
         System.out.println("------------服务器信息------------");
         System.out.println("------获取请求使用的协议名【request.getScheme()】:" + request.getScheme() + "------");
         System.out.println("------获取请求使用的具体协议版本【request.getProtocol()】:" + request.getProtocol() + "------");
@@ -96,7 +97,7 @@ public class RequestUtil {
      * 如：X-Forwarded-For：192.168.1.110, 192.168.1.120, 192.168.1.130,
      * 用户真实IP为： 192.168.1.110
      */
-    public final static String getIpAddress() throws Exception {
+    public static String getIpAddress() {
         // 获取请求主机IP地址,如果通过代理进来，则透过防火墙获取真实IP地址
         HttpServletRequest request = getRequest();
         String ip = request.getHeader("X-Forwarded-For");

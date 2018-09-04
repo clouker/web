@@ -1,10 +1,11 @@
 package org.clc.kernel.mysql.mapper;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.clc.pojo.Page;
 import org.clc.kernel.mysql.pojo.Pojo;
+import org.clc.pojo.Page;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Map;
@@ -30,11 +31,12 @@ public interface BaseMapper {
      *                          sort  --> pojo.put("sort","ase|desc")
      * @return
      */
+    @Select("select ${cols} from ${table}")
     List<Pojo> find(Pojo pojo);
 
+    @Select("select ${cols} from ${table}")
     List<Pojo> findByPage(Page page);
 
+    @Insert(" insert into ${table} ")
     int insert(Pojo pojo);
-
-    List<Map> initTablesInfo();
 }

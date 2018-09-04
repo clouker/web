@@ -8,18 +8,5 @@
         timeout 这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为 unset（依赖驱动）。
         fetchSize 这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等。默认值为 unset（依赖驱动）。
     -->
-	<select id="initTablesInfo" resultType="java.util.Map">
-		show tables and foreach -> desc ${table}
-	</select>
 
-    <select id="find" resultType="pojo" flushCache="false">
-        select ${cols} from ${table}
-    </select>
-    <select id="findByPage" resultType="pojo">
-        select ${cols} from ${table}
-    </select>
-    
-    <insert id="insert" useGeneratedKeys="true">
-      insert into ${table}
-    </insert>
 </mapper>

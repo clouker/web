@@ -3,9 +3,10 @@ package org.clc.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.clc.kernel.mysql.pojo.Pojo;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Page<T> {
+public class Page<T> implements Serializable {
 
     // -----------------------json过滤项----------------------- //
     @JsonIgnore// 表名
@@ -13,9 +14,9 @@ public class Page<T> {
     @JsonIgnore// 查询返回字段
     private String cols;
     @JsonIgnore// 搜索匹配字段 e.g."key1,key2"
-    private String searchKeys;
+    private String searchKeys = "";
     @JsonIgnore// 搜索条件
-    private String searchVal;
+    private String searchVal = "";
     @JsonIgnore// 分页条件
     private String where = "";
     @JsonIgnore// 分页排序
@@ -85,11 +86,14 @@ public class Page<T> {
             return rowCount / pageSize;
         return (rowCount / pageSize) + 1;
     }
-    public String getOrder() {
-        return order;
+    public int getPageNow() {
+        return pageNow;
     }
     public int getPageSize() {
         return pageSize;
+    }
+    public String getOrder() {
+        return order;
     }
     public int getRowCount() {
         return rowCount;

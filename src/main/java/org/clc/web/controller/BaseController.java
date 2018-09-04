@@ -112,14 +112,13 @@ public class BaseController {
 	 * @param table    表名
 	 * @param pageInfo 分页信息（页码|页容量）
 	 */
-	protected Page page(String table, Pojo pageInfo) {
+	protected Page<Pojo> page(String table, Pojo pageInfo) {
 		return page(table, pageInfo, "*");
 	}
 
 	/**
 	 * 分页信息整合
-	 *
-	 * @param table    表名
+	 *  @param table    表名
 	 * @param pageInfo 分页信息（页码|页容量）
 	 * @param cols     返回固定字段
 	 */

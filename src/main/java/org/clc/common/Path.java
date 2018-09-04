@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * 文件路径指定
  */
-public class PathCode {
+public class Path {
 
     //系统路径符号
     protected static final String PATH_FLAG = File.separator;

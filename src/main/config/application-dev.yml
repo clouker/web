@@ -1,12 +1,11 @@
 spring:
   # ----------------------------mysql-------------------------- #
   datasource:
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: org.gjt.mm.mysql.Driver
       # useSSL:高版本的MySQL是否进行ssl链接
-      url: jdbc:mysql://59.110.142.77:3306/sys_db?characterEncoding=utf8&useSSL=false
-      username: mysql
-      password: Yyy@mysql
-
+      url: jdbc:mysql://localhost:3306/bootdo?characterEncoding=utf8&useSSL=false
+      username: root
+      password: imissyou
   # ----------------------------mongo-------------------------- #
 #  data:
 #    mongodb:
@@ -19,7 +18,6 @@ spring:
 #        naming:
 #          # 表命名规格定义
 #          physical-strategy: org.clc.common.mysql.MySQLUpperCaseStrategy
-
   # ----------------------------jackson------------------------- #
   jackson:
       # 日期json输出格式
@@ -29,7 +27,6 @@ spring:
   # --------------------------thymeleaf------------------------ #
   thymeleaf:
     cache: false
-#    mode: LEGACYHTML5
 # ----------------------------mybatis-------------------------- #
 mybatis:
   # 加载mapper配置文件
@@ -40,21 +37,3 @@ logging:
   level:
     org.clc.kernel.mysql.mapper: debug
     org.clc.config: debug
-  # ------------------REDIS (RedisProperties)------------------ #
-#  redis:
-#    # Redis数据库索引（默认为0）
-#    database: 0
-#    host: 10.10.10.10
-#    port: 6379
-#    password: imissyou #（默认为空）
-#    # 连接超时时间（毫秒）
-#    timeout: 0
-#    pool:
-#      # 连接池最大连接数（使用负值表示没有限制）
-#      max-active: 8
-#      # 连接池最大阻塞等待时间（使用负值表示没有限制）
-#      max-wait: -1
-#      # 连接池中的最大空闲连接
-#      max-idle: 8
-#      # 连接池中的最小空闲连接
-#      min-idle: 0
