@@ -2,7 +2,10 @@ package org.clc.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(JsonInclude.Include.NON_NULL) //过滤null属性
+/**
+ * 统一返回JSON
+ */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result {
 
     private int code;
@@ -10,8 +13,8 @@ public class Result {
     private Object data;
 
     enum Code {
-        SUCCESS(-1, "请求无异常！！！"), ERROR(1, "程序报错！！！")
-        , FAIL(2, "请求异常！！！");
+        SUCCESS(0, "success."),
+        ERROR(1, "error");
         private int code;
         private String msg;
 
@@ -21,10 +24,6 @@ public class Result {
         }
     }
 
-    private Result(Code code) {
-        this(code, null);
-    }
-
     private Result(Code code, Object data) {
         this.code = code.code;
         this.msg = code.msg;
@@ -32,24 +31,34 @@ public class Result {
     }
 
     public static Result success() {
-        return new Result(Code.SUCCESS);
+        return success(null, null);
     }
 
     public static Result success(Object data) {
+        return success(data, null);
+    }
+
+    public static Result success(Object data, String msg) {
+        if (msg != null)
+            Code.SUCCESS.msg = msg;
         return new Result(Code.SUCCESS, data);
     }
 
     public static Result error() {
-        return new Result(Code.ERROR);
+        return error(null, null);
     }
 
-    public static Result fail(Object data) {
-        return new Result(Code.FAIL);
+    public static Result error(String errorMsg) {
+        return error(errorMsg, null);
+    }
+
+    public static Result error(String errorMsg, Object errorInfo) {
+        if (errorMsg != null)
+            Code.ERROR.msg = "";
+        return new Result(Code.ERROR, errorInfo);
     }
 
     //-------------------------get/set-------------------------//
-
-
     public int getCode() {
         return code;
     }

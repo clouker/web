@@ -21,15 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 public class WebUtils {
-    // 系统换行符：System.getProperty("line.separator")
-    public static void main(String[] args) {
-        get("");
-    }
+
     /**
      * get基本请求
-     *
-     * @param url
-     * @return
      */
     public static Response get(String url) {
         return get(url, null, null);
@@ -37,9 +31,6 @@ public class WebUtils {
 
     /**
      * get请求
-     *
-     * @param url
-     * @return
      */
     public static Response get(String url, Map<String, ?> params, List<Cookie> cookies) {
         return send(url, "get", cookies, params, null);
@@ -47,10 +38,6 @@ public class WebUtils {
 
     /**
      * post请求
-     *
-     * @param url
-     * @param params
-     * @return
      */
     public static Response post(String url, Map<String, ?> params) {
         return post(url, params, null, null);
@@ -58,11 +45,6 @@ public class WebUtils {
 
     /**
      * post请求
-     *
-     * @param url
-     * @param params  请求数据
-     * @param headers 自定义请求头
-     * @return
      */
     public static Response post(String url, Map<String, ?> params, Map<String, String> headers, List<Cookie> cookies) {
         return send(url, "post", cookies, params, headers);
@@ -70,12 +52,6 @@ public class WebUtils {
 
     /**
      * 公共请求
-     * @param url
-     * @param method
-     * @param cookies
-     * @param params
-     * @param headers
-     * @return
      */
     private static Response send(String url, String method, List<Cookie> cookies, Map<String, ?> params, Map<String, String> headers) {
         Response rs = null;
@@ -133,7 +109,6 @@ public class WebUtils {
      * @param headers 请求头
      * @param params  参数
      * @param method  请求类型
-     * @return
      */
     private static HttpUriRequest getHttpUriRequest(String url, Map<String, ?> params, Map<String, String> headers, String method) {
         HttpRequestBase httpRequest = null;
@@ -162,15 +137,11 @@ public class WebUtils {
 
     /**
      * 设置请求头
-     *
-     * @param request
-     * @param headers
      */
     private static void setHeader(HttpUriRequest request, Map<String, String> headers) {
         if (headers != null)
             headers.forEach(request::setHeader);
         request.setHeader("Connection", "keep-alive");
-//        request.setHeader("Accept-Encoding","gzip, deflate");
         request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36");
     }
 }

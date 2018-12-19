@@ -911,8 +911,7 @@ lyGrid = (function (options) {
             endpage = pageCount;
             if ((endpage - pagecode) > 0) startpage = endpage - pagecode + 1; else startpage = 1
         }
-        var se = {start: startpage, end: endpage};
-        return se
+        return {start: startpage, end: endpage}
     };
     var loadData = function () {
         app.extend(conf, options);
@@ -1017,7 +1016,7 @@ lyGrid = (function (options) {
             $.each(column, function (i, o) {
                 var li = document.createElement("li");
                 var spanbox = document.createElement("span");
-                if (o.hide == true) spanbox.className = "span_checkbox checked"; else spanbox.className = "span_checkbox";
+                if (o.hide === true) spanbox.className = "span_checkbox checked"; else spanbox.className = "span_checkbox";
                 spanbox.setAttribute("span_value", i);
                 spanbox.name = o.colkey;
                 spanbox.onclick = dmycolcheck.bind();
@@ -1033,7 +1032,7 @@ lyGrid = (function (options) {
     var lyickeck = function () {
         $('#' + grid.id + ' .i-checks').iCheck({
             checkboxClass: 'icheckbox_square-green',
-            radioClass: 'iradio_square-green',
+            radioClass: 'iradio_square-green'
         });
         $("#" + grid.id + " th:eq(1) input[class*='i-checks']").on('ifChanged', function () {
             checkboxbind(this)
@@ -1051,7 +1050,7 @@ lyGrid = (function (options) {
             p.pageSize = conf.pageSize
         }
         var d = app.extend(conf.data, p);
-        if (String(conf.local) == "true") {
+        if (String(conf.local) === "true") {
             json.records = conf.jsonUrl;
             json.pageSize = conf.pageSize;
             json.pageNow = 1;
@@ -1065,8 +1064,11 @@ lyGrid = (function (options) {
                 data: d,
                 url: conf.jsonUrl,
                 dataType: 'json',
-                success: function (data) {
-                    json = data
+                success: function (result) {
+                    if (result.data !== undefined)
+                        json = result.data;
+                    else
+                        json = result
                 },
                 error: function (msg) {
                     json = ''

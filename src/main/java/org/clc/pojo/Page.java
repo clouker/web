@@ -1,12 +1,11 @@
 package org.clc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.clc.kernel.mysql.pojo.Pojo;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class Page<T> implements Serializable {
+public class Page implements Serializable {
 
     // -----------------------json过滤项----------------------- //
     @JsonIgnore// 表名
@@ -24,14 +23,14 @@ public class Page<T> implements Serializable {
     @JsonIgnore// 分页排序(正反)
     private String sort = "desc";
     @JsonIgnore// 数据库类型 默认:mysql
-    private String dialect ="mysql";
+    private String dialect = "mysql";
     // -----------------------返回项----------------------- //
     private int pageNow;// 跳转页码
     private int pageSize;// 单页容量
     private int rowCount;// 总记录
-    private List<T> records;// 数据集
+    private List records;// 数据集
 
-    public Page(String table, int start, int size , String cols) {
+    public Page(String table, int start, int size, String cols) {
         this.table = table;
         this.pageNow = start;
         this.pageSize = size;
@@ -50,32 +49,40 @@ public class Page<T> implements Serializable {
     public int start() {
         return (pageNow - 1) * pageSize;
     }
+
     // 获取记录结束位置
-    public int end(){
+    public int end() {
         return start() + pageSize;
     }
 
     public void setOrder(String order) {
         this.order = order;
     }
+
     public void setRowCount(int rowCount) {
         this.rowCount = rowCount;
     }
+
     public void setSort(String sort) {
         this.sort = sort;
     }
+
     public void setSearchKeys(String searchKeys) {
         this.searchKeys = searchKeys;
     }
+
     public void setSearchVal(String searchVal) {
         this.searchVal = searchVal;
     }
-    public void setRecords(List<T> records) {
+
+    public void setRecords(List records) {
         this.records = records;
     }
+
     public void setWhere(String where) {
         this.where = where;
     }
+
     public void setDialect(String dialect) {
         this.dialect = dialect;
     }
@@ -86,36 +93,47 @@ public class Page<T> implements Serializable {
             return rowCount / pageSize;
         return (rowCount / pageSize) + 1;
     }
+
     public int getPageNow() {
         return pageNow;
     }
+
     public int getPageSize() {
         return pageSize;
     }
+
     public String getOrder() {
         return order;
     }
+
     public int getRowCount() {
         return rowCount;
     }
+
     public String getSearchKeys() {
         return searchKeys;
     }
+
     public String getSearchVal() {
         return searchVal;
     }
+
     public String getSort() {
         return sort;
     }
+
     public String getTable() {
         return table;
     }
+
     public String getWhere() {
         return where;
     }
-    public List<T> getRecords() {
+
+    public List getRecords() {
         return records;
     }
+
     public String getDialect() {
         return dialect;
     }

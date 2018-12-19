@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
  *
  * @Author clc
  */
-public class Web implements Callable {
+public class Web implements Callable<Object> {
 
     private String url;
     private Proxy proxy;
@@ -32,21 +32,11 @@ public class Web implements Callable {
     private List<HttpCookie> cookie;
 
     public static void main(String[] args) {
-//        String url = "http://www.androiddevtools.cn/";
-//        String url = "https://10minutemail.net/cdn/js/ads.js";
-//        String url = "https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css";
-//        String url = "https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=71b1394362061d95624631384bf50a5d/5ab5c9ea15ce36d30d89c34b36f33a87e950b138.jpg";
-//        String url = "http://m10.music.126.net/20180415171127/5f0f794030364a229791516b1283e526/ymusic/9c9e/8bb8/3f20/3bf2006159a00871e2f30d099ac05702.mp3";
-//        String url = "https://www.xiaozhizy.com";
-//        String url = "http://v3.jiathis.com/code/images/counter.gif";
-//		String url = "https://spring.io";
-        String url = "http://sfz.ckd.cc/idcard.php";
-//        String url = "http://localhost/user";
-//        String url = "https://s7.addthis.com/l10n/client.zh.min.json";
+        String url = "https://s7.addthis.com/l10n/client.zh.min.json";
 //        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1",8888));
         Map<String, Object> response = get(url, null, null, null, null);
         response.forEach((k, v) ->
-                System.out.println(k/* + " ------------ " + v*/)
+                System.out.println(k + " ------------ " + v)
         );
     }
 
@@ -106,12 +96,12 @@ public class Web implements Callable {
     /**
      * 请求方法
      *
-     * @param url
-     * @param method
-     * @param param
-     * @param header
-     * @param cookies
-     * @param proxy
+     * @param url 地址
+     * @param method 方法
+     * @param param 参数
+     * @param header 请求头
+     * @param cookies cookies
+     * @param proxy 代理
      * @return Result ---> （code、msg、header、contentLength、contentType）
      */
     private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookies, Proxy proxy) {
@@ -163,6 +153,7 @@ public class Web implements Callable {
 
     // region post请求设置请求体
     private static void setRequestBody(Map<String, ?> param) {
+
     }
     // endregion
 
@@ -175,7 +166,6 @@ public class Web implements Callable {
                 content = getIMGStr(inputStream);
             else if (contentType.contains("text") || contentType.contains("json") || contentType.contains("javascript"))
                 content = getContentWithHtml(inputStream);
-
         } else
             content = "无信息";
         response.putIfAbsent("content", content);
@@ -193,12 +183,12 @@ public class Web implements Callable {
                 break;
             out.append(buffer, 0, rsz);
         }
-        // ByteArrayOutputStream result = new ByteArrayOutputStream();
-        // byte[] buffer = new byte[1024];
-        // int length;
-        // while ((length = is.read(buffer)) != -1)
-        // result.write(buffer, 0, length);
-        // System.out.println(result.toString("UTF-8"));
+//         ByteArrayOutputStream result = new ByteArrayOutputStream();
+//         byte[] buffer = new byte[1024];
+//         int length;
+//         while ((length = is.read(buffer)) != -1)
+//         result.write(buffer, 0, length);
+//         System.out.println(result.toString("UTF-8"));
         return out.toString();
     }
     //endregion

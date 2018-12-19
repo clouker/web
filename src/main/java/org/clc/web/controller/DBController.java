@@ -1,7 +1,7 @@
 package org.clc.web.controller;
 
 import org.clc.kernel.mysql.mapper.BaseMapper;
-import org.clc.kernel.mysql.pojo.Pojo;
+import org.clc.pojo.Pojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,12 @@ public class DBController {
 
     private Logger log = LoggerFactory.getLogger(DBController.class);
 
+    private final BaseMapper baseMapper;
+
     @Autowired
-    private BaseMapper baseMapper;
+    public DBController(BaseMapper baseMapper) {
+        this.baseMapper = baseMapper;
+    }
 
     @GetMapping(value = "/{table}")
     public List<Pojo> tableInfo(@PathVariable String table){

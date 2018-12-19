@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("menu")
 public class MenuController extends BaseController {
 
+    private final BaseMapper menuMapper;
+
     @Autowired
-    private BaseMapper menuMapper;
+    public MenuController(BaseMapper menuMapper) {
+        this.menuMapper = menuMapper;
+    }
 
     @GetMapping("index")
     public String index() {

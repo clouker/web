@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * 定义请求返回对象
+ * 定义请求返回对象（JSOUP）
  */
 public class Response extends HashMap{
     private int statusCode;
@@ -20,9 +20,6 @@ public class Response extends HashMap{
     private String contentType;
     /**
      * 通过id选择器获取元素字符串
-     *
-     * @param id
-     * @return
      */
     public String getElementById(String id) {
         Document document = Jsoup.parse(this.content != null ? this.content : "");
@@ -32,9 +29,6 @@ public class Response extends HashMap{
 
     /**
      * 通过class选择器获取元素字符串
-     *
-     * @param className
-     * @return
      */
     public String getElementsByClass(String className) {
         Document document = Jsoup.parse(this.content != null ? this.content : "");
@@ -44,9 +38,6 @@ public class Response extends HashMap{
 
     /**
      * 通过CSS选择器获取元素字符串
-     *
-     * @param query css选择器
-     * @return
      */
     public String getElementsStr(String query) {
         return getElements(query).toString();
@@ -54,9 +45,6 @@ public class Response extends HashMap{
 
     /**
      * 通过CSS选择器获取元素
-     *
-     * @param query css选择器
-     * @return
      */
     public Elements getElements(String query) {
         Document document = Jsoup.parse(this.content != null ? this.content : "");

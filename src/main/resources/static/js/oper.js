@@ -22,7 +22,7 @@ var oper = function (options) {
             width: '26%',
             padding: '0 2% 3% 2%'
         }
-    }
+    };
     if (!options) return;
     if (typeof options != 'string')
         option = app.extend(option, options);
@@ -38,23 +38,23 @@ var oper = function (options) {
                 break;
         }
         obj.innerHTML = html
-    }
+    };
     var appendConfirmBtn = function (perent) {
         var confirmBox = document.createElement('div');
         confirmBox.setAttribute('class', 'confirmBox');
         // confirmBox.style.textAlign = 'center';
-        confirmBox.innerHTML = '<button class="yes">确认</button>';
+        confirmBox.innerHTML = '<button class="yes">confirm</button>';
         perent.appendChild(confirmBox);
-    }
+    };
     var appendCancelBtn = function (perent, cancelBtn) {
 
-    }
+    };
     var createTitle = function (box) {
         var header = document.createElement("div");
         header.setAttribute('data', 'header');
         header.innerHTML = option.title;
         box.appendChild(header);
-    }
+    };
     var createBox = function ($oper) {
         var box = document.createElement("div");
         box.setAttribute('class', 'box');
@@ -65,7 +65,7 @@ var oper = function (options) {
             createTitle(box);
         createMain(box);
         $oper.appendChild(box)
-    }
+    };
     var createMain = function (box) {
         var main = document.createElement("div");
         main.setAttribute('data', 'main');
@@ -76,7 +76,7 @@ var oper = function (options) {
             theme(main);
             option.confirmBtn = function () {
                 app.remove(main)
-            }
+            };
             appendConfirmBtn(main);
         }
         else {
@@ -87,12 +87,12 @@ var oper = function (options) {
             if (option.cancelBtn)
                 appendCancelBtn(main)
         }
-    }
+    };
 
     var init = function () {
         var _oper = document.getElementsByClassName('oper');
         var $oper;
-        if (_oper.length == 0) {
+        if (_oper.length === 0) {
             $oper = document.createElement("div");
             $oper.setAttribute('class', 'oper');
             $oper.style.zIndex = '100'
@@ -104,14 +104,14 @@ var oper = function (options) {
             top: 0,
             left: 0,
             width: '100%',
-            height: '100%',
-        }
-        // 设置背景
+            height: '100%'
+        };
+        // set background
         if (option.backgroud.length > 0)
             style.background = option.backgroud;
         Object.keys(style).forEach(function (key) {
             $oper.style.setProperty(key, style[key])
-        })
+        });
         createBox($oper);
         document.body.appendChild($oper);
         if (option.leftMouse)
@@ -128,18 +128,18 @@ var oper = function (options) {
                 }
                 if (flag)
                     $oper.onclick = null;
-            }
+            };
         if (option.key.length > 0)
             document.onkeyup = function (e) {
                 var flag = false;
                 var keyNum = window.event ? e.keyCode : e.which;// 获取被按下的键值
-                if (option.key.includes(27) && keyNum == 27) {
+                if (option.key.includes(27) && keyNum === 27) {
                     app.remove($oper);
                     flag = true;
                 }
                 if (flag)
                     document.onkeyup = null
             }
-    }
+    };
     init();
-}
+};

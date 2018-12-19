@@ -5,16 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@EnableCaching
-//@EnableScheduling
 @SpringBootApplication
-public class App implements WebMvcConfigurer {
+public class App{
 
-    @Autowired // 登陆拦截器
-    private LoginInterceptor loginInterceptor;
+    // 登陆拦截器
+    private final LoginInterceptor loginInterceptor;
+
+    @Autowired
+    public App(LoginInterceptor loginInterceptor) {
+        this.loginInterceptor = loginInterceptor;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);

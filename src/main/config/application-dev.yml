@@ -1,16 +1,16 @@
 spring:
-  # ----------------------------mysql-------------------------- #
+  # ----------------------------    mysql   -------------------------- #
   datasource:
-      driver-class-name: org.gjt.mm.mysql.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       # useSSL:高版本的MySQL是否进行ssl链接
-      url: jdbc:mysql://localhost:3306/bootdo?characterEncoding=utf8&useSSL=false
+      url: jdbc:mysql://localhost:3306/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
       username: root
-      password: imissyou
-  # ----------------------------mongo-------------------------- #
+      password: 12c3@cZswq
+  # ----------------------------    mongo   -------------------------- #
 #  data:
 #    mongodb:
 #      uri: mongodb://feature_peoplexs_test:Feature1234@172.30.10.31:40012/feature_peoplexs_test
-  # -----------------------------jpa--------------------------- #
+  # -----------------------------   jpa   --------------------------- #
 #  jpa:
 #      show-sql: true
 #      hibernate:
@@ -18,16 +18,16 @@ spring:
 #        naming:
 #          # 表命名规格定义
 #          physical-strategy: org.clc.common.mysql.MySQLUpperCaseStrategy
-  # ----------------------------jackson------------------------- #
+  # ----------------------------    jackson   ------------------------- #
   jackson:
       # 日期json输出格式
       date-format: 'yyyy-MM-dd HH:mm:ss'
       # 时区
       time-zone: GMT+8
-  # --------------------------thymeleaf------------------------ #
+  # --------------------------    thymeleaf   ------------------------ #
   thymeleaf:
     cache: false
-# ----------------------------mybatis-------------------------- #
+# ----------------------------      mybatis     -------------------------- #
 mybatis:
   # 加载mapper配置文件
   mapper-locations: classpath:mapper/*-mapper.xml

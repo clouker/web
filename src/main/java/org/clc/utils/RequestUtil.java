@@ -1,6 +1,6 @@
 package org.clc.utils;
 
-import org.clc.kernel.mysql.pojo.Pojo;
+import org.clc.pojo.Pojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
