@@ -1,4 +1,4 @@
-package org.clc.common;
+package org.clc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -35,10 +35,10 @@ public class Result {
     }
 
     public static Result success(Object data) {
-        return success(data, null);
+        return success(null, data);
     }
 
-    public static Result success(Object data, String msg) {
+    public static Result success(String msg, Object data) {
         if (msg != null)
             Code.SUCCESS.msg = msg;
         return new Result(Code.SUCCESS, data);
@@ -54,7 +54,7 @@ public class Result {
 
     public static Result error(String errorMsg, Object errorInfo) {
         if (errorMsg != null)
-            Code.ERROR.msg = "";
+            Code.ERROR.msg = errorMsg;
         return new Result(Code.ERROR, errorInfo);
     }
 
@@ -82,5 +82,4 @@ public class Result {
     public Object getData() {
         return data;
     }
-    //-------------------------get/set-------------------------//
 }

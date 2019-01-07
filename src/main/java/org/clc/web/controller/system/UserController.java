@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.clc.common.Path;
-import org.clc.common.Result;
+import org.clc.pojo.Result;
 import org.clc.kernel.mysql.mapper.BaseMapper;
 import org.clc.pojo.Pojo;
 import org.clc.pojo.Page;

@@ -1,5 +1,6 @@
 package org.clc.utils;
 
+import org.apache.http.cookie.Cookie;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -7,14 +8,13 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
  * 简单web请求
- *
+ * <p>
  * --支持多线程调用
  * -----List<Callable<Object>> list = new ArrayList<>()
  * -----list.add(Web.run[Get|Post]))
@@ -34,10 +34,8 @@ public class Web implements Callable<Object> {
     public static void main(String[] args) {
         String url = "https://s7.addthis.com/l10n/client.zh.min.json";
 //        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1",8888));
-        Map<String, Object> response = get(url, null, null, null, null);
-        response.forEach((k, v) ->
-                System.out.println(k + " ------------ " + v)
-        );
+        Response response = get(url, null, null, null, null);
+        System.out.println(response);
     }
 
     public static Web runGet(String url, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
@@ -63,52 +61,52 @@ public class Web implements Callable<Object> {
     public Object call() {
         StringBuilder sr = new StringBuilder(LocalDateTime.now().toString());
         sr.append(" : ").append(Thread.currentThread().getName()).append(" --- ").append(this.toString());
-        Map<String, Object> response = Web.send(this.url, this.method, this.param, this.header, this.cookie, this.proxy);
+        Response response = Web.send(this.url, this.method, this.param, this.header, this.cookie, this.proxy);
         sr.append("\n ==》Result: \n\t").append(response);
 //        System.out.println(sr);
         return response;
     }
 
-    public static Map<String, Object> get(String url) {
+    public static Response get(String url) {
         return get(url, null, null, null, null);
     }
 
-    public static Map<String, Object> get(String url, Map<String, String> param) {
+    public static Response get(String url, Map<String, String> param) {
         return get(url, param, null, null, null);
     }
 
-    public static Map<String, Object> get(String url, Map<String, String> param, Map<String, String> header) {
+    public static Response get(String url, Map<String, String> param, Map<String, String> header) {
         return get(url, param, header, null, null);
     }
 
-    public static Map<String, Object> get(String url, Map<String, String> param, Map<String, String> header, Proxy proxy) {
+    public static Response get(String url, Map<String, String> param, Map<String, String> header, Proxy proxy) {
         return get(url, param, header, null, proxy);
     }
 
-    public static Map<String, Object> get(String url, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+    public static Response get(String url, Map<String, String> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
         return send(url, "GET", param, header, cookie, proxy);
     }
 
-    public static Map<String, Object> post(String url, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
+    public static Response post(String url, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookie, Proxy proxy) {
         return send(url, "POST", param, header, cookie, proxy);
     }
 
     /**
      * 请求方法
      *
-     * @param url 地址
-     * @param method 方法
-     * @param param 参数
-     * @param header 请求头
+     * @param url     地址
+     * @param method  方法
+     * @param param   参数
+     * @param header  请求头
      * @param cookies cookies
-     * @param proxy 代理
-     * @return Result ---> （code、msg、header、contentLength、contentType）
+     * @param proxy   代理
+     * @return Response
      */
-    private static Map<String, Object> send(String url, String method, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookies, Proxy proxy) {
-        Map<String, Object> response = new HashMap<>();
+    private static Response send(String url, String method, Map<String, ?> param, Map<String, String> header, List<HttpCookie> cookies, Proxy proxy) {
+        Response response = new Response();
         if (url == null) {
-            response.put("code", -1);
-            response.put("msg", "url为空...");
+            response.setStatusCode(-1);
+            response.setMsg("url为空...");
             return response;
         }
         try {
@@ -136,14 +134,14 @@ public class Web implements Callable<Object> {
                 printWriter.flush();// flush输出流的缓冲
             }
             int responseCode = connection.getResponseCode();
-            response.putIfAbsent("code", responseCode);
+            response.setStatusCode(responseCode);
             setResponseMsg(response, responseCode);
             // 当请求格式不对、服务器报错,直接返回
             if (400 <= responseCode)
                 return response;
-            response.putIfAbsent("header", connection.getHeaderFields());
+            response.setHeader(connection.getHeaderFields());
             // connection.getContentLength() == -1  （服务端没设置content-length头）
-            response.putIfAbsent("contentLength", connection.getContentLength());
+            response.setContentLength(connection.getContentLength());
             responseContent(response, connection.getContentType(), connection.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
@@ -158,9 +156,9 @@ public class Web implements Callable<Object> {
     // endregion
 
     //region 添加响应内容
-    private static void responseContent(Map<String, Object> response, String contentType, InputStream inputStream) throws IOException {
-        response.putIfAbsent("contentType", contentType);
-        Object content = null;
+    private static void responseContent(Response response, String contentType, InputStream inputStream) throws IOException {
+        response.setContentType(contentType);
+        String content = null;
         if (contentType != null) {
             if (contentType.contains("image"))
                 content = getIMGStr(inputStream);
@@ -168,7 +166,7 @@ public class Web implements Callable<Object> {
                 content = getContentWithHtml(inputStream);
         } else
             content = "无信息";
-        response.putIfAbsent("content", content);
+        response.setContent(content);
     }
     //endregion
 
@@ -235,7 +233,7 @@ public class Web implements Callable<Object> {
 
 
     //region 设置响应消息
-    private static void setResponseMsg(Map<String, Object> response, int responseCode) {
+    private static void setResponseMsg(Response response, int responseCode) {
         String msg = "";
         switch (responseCode) {
             //-----------------------1xx(临时响应)-----------------------
@@ -361,7 +359,7 @@ public class Web implements Callable<Object> {
                 msg = "HTTP 版本不受支持:服务器不支持请求中所用的 HTTP 协议版本";
                 break;
         }
-        response.putIfAbsent("msg", msg);
+        response.setMsg(msg);
     }
     //endregion
 
@@ -382,5 +380,85 @@ public class Web implements Callable<Object> {
             sb.append(" proxy: ").append(this.proxy);
         sb.append(" ]");
         return sb.toString();
+    }
+
+    // 响应类
+    public static class Response {
+        private int statusCode;
+        private String msg;
+        private String content;
+        private List<Cookie> cookies;
+        private String contentType;
+        private int contentLength;
+        private Map<String, List<String>> header;
+
+        public int getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(int contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public Map<String, List<String>> getHeader() {
+            return header;
+        }
+
+        public void setHeader(Map<String, List<String>> header) {
+            this.header = header;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(int statusCode) {
+            this.statusCode = statusCode;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public List<Cookie> getCookies() {
+            return cookies;
+        }
+
+        public void setCookies(List<Cookie> cookies) {
+            this.cookies = cookies;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        @Override
+        public String toString() {
+            return "response info ==>" +
+                    "\n\tstatusCode: " + this.statusCode +
+                    "\n\tmsg: " + this.msg +
+                    "\n\theader: " + this.header +
+                    "\n\tcontentType: " + this.contentType +
+                    "\n\tcontentLength: " + this.contentLength +
+                    "\n\tcontent: " + this.content +
+                    "\n\tcontent: " + this.content +
+                    "\n\tcookies: " + this.cookies;
+        }
     }
 }

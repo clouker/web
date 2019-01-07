@@ -2,17 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <import th:replace="common/plugin :: bootstrap"/>
+    <import th:replace="common/plugin :: bootstrap"></import>
     <link rel="stylesheet" th:href="@{/css/ace.css}"/>
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
     <link rel="stylesheet" th:href="@{/plugin/iCheck/custom.css}"/>
     <script th:src="@{/plugin/ajax/ajax.1.7.js}"></script>
 
     <!--<import th:replace="common/plugin :: sweetalert"/>-->
-    <import th:replace="common/plugin :: sweetalert2"/>
-    <import th:replace="common/plugin :: sweetalert2-animate"/>
-    <import th:replace="common/plugin :: sweetalert2-font-awesome"/>
-    <import th:replace="common/plugin :: jquery"/>
+    <import th:replace="common/plugin :: sweetalert2"></import>
+    <import th:replace="common/plugin :: sweetalert2-animate"></import>
+    <import th:replace="common/plugin :: sweetalert2-font-awesome"></import>
+    <import th:replace="common/plugin :: jquery"></import>
     <!--<import th:replace="common/plugin :: vue"/>-->
 
     <script th:src="@{/js/app.js}"></script>
@@ -41,6 +41,7 @@
             display: block;
         }
     </style>
+    <title></title>
 </head>
 <body>
 <div style="height:80px;border:3px solid #6f8a3c;border-radius: 10px">
@@ -49,7 +50,9 @@
 </div>
 <div class="page-content" style="padding: 0;">
     <div class="nav">
-        <input type="search" class="search-input"/>
+        <label>
+            <input type="search" class="search-input"/>
+        </label>
         <button class="btn btn-info search-btn">搜索</button>
         <button class="btn btn-success export">导出</button>
         <button class="btn btn-bold input-lg add">添加</button>
@@ -80,7 +83,7 @@
         </label>
         <label class="block">
             <span style="vertical-align: top">头&nbsp;&nbsp;&nbsp;像：</span>
-            <img id='ava' th:src="@{images/ava.jpg}" width="186px" height="186px"/>
+            <img id='ava' th:src="@{images/ava.jpg}" width="186px" height="186px" alt="default"/>
             <input type="file" accept="image/*" onchange="ConvertToBase64Img(event)" class="hidden"/>
             <input name='$avatar' type="hidden" class="avatar"/></label>
         <label class="block">
