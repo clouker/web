@@ -33,6 +33,4 @@ public class App{
         registry.addInterceptor(loginInterceptor);
 //        log.info("InterceptorRegistry : Success...");
     }
-
-
 }

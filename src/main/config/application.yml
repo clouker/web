@@ -1,10 +1,12 @@
 server:
   port: 8888
-#  ssl:
-#    key-store: classpath:.keystore
-#    key-store-type: JKS
-#    key-password: 123123
-#    key-alias: tomcat
+  #https 配置
+  ssl:
+    key-store: https.key
+    key-store-type: JKS
+    key-password: imissyou
+    key-alias: https
+    key-store-password: imissyou
 spring:
   profiles:
     active: dev

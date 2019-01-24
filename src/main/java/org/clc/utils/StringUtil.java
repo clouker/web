@@ -1,7 +1,13 @@
 package org.clc.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,5 +129,49 @@ public class StringUtil {
     public static boolean verifyMd5(String text, String key, String md5) {
         String md5Text = md5(text, key);
         return md5Text.equalsIgnoreCase(md5);
+    }
+
+
+    /**
+     * 图片解析(Base64字符串)
+     * @param input 图片流
+     */
+    public static String getIMGStr(InputStream input) {
+        byte[] data = null;
+        try {
+            data = new byte[input.available()];
+            int read = input.read(data);
+            input.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new BASE64Encoder().encode(data != null ? data : new byte[0]);
+    }
+
+    /**
+     * base64字符串转化成图片
+     * @param imgStr base64Str
+     */
+    public static boolean GenerateImage(String imgStr) {
+        if (imgStr == null) // 图像数据为空
+            return false;
+        BASE64Decoder decoder = new BASE64Decoder();
+        try {
+            // Base64解码
+            byte[] b = decoder.decodeBuffer(imgStr);
+            for (int i = 0; i < b.length; ++i) {
+                if (b[i] < 0)// 调整异常数据
+                    b[i] += 256;
+            }
+            // 生成jpeg图片
+            String imgFilePath = "d:\\222.jpg";
+            OutputStream out = new FileOutputStream(imgFilePath);
+            out.write(b);
+            out.flush();
+            out.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

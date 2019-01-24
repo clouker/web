@@ -3,9 +3,9 @@ spring:
   datasource:
       driver-class-name: com.mysql.cj.jdbc.Driver
       # useSSL:高版本的MySQL是否进行ssl链接
-      url: jdbc:mysql://localhost:3306/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      url: jdbc:mysql://116.62.56.200:3306/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
       username: root
-      password: 12c3@cZswq
+      password: DS@.AC@a21n
   # ----------------------------    mongo   -------------------------- #
 #  data:
 #    mongodb:

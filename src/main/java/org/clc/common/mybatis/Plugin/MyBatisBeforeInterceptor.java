@@ -40,7 +40,8 @@ class MyBatisBeforeInterceptor {
         else if (id.matches("\\S+.insert\\w*") && boundSql.getParameterObject() instanceof Pojo) {
             Pojo pojo = (Pojo) boundSql.getParameterObject();
             Map<String, Object> cols = new HashMap<>();
-            ResultSet catalogs = connection.getMetaData().getColumns(null, "%", "SYS_USER", "%");
+            ResultSet catalogs = connection.getMetaData().getColumns(null,
+                    "%", pojo.getTable(), "%");
             while (catalogs.next()) {
                 if (catalogs.getString("IS_AUTOINCREMENT").equalsIgnoreCase("yes"))
                     continue;
@@ -50,10 +51,8 @@ class MyBatisBeforeInterceptor {
                     cols.put(column_name, pojo.get(column));
             }
             sql = goInsert(cols, pojo.getTable());
-        } else if (id.matches("\\S+.update\\w*")){
+        } else if (id.matches("\\S+.update\\w*")) {
             sql = goUpdate();
-        } else if (id.matches(".+initTablesInfo$")) {
-            sql = "show tables";
         } else sql = boundSql.getSql();
         metaObject.setValue("delegate.boundSql.sql", sql);
     }
@@ -121,10 +120,6 @@ class MyBatisBeforeInterceptor {
                 pageSql.append(sql);
                 pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
                 break;
-            case "mysql":
-                pageSql.append(sql);
-                pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
-                break;
             case "hsqldb":
                 pageSql.append(sql);
                 pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
@@ -133,6 +128,11 @@ class MyBatisBeforeInterceptor {
                 pageSql.append("select * from ( select temp.*, rownum row_id from ( ").append(sql);
                 pageSql.append(" ) temp where rownum <= ").append(page.end());
                 pageSql.append(") where row_id > ").append(page.start());
+                break;
+            case "mysql":
+            default:
+                pageSql.append(sql);
+                pageSql.append(" limit ").append(page.start()).append(",").append(page.getPageSize());
                 break;
         }
         return pageSql.toString();
@@ -145,7 +145,6 @@ class MyBatisBeforeInterceptor {
         StringBuilder sql = new StringBuilder("insert into " + table);
         StringBuilder key = new StringBuilder("(");
         StringBuilder val = new StringBuilder("values(");
-        String jdkVer = System.getProperty("java.version");
         cols.forEach((k, v) -> {
             key.append(k).append(",");
             val.append("'").append(v).append("',");

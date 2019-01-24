@@ -1,4 +1,4 @@
-package org.clc.utils;
+package org.clc.utils.http;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;

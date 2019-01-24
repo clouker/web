@@ -23,9 +23,9 @@ window.onload = function () {
             colkey: "sex",
             name: "性别",
             renderData: function (rowindex, data) {
-                if (data == 1)
+                if (data === 1)
                     return '女';
-                else if (data == 0)
+                else if (data === 0)
                     return '男';
                 return '未知';
             }
