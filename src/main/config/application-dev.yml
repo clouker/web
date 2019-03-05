@@ -1,32 +1,50 @@
 spring:
   # ----------------------------    mysql   -------------------------- #
   datasource:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      # useSSL:高版本的MySQL是否进行ssl链接
-      url: jdbc:mysql://116.62.56.200:3306/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
-      username: root
-      password: DS@.AC@a21n
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # useSSL:高版本的MySQL是否进行ssl链接
+    url: jdbc:mysql://116.62.56.200:3306/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: DS@.AC@a21n
   # ----------------------------    mongo   -------------------------- #
-#  data:
-#    mongodb:
-#      uri: mongodb://feature_peoplexs_test:Feature1234@172.30.10.31:40012/feature_peoplexs_test
+  #  data:
+  #    mongodb:
+  #      uri: mongodb://feature_peoplexs_test:Feature1234@172.30.10.31:40012/feature_peoplexs_test
+  # -----------------------------   mail   --------------------------- #
+  mail:
+    host: smtp.yeah.net
+    username: clouker@yeah.net
+    password: 123imissyou #iwantfackyou@1.h
+    default-encoding: utf-8
+    from: clouker@yeah.net
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.port: 994
+    properties.mail.display.sendmail: Javen
+    properties.mail.display.sendname: Spring Boot Guide Email
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.ssl.enable: true
   # -----------------------------   jpa   --------------------------- #
-#  jpa:
-#      show-sql: true
-#      hibernate:
-#        ddl-auto: none
-#        naming:
-#          # 表命名规格定义
-#          physical-strategy: org.clc.common.mysql.MySQLUpperCaseStrategy
+  #  jpa:
+  #      show-sql: true
+  #      hibernate:
+  #        ddl-auto: none
+  #        naming:
+  #          # 表命名规格定义
+  #          physical-strategy: org.clc.common.mysql.MySQLUpperCaseStrategy
   # ----------------------------    jackson   ------------------------- #
   jackson:
-      # 日期json输出格式
-      date-format: 'yyyy-MM-dd HH:mm:ss'
-      # 时区
-      time-zone: GMT+8
+    # 日期json输出格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 时区
+    time-zone: GMT+8
   # --------------------------    thymeleaf   ------------------------ #
   thymeleaf:
     cache: false
+  # --------------------------    redis   ------------------------ #
+  redis:
+    host: localhost
+    port: 6379
 # ----------------------------      mybatis     -------------------------- #
 mybatis:
   # 加载mapper配置文件

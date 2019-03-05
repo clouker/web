@@ -52,7 +52,20 @@ window.onload = function () {
                 html += '<span class="lbl middle"></span></label>';
                 return html;
             }
-        }],
+        }, {
+            colkey: "clear",
+            name: "删除",
+            renderData: function (rowindex) {
+                var ck = "";
+                if (rowindex % 2)
+                    ck = "checked='checked'";
+                var html = '<label class="inline">';
+                html += '<input id="id-button-borders" ' + ck + ' type="checkbox" class="ace ace-switch ace-switch-6">';
+                html += '<span class="lbl middle"></span></label>';
+                return html;
+            }
+        }
+        ],
         async: false, // 默认为同步
         setNumber: true,
         pageSize: 10,
@@ -111,7 +124,6 @@ function exportTable() {
     console.log(grid.getColumn());
     // oper.jsalert('待开发。。。');
     // grid.exportData();
-    return;
 }
 
 function gridOptions() {// 绑定查询按扭
@@ -122,7 +134,7 @@ function gridOptions() {// 绑定查询按扭
     grid.setOptions({
         beforeComplete: function (conf) {
             var s = "加载之前触发,当前表格配置参数 " + JSON.stringify(conf);
-            // operjs.alert(s);
+            alert(s);
         }
     });
     grid.setOptions({

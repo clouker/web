@@ -10,6 +10,8 @@ import org.clc.pojo.Pojo;
 import org.clc.pojo.Page;
 import org.clc.web.controller.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -43,12 +45,13 @@ public class UserController extends BaseController {
     @PostMapping("findByPage")
     @ApiOperation(value = "用户分页信息")
     @ApiImplicitParam(name = "分页信息", value = "Page", dataType = "Page")
+    @Cacheable(value = "user", key = "'user.list'")// 查询前读取缓存（有：不执行方法，直接返回缓存数据，无：执行方法后缓存返回值 ）
     public Result findByPage() throws Exception {
-        Page page = page(table, getParams());
+        Page page = page(table, params());
 //		page.setWhere("ID != '80'");
         page.setSearchKeys("NAME");
         page.setRecords(userMapper.findByPage(page));
-        return Result.success(page);
+        return Result.success("", page);
     }
 
     @ResponseBody
@@ -57,7 +60,7 @@ public class UserController extends BaseController {
     @ApiOperation(value = "用户添加")
     @ApiImplicitParam(name = "用户信息", value = "Pojo", dataType = "Pojo")
     public Result add() throws Exception {
-        Pojo pojo = getParams();
+        Pojo pojo = params();
         if (pojo.size() > 0) {
             pojo.setTable(table);
             int code = userMapper.insert(pojo);
@@ -66,5 +69,18 @@ public class UserController extends BaseController {
             return Result.error("添加失败,请稍后重试...");
         }
         return Result.error("参数有误...");
+    }
+
+    @ResponseBody
+    @Transactional
+    @GetMapping("clear")
+    @ApiOperation(value = "删除用户记录")
+    @CacheEvict(value = "user", key = "'user.list'")
+    public Result remove() throws Exception {
+        Pojo pojo = params();
+        if (pojo.size() == 0) {
+            return Result.error("缺少必要参数");
+        }
+        return Result.success("操作成功");
     }
 }

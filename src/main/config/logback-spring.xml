@@ -5,11 +5,11 @@
     <!-- console -->
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <!--  info -->
-    <property name="log.path" value="/var/log/web"/>
-    <property name="log.file" value="/var/log/java/log.log"/>
+    <property name="log.path" value="/var/log/web/"/>
+    <property name="log.file" value="/var/log/web/info.log"/>
     <!-- error -->
-    <property name="log.path.error" value="/var/log/web/error"/>
-    <property name="log.file.error" value="/var/log/web/error/log-error.log"/>
+    <property name="log.path.error" value="/var/log/web/error/"/>
+    <property name="log.file.error" value="/var/log/web/error/error.log"/>
 
     <!-- 普通日志 -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">

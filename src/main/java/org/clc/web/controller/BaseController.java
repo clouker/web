@@ -1,9 +1,9 @@
 package org.clc.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.clc.pojo.Pojo;
 import org.clc.pojo.Page;
-import org.clc.utils.RequestUtil;
+import org.clc.pojo.Pojo;
+import org.clc.utils.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,54 +34,64 @@ public class BaseController {
     /**
      * 获取请求实体
      */
-    protected Pojo getParams() throws Exception {
-        Pojo pojo = null;
-        HttpServletRequest request = RequestUtil.getRequest();
-        String contentType = request.getContentType();
-        if (contentType != null) {
-            if (contentType.startsWith("application/json")) {
-                StringBuilder sb = new StringBuilder();
-                String line;
-                BufferedReader reader = request.getReader();
-                while ((line = reader.readLine()) != null)
-                    sb.append(line);
-                ObjectMapper mapper = new ObjectMapper();
-                pojo = mapper.readValue(sb.toString(), Pojo.class);
-            } else {
-                Map<String, String[]> map = request.getParameterMap();
-                Pojo $pojo = new Pojo();
-                map.forEach((k, v) -> {
-                    StringBuilder sb = new StringBuilder();
-                    if (v.length == 1)
-                        sb.append(v[0]);
-                    else// 单key多val时，v以，相连
-                        for (String s : v)
-                            sb.append(s).append(",");
-                    $pojo.put(k, sb.toString());
-                });
-                pojo = $pojo;
-                // 判断是否包含上传文件
-                if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
-                    Collection<Part> parts = request.getParts();
-                    Pojo upFiles = new Pojo();
-                    parts.forEach(item -> {
-                        if (item.getSubmittedFileName() != null) {
-                            try {
-                                upFiles.put(item.getName(), item.getInputStream());
-                            } catch (Exception e) {
-                                e.printStackTrace();
+    protected Pojo params() throws Exception {
+        Pojo pojo = new Pojo();
+        HttpServletRequest request = Request.getRequest();
+        switch (request.getMethod()) {
+            case "GET":
+                Map<String, String[]> parameterMap = request.getParameterMap();
+                if (parameterMap.size() > 0)
+                    pojo.putAll(parameterMap);
+                break;
+            case "POST":
+            default:
+                String contentType = request.getContentType();
+                if (contentType != null) {
+                    if (contentType.startsWith("application/json")) {
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        BufferedReader reader = request.getReader();
+                        while ((line = reader.readLine()) != null)
+                            sb.append(line);
+                        ObjectMapper mapper = new ObjectMapper();
+                        pojo = mapper.readValue(sb.toString(), Pojo.class);
+                    } else {
+                        Map<String, String[]> map = request.getParameterMap();
+                        Pojo $pojo = new Pojo();
+                        map.forEach((k, v) -> {
+                            StringBuilder sb = new StringBuilder();
+                            if (v.length == 1)
+                                sb.append(v[0]);
+                            else// 单key多val时，v以，相连
+                                for (String s : v)
+                                    sb.append(s).append(",");
+                            $pojo.put(k, sb.toString());
+                        });
+                        pojo = $pojo;
+                        // 判断是否包含上传文件
+                        if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
+                            Collection<Part> parts = request.getParts();
+                            Pojo upFiles = new Pojo();
+                            parts.forEach(item -> {
+                                if (item.getSubmittedFileName() != null) {
+                                    try {
+                                        upFiles.put(item.getName(), item.getInputStream());
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            if (upFiles.size() > 0) {
+                                if (pojo.size() > 0)
+                                    pojo.putAll(upFiles);
+                                else
+                                    pojo = upFiles;
                             }
                         }
-                    });
-                    if (upFiles.size() > 0) {
-                        if (pojo.size() > 0)
-                            pojo.putAll(upFiles);
-                        else
-                            pojo = upFiles;
                     }
                 }
-            }
         }
+
         return pojo;
     }
 

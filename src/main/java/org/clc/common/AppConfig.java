@@ -45,7 +45,6 @@ public class AppConfig {
 //                .apis(RequestHandlerSelectors.basePackage("org.clc.web.controller.*.*"))
                 .build();
     }
-
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("网站API文档")
