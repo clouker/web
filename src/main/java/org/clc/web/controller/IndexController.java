@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController extends BaseController {
 
     @Log(value = "擦擦擦擦")
-    @RequestMapping
+    @RequestMapping("/")
     @ApiOperation(value = "首页", notes = "项目首页")
     public String test(Model model) {
         return "index";
