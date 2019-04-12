@@ -2,12 +2,10 @@ package org.clc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.io.Serializable;
 
 @Getter
-@ToString(exclude = {"code"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result implements Serializable {
 
