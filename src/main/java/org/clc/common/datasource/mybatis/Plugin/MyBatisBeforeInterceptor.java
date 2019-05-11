@@ -1,4 +1,4 @@
-package org.clc.common.mybatis.Plugin;
+package org.clc.common.datasource.mybatis.Plugin;
 
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
@@ -63,27 +63,22 @@ class MyBatisBeforeInterceptor {
 
     /**
      * 分页业务处理
-     *
-     * @param connection
-     * @param boundSql
-     * @param metaObject
-     * @throws SQLException
      */
     private static String startPage(Connection connection, BoundSql boundSql, MetaObject metaObject) throws SQLException {
         Page page = (Page) boundSql.getParameterObject();
         // 统计sql
-        StringBuilder countSql = new StringBuilder("SELECT COUNT(0) FROM " + page.getTable());
+        StringBuilder countSql = new StringBuilder("SELECT count(0) FROM " + page.getTable());
         if (page.getWhere().length() > 0)
-            countSql.append(" where ").append(page.getWhere());
+            countSql.append(" WHERE ").append(page.getWhere());
         StringBuilder search = new StringBuilder(0);
         if (page.getSearchVal().length() > 0) {
             String[] searchKeys = page.getSearchKeys().split(",");
             for (String searchKey : searchKeys)
                 search.append(searchKey).append(" like '%").append(page.getSearchVal()).append("%' and ");
-            if (countSql.indexOf("where") != -1)
+            if (countSql.indexOf("WHERE") != -1)
                 countSql.append(" and ").append(search.substring(0, search.length() - 5));
             else
-                countSql.append(" where ").append(search.substring(0, search.length() - 5));
+                countSql.append(" WHERE ").append(search.substring(0, search.length() - 5));
         }
         PreparedStatement countStatement = connection.prepareStatement(countSql.toString());
         ParameterHandler parameterHandler = (ParameterHandler) metaObject.getValue("delegate.parameterHandler");
@@ -91,19 +86,19 @@ class MyBatisBeforeInterceptor {
         ResultSet rs = countStatement.executeQuery();
         if (rs.next())
             page.setRowCount(rs.getInt(1));
-        log.info("<==      Total: " + page.getRowCount());
+        log.info("<==   Total: " + page.getRowCount());
         // 拼装分页sql
         StringBuilder sql = new StringBuilder(boundSql.getSql());
         if (page.getWhere().length() > 0)
-            sql.append(" where ").append(page.getWhere());
+            sql.append(" WHERE ").append(page.getWhere());
         if (search.length() > 0) {
-            if (sql.indexOf("where") != -1)
+            if (sql.indexOf("WHERE") != -1)
                 sql.append(" and ").append(search.substring(0, search.length() - 5));
             else
-                sql.append(" where ").append(search.substring(0, search.length() - 5));
+                sql.append(" WHERE ").append(search.substring(0, search.length() - 5));
         }
         if (page.getOrder().length() > 0) {
-            sql.append(" order by ").append(page.getOrder());
+            sql.append(" ORDER BY ").append(page.getOrder());
             if (page.getSort().length() > 0)
                 sql.append(" ").append(page.getSort());
         }
@@ -144,12 +139,12 @@ class MyBatisBeforeInterceptor {
     private static String goInsert(Map<String, Object> cols, String table) {
         StringBuilder sql = new StringBuilder("insert into " + table);
         StringBuilder key = new StringBuilder("(");
-        StringBuilder val = new StringBuilder("values(");
+        StringBuilder val = new StringBuilder(" values(");
         cols.forEach((k, v) -> {
             key.append(k).append(",");
             val.append("'").append(v).append("',");
         });
-        sql.append(key.deleteCharAt(key.lastIndexOf(",")).append(") "));
+        sql.append(key.deleteCharAt(key.lastIndexOf(",")).append(")"));
         sql.append(val.deleteCharAt(val.lastIndexOf(",")).append(")"));
         return sql.toString();
     }

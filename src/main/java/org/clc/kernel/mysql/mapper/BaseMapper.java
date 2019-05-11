@@ -3,13 +3,15 @@ package org.clc.kernel.mysql.mapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
-import org.clc.pojo.Pojo;
+import org.clc.common.datasource.annotation.DataSource;
 import org.clc.pojo.Page;
+import org.clc.pojo.Pojo;
 
 import java.util.List;
 import java.util.Map;
 
 @Mapper
+@DataSource
 public interface BaseMapper {
 
     @Select("select * from information_schema.TABLES where TABLE_SCHEMA=(select database())")

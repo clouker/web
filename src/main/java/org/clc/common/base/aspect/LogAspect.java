@@ -1,11 +1,11 @@
-package org.clc.common.aspect;
+package org.clc.common.base.aspect;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.clc.common.annotation.Log;
+import org.clc.common.base.annotation.ActionLog;
 import org.clc.utils.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class LogAspect {
     //@Pointcut("target(com.test.spring.aop.pointcutexp.Intf)")
     //@Pointcut("@within(org.springframework.transaction.annotation.Transactional)")
 //    @Pointcut("args(String)")
-    @Pointcut("@annotation(org.clc.common.annotation.Log)")
+    @Pointcut("@annotation(org.clc.common.base.annotation.ActionLog)")
     public void logPointCut() {
     }
 
@@ -92,11 +92,11 @@ public class LogAspect {
         Method method = signature.getMethod();
         // 获取注解信息
         //
-        Log annotation = AnnotationUtils.findAnnotation(method, Log.class);
-        Log logInfo = method.getAnnotation(Log.class);
-        String name = logInfo.name();
-        String description = logInfo.description();
-        boolean save = logInfo.save();
+        ActionLog annotation = AnnotationUtils.findAnnotation(method, ActionLog.class);
+        ActionLog actionLogInfo = method.getAnnotation(ActionLog.class);
+        String name = actionLogInfo.name();
+        String description = actionLogInfo.description();
+        boolean save = actionLogInfo.save();
 
         Object proceed = null;
         try {

@@ -2,10 +2,14 @@ spring:
   # ----------------------------    mysql   -------------------------- #
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # useSSL:高版本的MySQL是否进行ssl链接
-    url: jdbc:mysql://localhost:3980/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    jdbcUrl: jdbc:mysql://localhost:3980/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
     password: imissyou
+    test:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbcUrl: jdbc:mysql://localhost:3980/test?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+      username: root
+      password: imissyou
   # ----------------------------    mongo   -------------------------- #
   #  data:
   #    mongodb:
@@ -31,7 +35,7 @@ spring:
   #        ddl-auto: none
   #        naming:
   #          # 表命名规格定义
-  #          physical-strategy: org.clc.common.mysql.MySQLUpperCaseStrategy
+  #          physical-strategy: org.clc.common.datasource.mysql.MySQLUpperCaseStrategy
   # ----------------------------    jackson   ------------------------- #
   jackson:
     # 日期json输出格式

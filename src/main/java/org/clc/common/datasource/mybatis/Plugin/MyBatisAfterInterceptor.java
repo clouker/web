@@ -1,4 +1,4 @@
-package org.clc.common.mybatis.Plugin;
+package org.clc.common.datasource.mybatis.Plugin;
 
 import org.apache.ibatis.plugin.Invocation;
 import org.clc.utils.StringUtil;

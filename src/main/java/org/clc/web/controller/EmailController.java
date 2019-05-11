@@ -35,7 +35,7 @@ public class EmailController {
             ex.printStackTrace();
             return Result.error("邮件发送失败!!");
         }
-        return Result.success();
+        return Result.ok();
     }
 
     @RequestMapping("/htmlEmail")
@@ -55,7 +55,7 @@ public class EmailController {
             ex.printStackTrace();
             return Result.error("邮件发送失败!!");
         }
-        return Result.success();
+        return Result.ok();
     }
 
     @RequestMapping("/attachmentsMail")
@@ -67,7 +67,7 @@ public class EmailController {
             ex.printStackTrace();
             return Result.error("邮件发送失败!!");
         }
-        return Result.success();
+        return Result.ok();
     }
 
     @RequestMapping("/resourceMail")
@@ -82,7 +82,7 @@ public class EmailController {
             ex.printStackTrace();
             return Result.error("邮件发送失败!!");
         }
-        return Result.success();
+        return Result.ok();
     }
 
     @RequestMapping("/templateMail")
@@ -99,6 +99,6 @@ public class EmailController {
             ex.printStackTrace();
             return Result.error("邮件发送失败!!");
         }
-        return Result.success();
+        return Result.ok();
     }
 }

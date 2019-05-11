@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.clc.common.Path;
+import org.clc.common.datasource.annotation.DataSource;
 import org.clc.pojo.Result;
 import org.clc.kernel.mysql.mapper.BaseMapper;
 import org.clc.pojo.Pojo;
@@ -45,13 +46,12 @@ public class UserController extends BaseController {
     @PostMapping("findByPage")
     @ApiOperation(value = "用户分页信息")
     @ApiImplicitParam(name = "分页信息", value = "Page", dataType = "Page")
-    @Cacheable(value = "user", key = "'user.list'")// 查询前读取缓存（有：不执行方法，直接返回缓存数据，无：执行方法后缓存返回值 ）
+//    @Cacheable(value = "user", key = "'user.list'")
     public Result findByPage() throws Exception {
         Page page = page(table, params());
-//		page.setWhere("ID != '80'");
         page.setSearchKeys("NAME");
         page.setRecords(userMapper.findByPage(page));
-        return Result.success("", page);
+        return Result.$ok(page);
     }
 
     @ResponseBody
@@ -65,7 +65,7 @@ public class UserController extends BaseController {
             pojo.setTable(table);
             int code = userMapper.insert(pojo);
             if (code > 0)
-                return Result.success();
+                return Result.ok();
             return Result.error("添加失败,请稍后重试...");
         }
         return Result.error("参数有误...");
@@ -81,6 +81,6 @@ public class UserController extends BaseController {
         if (pojo.size() == 0) {
             return Result.error("缺少必要参数");
         }
-        return Result.success("操作成功");
+        return Result.ok("操作成功");
     }
 }

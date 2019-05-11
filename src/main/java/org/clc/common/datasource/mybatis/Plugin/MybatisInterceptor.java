@@ -1,4 +1,4 @@
-package org.clc.common.mybatis.Plugin;
+package org.clc.common.datasource.mybatis.Plugin;
 
 import org.apache.ibatis.executor.resultset.ResultSetHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
