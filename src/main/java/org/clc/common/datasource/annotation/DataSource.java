@@ -1,5 +1,6 @@
 package org.clc.common.datasource.annotation;
 
+import org.clc.common.datasource.config.DynamicDataSource;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -13,13 +14,12 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface DataSource {
 
-    String dataSourceDefault = "dataSourceDefault";
-    String dataSourceTest = "dataSourceTest";
+
 
     @AliasFor("dataSource")
-    String value() default dataSourceDefault;
+    String value() default DynamicDataSource.dataSourceDefault;
 
     @AliasFor("value")
-    String dataSource() default dataSourceDefault;
+    String dataSource() default DynamicDataSource.dataSourceDefault;
 
 }
